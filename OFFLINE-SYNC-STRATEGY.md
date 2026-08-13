@@ -1,4 +1,4 @@
-# Offline-First Sync Strategy for MarketMate
+# Offline-First Sync Strategy for Trackkit
 ## Detailed Algorithm, Conflict Resolution, and Testing
 
 **Document:** OFFLINE-SYNC-STRATEGY.md  
@@ -708,7 +708,7 @@ export function logSyncState() {
     'SELECT last_synced_at FROM sync_metadata'
   );
 
-  console.log('[MarketMate Sync Debug]', {
+  console.log('[Trackkit Sync Debug]', {
     pending_mutations: syncQueue[0].pending,
     last_synced: lastSync[0].last_synced_at,
     online: navigator.onLine,

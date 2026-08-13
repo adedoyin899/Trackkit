@@ -1,4 +1,4 @@
-# MarketMate API Reference
+# Trackkit API Reference
 ## REST API Specification for All Phases
 
 **Document:** API-REFERENCE.md  
@@ -10,7 +10,7 @@
 
 ## API Overview
 
-**Base URL:** `https://api.marketmate.app` (production)  
+**Base URL:** `https://api.trackkit.app` (production)  
 **API Version:** `v1`  
 **Authentication:** JWT (Phase 2+), Bearer token in `Authorization` header  
 **Content-Type:** `application/json`  
@@ -82,7 +82,7 @@
 
 ```http
 POST /api/auth/request-otp HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Content-Type: application/json
 
 {
@@ -124,7 +124,7 @@ Content-Type: application/json
 
 ```http
 POST /api/auth/verify-otp HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Content-Type: application/json
 
 {
@@ -174,7 +174,7 @@ Content-Type: application/json
 
 ```http
 POST /api/auth/refresh HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Authorization: Bearer {refreshToken}
 ```
 
@@ -194,7 +194,7 @@ Authorization: Bearer {refreshToken}
 
 ```http
 POST /api/auth/logout HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Authorization: Bearer {token}
 ```
 
@@ -210,7 +210,7 @@ Authorization: Bearer {token}
 
 ```http
 GET /api/products HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Authorization: Bearer {token}
 ```
 
@@ -254,7 +254,7 @@ Authorization: Bearer {token}
 
 ```http
 GET /api/products/550e8400-e29b-41d4-a716-446655440000 HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Authorization: Bearer {token}
 ```
 
@@ -302,7 +302,7 @@ Authorization: Bearer {token}
 
 ```http
 POST /api/products HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Authorization: Bearer {token}
 Content-Type: application/json
 
@@ -361,7 +361,7 @@ Content-Type: application/json
 
 ```http
 PATCH /api/products/550e8400-e29b-41d4-a716-446655440000 HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Authorization: Bearer {token}
 Content-Type: application/json
 
@@ -408,7 +408,7 @@ Content-Type: application/json
 
 ```http
 DELETE /api/products/550e8400-e29b-41d4-a716-446655440000 HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Authorization: Bearer {token}
 ```
 
@@ -433,7 +433,7 @@ Authorization: Bearer {token}
 
 ```http
 GET /api/transactions?productId=550e8400-e29b-41d4-a716-446655440000&limit=50 HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Authorization: Bearer {token}
 ```
 
@@ -485,7 +485,7 @@ Authorization: Bearer {token}
 
 ```http
 POST /api/transactions HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Authorization: Bearer {token}
 Content-Type: application/json
 
@@ -551,7 +551,7 @@ This is the core endpoint for Phase 2+ offline-first sync. Phone sends all queue
 
 ```http
 POST /api/sync HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Authorization: Bearer {token}
 Content-Type: application/json
 
@@ -682,7 +682,7 @@ Content-Type: application/json
 
 ```http
 GET /api/dashboard HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Authorization: Bearer {token}
 ```
 
@@ -726,7 +726,7 @@ Authorization: Bearer {token}
 
 ```http
 POST /api/ai/chat HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Authorization: Bearer {token}
 Content-Type: application/json
 
@@ -765,7 +765,7 @@ Content-Type: application/json
 
 ```http
 GET /api/analytics/trends?productId=550e8400-e29b-41d4-a716-446655440000&period=week HTTP/1.1
-Host: api.marketmate.app
+Host: api.trackkit.app
 Authorization: Bearer {token}
 ```
 

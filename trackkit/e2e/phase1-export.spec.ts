@@ -32,14 +32,14 @@ test.describe("CSV Export (User Story 5)", () => {
     await page.getByRole("button", { name: "Export Data to CSV" }).click();
     const download = await downloadPromise;
 
-    expect(download.suggestedFilename()).toMatch(/^marketmate-export-\d{4}-\d{2}-\d{2}\.csv$/);
+    expect(download.suggestedFilename()).toMatch(/^trackkit-export-\d{4}-\d{2}-\d{2}\.csv$/);
 
     const filePath = await download.path();
     expect(filePath).not.toBeNull();
     const csv = readFileSync(filePath as string, "utf8");
 
     // Preamble
-    expect(csv).toContain("MarketMate Inventory Export");
+    expect(csv).toContain("Trackkit Inventory Export");
     expect(csv).toMatch(/Exported: \d{4}-\d{2}-\d{2} \d{2}:\d{2}/);
 
     // Product rows (all products present, not just the most recent)
@@ -94,7 +94,7 @@ test.describe("CSV Export (User Story 5)", () => {
 
     const filePath = await download.path();
     const csv = readFileSync(filePath as string, "utf8");
-    expect(csv).toContain("MarketMate Inventory Export");
+    expect(csv).toContain("Trackkit Inventory Export");
   });
 
   test("shop name (if set) appears in the export", async ({ page }) => {

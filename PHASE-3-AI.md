@@ -803,7 +803,7 @@ test.describe('Phase 3: AI Assistant', () => {
 
 ## Summary
 
-Phase 3 transforms MarketMate from "profit analyzer" to "AI business advisor". Market woman:
+Phase 3 transforms Trackkit from "profit analyzer" to "AI business advisor". Market woman:
 - **Asks questions in plain English** (no manual calculations)
 - **Sees demand patterns** (which days are busy, which seasons matter)
 - **Gets reorder hints** (avoid stock-outs with confidence)

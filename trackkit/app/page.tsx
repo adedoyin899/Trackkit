@@ -12,7 +12,7 @@ import {
 } from "@phosphor-icons/react";
 import { useLocalInventory } from "@/hooks/useLocalInventory";
 import { useDatabaseStatus } from "@/lib/db-context";
-import { useMarketMateStore, type Tab } from "@/lib/store";
+import { useTrackkitStore, type Tab } from "@/lib/store";
 import { sortByLowStockFirst } from "@/lib/product-utils";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductForm } from "@/components/ProductForm";
@@ -28,8 +28,8 @@ const TABS: { id: Tab; label: string; icon: Icon }[] = [
 function InventoryTab() {
   const { products, isLoading } = useLocalInventory();
   const [showAddForm, setShowAddForm] = useState(false);
-  const selectedProductId = useMarketMateStore((s) => s.selectedProductId);
-  const setSelectedProductId = useMarketMateStore((s) => s.setSelectedProductId);
+  const selectedProductId = useTrackkitStore((s) => s.selectedProductId);
+  const setSelectedProductId = useTrackkitStore((s) => s.setSelectedProductId);
   const editingProduct = products.find((p) => p.id === selectedProductId) ?? null;
   const sortedProducts = useMemo(() => sortByLowStockFirst(products), [products]);
 
@@ -75,8 +75,8 @@ function InventoryTab() {
 }
 
 function SettingsTab() {
-  const shopName = useMarketMateStore((s) => s.shopName);
-  const setShopName = useMarketMateStore((s) => s.setShopName);
+  const shopName = useTrackkitStore((s) => s.shopName);
+  const setShopName = useTrackkitStore((s) => s.setShopName);
 
   return (
     <div className="space-y-6">
@@ -106,8 +106,8 @@ function SettingsTab() {
 }
 
 export default function Home() {
-  const currentTab = useMarketMateStore((s) => s.currentTab);
-  const setCurrentTab = useMarketMateStore((s) => s.setCurrentTab);
+  const currentTab = useTrackkitStore((s) => s.currentTab);
+  const setCurrentTab = useTrackkitStore((s) => s.setCurrentTab);
   const { ready, error } = useDatabaseStatus();
 
   return (
@@ -117,7 +117,7 @@ export default function Home() {
           <Storefront weight="fill" size={18} />
         </span>
         <h1 className="font-display text-[23px] font-medium tracking-[-0.02em] text-heading-charcoal">
-          MarketMate
+          Trackkit
         </h1>
       </header>
 

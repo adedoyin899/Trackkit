@@ -1,6 +1,6 @@
 {
-  "name": "MarketMate",
-  "short_name": "MarketMate",
+  "name": "Trackkit",
+  "short_name": "Trackkit",
   "description": "Offline-first inventory tracker for market traders.",
   "start_url": "/",
   "display": "standalone",

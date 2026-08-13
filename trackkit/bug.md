@@ -1,6 +1,6 @@
 # Bug Log
 
-Chronological record of bugs found while building MarketMate. Add a new entry
+Chronological record of bugs found while building Trackkit. Add a new entry
 every time something breaks — even if you fix it in the same session. This is
 what future-us (or whoever inherits this) reads to avoid re-discovering the
 same failure modes.

@@ -1,7 +1,7 @@
 "use client";
 
 import { Minus, PencilSimple, Plus, Warning } from "@phosphor-icons/react";
-import { useMarketMateStore } from "@/lib/store";
+import { useTrackkitStore } from "@/lib/store";
 import { useTransactions } from "@/hooks/useTransactions";
 import { isLowStock } from "@/lib/product-utils";
 import type { Product } from "@/lib/types";
@@ -12,7 +12,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { logTransaction, isLogging } = useTransactions(product.id);
-  const setSelectedProductId = useMarketMateStore((s) => s.setSelectedProductId);
+  const setSelectedProductId = useTrackkitStore((s) => s.setSelectedProductId);
   const lowStock = isLowStock(product);
 
   const adjust = (type: "sale" | "restock", quantity = 1) => {

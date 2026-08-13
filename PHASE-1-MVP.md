@@ -174,7 +174,7 @@ Phase 1 is the MVP: offline-first inventory tracking with low-stock alerts and s
 
 **CSV Format Example:**
 ```
-MarketMate Inventory Export
+Trackkit Inventory Export
 Exported: 2026-08-11 14:30
 Shop Name: (user can set in settings)
 
@@ -334,7 +334,7 @@ utils/
 
 **Zustand store (app-wide state):**
 ```typescript
-interface MarketMateStore {
+interface TrackkitStore {
   // Settings
   shopName: string | null;
   currency: string; // ₦ by default
@@ -369,7 +369,7 @@ useQuery({
 // 1. Cache all static assets on install
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open('marketmate-v1').then((cache) => {
+    caches.open('trackkit-v1').then((cache) => {
       return cache.addAll([
         '/',
         '/styles/main.css',
@@ -429,7 +429,7 @@ self.addEventListener('fetch', (event) => {
 ### Home Screen (Dashboard)
 ```
 ┌────────────────────────────────┐
-│ MarketMate                  🔧  │  ← Settings gear
+│ Trackkit                  🔧  │  ← Settings gear
 ├────────────────────────────────┤
 │                                │
 │  TODAY'S SNAPSHOT             │
@@ -552,7 +552,7 @@ self.addEventListener('fetch', (event) => {
 ## File Structure (Phase 1)
 
 ```
-marketmate/
+trackkit/
 ├── app/
 │   ├── layout.tsx
 │   ├── page.tsx                # Home / Dashboard

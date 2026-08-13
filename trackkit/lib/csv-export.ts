@@ -6,7 +6,7 @@ function formatTimestamp(date: Date): string {
 }
 
 /**
- * Builds the MarketMate export CSV: inventory snapshot (per PHASE-1-MVP.md's
+ * Builds the Trackkit export CSV: inventory snapshot (per PHASE-1-MVP.md's
  * format) plus full transaction history, so a phone-loss backup doesn't lose
  * the sale/restock log — just the current quantities.
  */
@@ -16,7 +16,7 @@ export function buildInventoryCsv(
   shopName: string | null,
 ): string {
   const header = [
-    "MarketMate Inventory Export",
+    "Trackkit Inventory Export",
     `Exported: ${formatTimestamp(new Date())}`,
     `Shop Name: ${shopName ?? ""}`,
     "",
@@ -52,7 +52,7 @@ export function buildInventoryCsv(
 }
 
 /** Triggers a browser download of the given CSV content. */
-export function downloadCsv(csv: string, filename = "marketmate-export.csv") {
+export function downloadCsv(csv: string, filename = "trackkit-export.csv") {
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

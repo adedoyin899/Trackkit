@@ -1,4 +1,4 @@
-# MarketMate Architecture
+# Trackkit Architecture
 ## Offline-First Inventory & Profit Intelligence Platform
 
 **Document:** ARCHITECTURE.md  
@@ -10,7 +10,7 @@
 
 ## System Overview
 
-MarketMate is built on an **offline-first architecture** where the phone is the source of truth in Phase 1, and cloud sync is optional (Phase 2+).
+Trackkit is built on an **offline-first architecture** where the phone is the source of truth in Phase 1, and cloud sync is optional (Phase 2+).
 
 ```
                     PHASE 1 (Offline Only)
@@ -117,7 +117,7 @@ MarketMate is built on an **offline-first architecture** where the phone is the 
 import { OpenDatabase } from 'wa-sqlite';
 
 const db = await OpenDatabase({
-  filename: 'marketmate.db',
+  filename: 'trackkit.db',
   flags: 'cs'  // Create + Shared cache
 });
 
@@ -168,7 +168,7 @@ await db.exec(`
 ```javascript
 // service-worker.ts
 
-const CACHE_NAME = 'marketmate-v1';
+const CACHE_NAME = 'trackkit-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -306,8 +306,8 @@ export function useLocalInventory() {
 
 ```json
 {
-  "name": "MarketMate",
-  "short_name": "MarketMate",
+  "name": "Trackkit",
+  "short_name": "Trackkit",
   "description": "Know your stock. Know your profit. No internet needed.",
   "start_url": "/",
   "scope": "/",
@@ -737,8 +737,8 @@ provider "aws" {
 }
 
 # Vercel project (managed via Vercel UI, but can be automated)
-# resource "vercel_project" "marketmate" {
-#   name = "marketmate"
+# resource "vercel_project" "trackkit" {
+#   name = "trackkit"
 #   ...
 # }
 
@@ -746,14 +746,14 @@ provider "aws" {
 # Future: Use Supabase Terraform provider when stable
 
 # CloudFlare for DNS + DDoS protection
-resource "cloudflare_zone" "marketmate" {
+resource "cloudflare_zone" "trackkit" {
   account_id = var.cloudflare_account_id
-  zone       = "marketmate.app"
+  zone       = "trackkit.app"
 }
 
 resource "cloudflare_record" "apex" {
-  zone_id = cloudflare_zone.marketmate.id
-  name    = "marketmate.app"
+  zone_id = cloudflare_zone.trackkit.id
+  name    = "trackkit.app"
   type    = "CNAME"
   value   = "cname.vercel-dns.com"
 }
@@ -829,13 +829,13 @@ import Analytics from 'analytics';
 
 export const analytics = Analytics({
   app: {
-    name: 'MarketMate'
+    name: 'Trackkit'
   },
   plugins: [
     {
       name: 'plausible',
       config: {
-        domain: 'marketmate.app',
+        domain: 'trackkit.app',
         apiHost: 'https://plausible.io'
       }
     }
@@ -898,7 +898,7 @@ analytics.track('product_added', {
 export function logError(error: Error, context: any) {
   if (typeof window !== 'undefined') {
     // Only in browser
-    console.error('[MarketMate]', error.message, context);
+    console.error('[Trackkit]', error.message, context);
     
     // Phase 2: Send to error tracking
     // if (window.__shouldReport) {
@@ -1054,7 +1054,7 @@ test.describe('Offline → Cloud Sync', () => {
     // Verify synced to queue (check IndexedDB)
     const queueCount = await page.evaluate(() => {
       return new Promise((resolve) => {
-        const req = indexedDB.open('marketmate.db');
+        const req = indexedDB.open('trackkit.db');
         req.onsuccess = () => {
           const tx = req.result.transaction('sync_queue');
           const cursor = tx.objectStore('sync_queue').openCursor();

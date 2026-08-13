@@ -1,7 +1,7 @@
 import initSqlJs, { type Database } from "sql.js";
 import { get, set } from "idb-keyval";
 
-const DB_STORAGE_KEY = "marketmate-db";
+const DB_STORAGE_KEY = "trackkit-db";
 
 const SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS products (

@@ -1,4 +1,4 @@
-# MarketMate Documentation Index
+# Trackkit Documentation Index
 ## Complete Product Suite Specification (All Phases)
 
 **Last updated:** 2026-08-11  
@@ -215,7 +215,7 @@ DEPLOYMENT-&-INFRA.md
 
 **Step 1: Give context**
 ```
-I want to build MarketMate Phase 1.
+I want to build Trackkit Phase 1.
 Read these docs: PRODUCT-OVERVIEW.md, PHASE-1-MVP.md
 Then read: ARCHITECTURE.md (Phase 1 section)
 ```

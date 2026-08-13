@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 
 export type Tab = "inventory" | "dashboard" | "settings";
 
-interface MarketMateStore {
+interface TrackkitStore {
   shopName: string | null;
   currency: string;
   syncEnabled: boolean;
@@ -16,7 +16,7 @@ interface MarketMateStore {
   setSelectedProductId: (id: string | null) => void;
 }
 
-export const useMarketMateStore = create<MarketMateStore>()(
+export const useTrackkitStore = create<TrackkitStore>()(
   persist(
     (set) => ({
       shopName: null,
@@ -31,7 +31,7 @@ export const useMarketMateStore = create<MarketMateStore>()(
       setSelectedProductId: (id) => set({ selectedProductId: id }),
     }),
     {
-      name: "marketmate-store",
+      name: "trackkit-store",
       // selectedProductId is transient modal state — persisting it would
       // reopen a stale edit form on the next app launch.
       partialize: (state) => ({

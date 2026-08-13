@@ -53,7 +53,7 @@ Same as Phase 2: Each prompt includes references, acceptance criteria, files to 
 **Copy-paste this to Claude Code:**
 
 ```
-I'm building Phase 3 of MarketMate (Make Smarter Decisions).
+I'm building Phase 3 of Trackkit (Make Smarter Decisions).
 
 Phase 1 & 2 are deployed and validated in production.
 
@@ -883,4 +883,4 @@ If metrics are mixed:
 
 ---
 
-**You've got this. Let's ship MarketMate. 🚀**
+**You've got this. Let's ship Trackkit. 🚀**

@@ -40,7 +40,7 @@
 ```
 PROMPT:
 
-You are building MarketMate, an offline-first inventory tracker for market women in West Africa.
+You are building Trackkit, an offline-first inventory tracker for market women in West Africa.
 
 REFERENCE:
 - PRODUCT-OVERVIEW.md (full vision)
@@ -54,7 +54,7 @@ Set up a Next.js project with local SQLite database for Phase 1 MVP.
 
 ### What to Build
 
-1. **Create Next.js project** (`marketmate`)
+1. **Create Next.js project** (`trackkit`)
    - Use TypeScript
    - Install: Tailwind CSS, Zustand, TanStack Query, wa-sqlite, sql.js
    - Create directory structure per PHASE-1-MVP.md
@@ -76,7 +76,7 @@ Set up a Next.js project with local SQLite database for Phase 1 MVP.
 
 5. **Create basic folder structure**:
    ```
-   marketmate/
+   trackkit/
    ├── app/
    │   ├── layout.tsx
    │   ├── page.tsx (home)
@@ -137,7 +137,7 @@ CREATE INDEX idx_transactions_product_id ON transactions(product_id);
 
 1. **Check project structure**:
    ```bash
-   ls -la marketmate/
+   ls -la trackkit/
    # Should show: app/, components/, hooks/, lib/, public/, styles/, tests/, package.json
    ```
 
@@ -156,7 +156,7 @@ CREATE INDEX idx_transactions_product_id ON transactions(product_id);
 4. **Manual test** (in browser after `npm run dev`):
    - Open DevTools Console
    - Run: `window.__db` (should show SQLite instance)
-   - Check IndexedDB: DevTools → Storage → IndexedDB → marketmate.db
+   - Check IndexedDB: DevTools → Storage → IndexedDB → trackkit.db
 
 5. **Commit to GitHub**:
    ```bash
@@ -326,8 +326,8 @@ Set up Service Worker for true offline-first experience:
    - Handle offline/online transitions
 
 3. **PWA manifest** (`public/manifest.json`)
-   - name: "MarketMate"
-   - short_name: "MarketMate"
+   - name: "Trackkit"
+   - short_name: "Trackkit"
    - display: "standalone"
    - theme_color: "#1f2937"
    - icons: Provide 192px + 512px icons
@@ -526,12 +526,12 @@ Deploy to Vercel and set up CI/CD:
 1. **Connect to Vercel**
    - GitHub repo already exists (you've been pushing)
    - Go to vercel.com, click "New Project"
-   - Import GitHub repo `marketmate`
+   - Import GitHub repo `trackkit`
    - Framework preset: Next.js
    - Deploy (Vercel will auto-build)
 
 2. **Verify deployment**
-   - Vercel assigns URL: `marketmate-xxxxx.vercel.app`
+   - Vercel assigns URL: `trackkit-xxxxx.vercel.app`
    - Test URL in browser: Should load Phase 1 app
    - Test offline: DevTools → Offline → Refresh → Should work
    - Test PWA: Try install from browser menu
@@ -562,7 +562,7 @@ Deploy to Vercel and set up CI/CD:
 
 1. **Test live URL**:
    ```bash
-   curl https://marketmate-xxxxx.vercel.app/
+   curl https://trackkit-xxxxx.vercel.app/
    # Should return 200
    ```
 

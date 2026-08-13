@@ -3,18 +3,18 @@
 import { DownloadSimple } from "@phosphor-icons/react";
 import { useLocalInventory } from "@/hooks/useLocalInventory";
 import { useTransactions } from "@/hooks/useTransactions";
-import { useMarketMateStore } from "@/lib/store";
+import { useTrackkitStore } from "@/lib/store";
 import { buildInventoryCsv, downloadCsv } from "@/lib/csv-export";
 
 export function ExportButton() {
   const { products } = useLocalInventory();
   const { transactions } = useTransactions();
-  const shopName = useMarketMateStore((s) => s.shopName);
+  const shopName = useTrackkitStore((s) => s.shopName);
 
   const handleExport = () => {
     const csv = buildInventoryCsv(products, transactions, shopName);
     const date = new Date().toISOString().slice(0, 10);
-    downloadCsv(csv, `marketmate-export-${date}.csv`);
+    downloadCsv(csv, `trackkit-export-${date}.csv`);
   };
 
   return (

@@ -662,7 +662,7 @@ Once Phase 2 is validated (retention 60%+, 15%+ paid conversion):
 
 ## Summary
 
-Phase 2 transforms MarketMate from "inventory tracker" to "profit analyzer". Market woman sees:
+Phase 2 transforms Trackkit from "inventory tracker" to "profit analyzer". Market woman sees:
 - **Which products make real money** (margin %)
 - **How to reprice losers** (suggestions)
 - **Cloud backup** (peace of mind)

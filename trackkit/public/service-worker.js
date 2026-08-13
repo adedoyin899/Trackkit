@@ -1,4 +1,4 @@
-// MarketMate offline-first service worker.
+// Trackkit offline-first service worker.
 //
 // Plain JS, not TS: this file is served verbatim from /public by Next.js and
 // executed directly by the browser as a Worker script — there is no build
@@ -17,7 +17,7 @@
 // yet to intercept anything, which is inherent to any PWA, not specific to
 // this approach.
 
-const CACHE_NAME = "marketmate-v1";
+const CACHE_NAME = "trackkit-v1";
 
 const PRECACHE_URLS = [
   "/",

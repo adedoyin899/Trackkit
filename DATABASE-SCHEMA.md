@@ -1,4 +1,4 @@
-# MarketMate Database Schema
+# Trackkit Database Schema
 ## Complete SQL Design for All Phases
 
 **Document:** DATABASE-SCHEMA.md  

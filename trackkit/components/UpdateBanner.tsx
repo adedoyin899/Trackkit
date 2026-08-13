@@ -17,7 +17,7 @@ export function UpdateBanner() {
 
   return (
     <div className="flex items-center justify-center gap-3 bg-[var(--color-link-blue)] px-4 py-2 text-[13px] font-medium text-white">
-      A new version of MarketMate is ready.
+      A new version of Trackkit is ready.
       <button
         type="button"
         onClick={applyServiceWorkerUpdate}

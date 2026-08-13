@@ -53,7 +53,7 @@
 **Copy-paste this to Claude Code:**
 
 ```
-I'm building Phase 2 of MarketMate (Know Your Profit). 
+I'm building Phase 2 of Trackkit (Know Your Profit). 
 
 Phase 1 is complete (offline inventory app). Now I'm adding cloud sync.
 

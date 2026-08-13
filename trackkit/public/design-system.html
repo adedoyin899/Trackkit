@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MarketMate — Design System</title>
-<meta name="description" content="Live design tokens and component gallery for MarketMate, sourced from styles/tokens.css." />
+<title>Trackkit — Design System</title>
+<meta name="description" content="Live design tokens and component gallery for Trackkit, sourced from styles/tokens.css." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 <!-- Single source of truth: editing styles/tokens.css updates this page AND the live app (app/globals.css imports the same file). -->
@@ -166,14 +166,14 @@
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">Market<span>Mate</span> — Design System</div>
+    <div class="brand">Track<span>kit</span> — Design System</div>
     <button class="theme-toggle" id="themeToggle" type="button"><i class="ph-bold ph-moon"></i> Dark mode</button>
   </header>
 
   <div class="wrap">
     <p class="lede" style="margin-top: 32px;">
       Live reference for every color, type size, spacing/radius/shadow token, and core component
-      used in MarketMate. Source of truth is <code>styles/tokens.css</code> — this page links that
+      used in Trackkit. Source of truth is <code>styles/tokens.css</code> — this page links that
       file directly (see the <code>&lt;link&gt;</code> tag in <code>&lt;head&gt;</code>), and so does
       the live app's <code>app/globals.css</code>. Change a value once, both update.
     </p>
@@ -296,7 +296,7 @@
 
     <section id="patterns">
       <h2>App Patterns</h2>
-      <p class="lede">Live replicas of the actual MarketMate components (components/ProductCard.tsx, LowStockAlert.tsx, and the tab nav in app/page.tsx) so changes to tokens.css are checkable against real UI, not just abstract swatches.</p>
+      <p class="lede">Live replicas of the actual Trackkit components (components/ProductCard.tsx, LowStockAlert.tsx, and the tab nav in app/page.tsx) so changes to tokens.css are checkable against real UI, not just abstract swatches.</p>
 
       <h3 class="sub">Product Card</h3>
       <div class="gallery">
@@ -479,7 +479,7 @@
       document.getElementById("typeRows").innerHTML = TYPE_SCALE.map(([label, sizeToken, meta]) => `
         <div class="type-row">
           <div class="label">${label}<br/>${meta}px/wt</div>
-          <div class="sample" style="font-size: var(${sizeToken}); font-weight: 500; letter-spacing: -0.01em;">MarketMate</div>
+          <div class="sample" style="font-size: var(${sizeToken}); font-weight: 500; letter-spacing: -0.01em;">Trackkit</div>
         </div>
       `).join("");
     }
@@ -543,7 +543,7 @@
       toggle.innerHTML = theme === "dark"
         ? '<i class="ph-bold ph-sun"></i> Light mode'
         : '<i class="ph-bold ph-moon"></i> Dark mode';
-      localStorage.setItem("marketmate-ds-theme", theme);
+      localStorage.setItem("trackkit-ds-theme", theme);
       renderAll();
     }
     toggle.addEventListener("click", () => {
@@ -551,7 +551,7 @@
       applyTheme(current === "dark" ? "light" : "dark");
     });
 
-    applyTheme(localStorage.getItem("marketmate-ds-theme") || "light");
+    applyTheme(localStorage.getItem("trackkit-ds-theme") || "light");
   </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 # Build Process Log
 
-How MarketMate's Phase 1 scaffold was actually built, in order, with the exact
+How Trackkit's Phase 1 scaffold was actually built, in order, with the exact
 commands used. Follow this top to bottom on a clean checkout and you should
 land in the same place. Written after the fact from the real session — not a
 cleaned-up ideal version — so the dead ends and the fix for the one real bug
@@ -25,10 +25,10 @@ git --version
 
 ## 1. Scaffold the Next.js project
 
-Ran from the `Trackkit/` docs folder, creating `marketmate/` alongside the spec docs:
+Ran from the `Trackkit/` docs folder, creating `trackkit/` alongside the spec docs:
 
 ```bash
-bunx create-next-app@latest marketmate \
+bunx create-next-app@latest trackkit \
   --typescript --tailwind --eslint --app \
   --src-dir=false --import-alias "@/*" --use-npm --no-turbopack
 ```

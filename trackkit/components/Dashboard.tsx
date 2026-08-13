@@ -3,15 +3,15 @@
 import { useState } from "react";
 import { Plus, Warning } from "@phosphor-icons/react";
 import { useInventoryStats } from "@/hooks/useInventoryStats";
-import { useMarketMateStore } from "@/lib/store";
+import { useTrackkitStore } from "@/lib/store";
 import { LowStockAlert } from "./LowStockAlert";
 import { ProductForm } from "./ProductForm";
 
 export function Dashboard() {
   const { totalProducts, lowStockCount, lowStockItems, totalInventoryValue, isLoading } =
     useInventoryStats();
-  const currency = useMarketMateStore((s) => s.currency);
-  const setCurrentTab = useMarketMateStore((s) => s.setCurrentTab);
+  const currency = useTrackkitStore((s) => s.currency);
+  const setCurrentTab = useTrackkitStore((s) => s.setCurrentTab);
   const [showAddForm, setShowAddForm] = useState(false);
 
   return (

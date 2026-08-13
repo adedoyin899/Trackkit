@@ -1,4 +1,4 @@
-# MarketMate — Complete Product Vision
+# Trackkit — Complete Product Vision
 ## An Offline-First Inventory & Profit Intelligence Platform for Market Women
 
 **Document:** PRODUCT-OVERVIEW.md  
@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-MarketMate is a mobile-first PWA designed for informal market traders in West Africa (Nigeria, Ghana, Ivory Coast, Senegal, etc.). It solves a real pain: market women lose ₦500k–₦1M annually from forgotten stock-outs, overbuying unprofitable goods, and operating from memory instead of data.
+Trackkit is a mobile-first PWA designed for informal market traders in West Africa (Nigeria, Ghana, Ivory Coast, Senegal, etc.). It solves a real pain: market women lose ₦500k–₦1M annually from forgotten stock-outs, overbuying unprofitable goods, and operating from memory instead of data.
 
 **Core thesis:** Offline-first architecture is the differentiator. In markets with unreliable internet, a tool that works without connection *and* syncs intelligently to the cloud is uniquely valuable.
 
@@ -56,7 +56,7 @@ A tool that requires internet for every sale/restock/lookup is **not viable for 
 
 ---
 
-## The Solution: MarketMate (Three Phases)
+## The Solution: Trackkit (Three Phases)
 
 ### Phase 1: Know Your Stock (MVP — 6–8 weeks)
 **Goal:** Eliminate forgotten stock-outs and stock-level guessing.
@@ -180,7 +180,7 @@ Week 4: AI feature unlocked (₦1,500/month).
 
 ## Competitive Positioning
 
-| **Attribute** | **MarketMate** | **Zoho Inventory** | **Square** | **Paper** |
+| **Attribute** | **Trackkit** | **Zoho Inventory** | **Square** | **Paper** |
 |---|---|---|---|---|
 | **Offline-first** | ✅ Core | ❌ Cloud-only | ❌ Cloud-only | ✅ Works |
 | **Low price** | ₦0–1,500/mo | ₦5k+/mo | ₦3k+/mo | ₦0 |

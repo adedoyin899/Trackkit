@@ -1,4 +1,4 @@
-# MarketMate Deployment & Infrastructure
+# Trackkit Deployment & Infrastructure
 ## Production Setup, Scaling, and Operations
 
 **Document:** DEPLOYMENT-&-INFRA.md  
@@ -48,7 +48,7 @@
 
 ### Prerequisites
 
-- GitHub account with MarketMate repo
+- GitHub account with Trackkit repo
 - Vercel account (free)
 - Node.js 18+ locally
 - Bun 1.0+
@@ -57,14 +57,14 @@
 
 ```bash
 # Create GitHub repo (if not already done)
-mkdir marketmate
-cd marketmate
+mkdir trackkit
+cd trackkit
 git init
-git remote add origin https://github.com/YOUR_ORG/marketmate.git
+git remote add origin https://github.com/YOUR_ORG/trackkit.git
 
 # Push initial commit
 git add .
-git commit -m "Initial MarketMate commit"
+git commit -m "Initial Trackkit commit"
 git push -u origin main
 ```
 
@@ -79,10 +79,10 @@ npm i -g vercel
 vercel --prod
 
 # Follow prompts:
-# ? Set up and deploy "path/to/marketmate"? yes
+# ? Set up and deploy "path/to/trackkit"? yes
 # ? Which scope? (your account)
 # ? Link to existing project? no
-# ? What's your project's name? marketmate
+# ? What's your project's name? trackkit
 # ? In which directory is your code? ./
 # ? Want to modify these settings? no
 
@@ -93,7 +93,7 @@ vercel --prod
 1. Go to vercel.com
 2. Click "New Project"
 3. Import GitHub repo
-4. Select "marketmate"
+4. Select "trackkit"
 5. Framework preset: "Next.js"
 6. Deploy
 
@@ -103,7 +103,7 @@ Phase 1 has no backend API, so no environment variables required.
 
 ```bash
 # Verify deployment
-curl https://marketmate.vercel.app/  # Should return 200
+curl https://trackkit.vercel.app/  # Should return 200
 ```
 
 ---
@@ -115,7 +115,7 @@ curl https://marketmate.vercel.app/  # Should return 200
 ```bash
 # Go to supabase.com
 # 1. Click "New project"
-# 2. Project name: marketmate
+# 2. Project name: trackkit
 # 3. Database password: [generate strong password]
 # 4. Region: Select closest to target market
 #    - Recommended: eu-west-1 (Ireland) for West Africa
@@ -384,7 +384,7 @@ git push origin main
 # Check: vercel.com → Deployments → should see new build
 
 # Verify API is working:
-curl -X GET https://marketmate.vercel.app/api/products \
+curl -X GET https://trackkit.vercel.app/api/products \
   -H "Authorization: Bearer eyJhbGci..."
 # Should return products for authenticated user
 ```
@@ -420,11 +420,11 @@ curl -X GET https://marketmate.vercel.app/api/products \
 
 # 4. Enable Page Rules (optional)
 # Page Rules:
-# - marketmate.app* → Cache Everything
-# - api.marketmate.app/* → Bypass Cache
+# - trackkit.app* → Cache Everything
+# - api.trackkit.app/* → Bypass Cache
 
 # 5. Test DNS
-nslookup marketmate.app
+nslookup trackkit.app
 # Should resolve to Vercel IP
 ```
 
@@ -491,7 +491,7 @@ export default MyApp;
 ```bash
 # 1. Create account at uptimerobot.com
 # 2. Add monitor:
-#    - URL: https://marketmate.app/api/health
+#    - URL: https://trackkit.app/api/health
 #    - Interval: 5 minutes
 #    - Alerts: Email on down
 
@@ -674,11 +674,11 @@ jobs:
     steps:
       - name: Test health endpoint
         run: |
-          curl -f https://marketmate.vercel.app/api/health || exit 1
+          curl -f https://trackkit.vercel.app/api/health || exit 1
       
       - name: Test API is responsive
         run: |
-          curl -f https://marketmate.vercel.app/api/products \
+          curl -f https://trackkit.vercel.app/api/products \
             -H "Authorization: Bearer test-token" || exit 1
 ```
 
@@ -730,7 +730,7 @@ supabase db pull  # Downloads schema + data as seed.sql
 # 3. Notify users: "Brief maintenance window occurred"
 
 # 4. Verify:
-curl https://marketmate.vercel.app/api/health
+curl https://trackkit.vercel.app/api/health
 ```
 
 ---
@@ -740,7 +740,7 @@ curl https://marketmate.vercel.app/api/health
 - [ ] HTTPS enforced (Vercel + Cloudflare)
 - [ ] Environment variables never committed to git
 - [ ] Supabase RLS policies enabled on all tables
-- [ ] CORS configured (only allow marketmate.app)
+- [ ] CORS configured (only allow trackkit.app)
 - [ ] Rate limiting enabled
 - [ ] SQL injection prevention (use parameterized queries)
 - [ ] XSS prevention (sanitize user input)

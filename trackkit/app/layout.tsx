@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MarketMate",
+  title: "Trackkit",
   description:
     "Offline-first inventory tracker for market traders — know your stock, no internet required.",
   manifest: "/manifest.json",
