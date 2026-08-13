@@ -11,6 +11,7 @@ import {
   Storefront,
   SignOut,
   Coins,
+  ClockCounterClockwise,
   type Icon,
 } from "@phosphor-icons/react";
 import { useLocalInventory } from "@/hooks/useLocalInventory";
@@ -23,11 +24,13 @@ import { Dashboard } from "@/components/Dashboard";
 import { ExportButton } from "@/components/ExportButton";
 import { useAuth } from "@/hooks/useAuth";
 import { ProfitabilityDashboard } from "@/components/ProfitabilityDashboard";
+import { PurchaseHistoryDashboard } from "@/components/PurchaseHistoryDashboard";
 
 const TABS: { id: Tab; label: string; icon: Icon }[] = [
   { id: "dashboard", label: "Dashboard", icon: SquaresFour },
   { id: "inventory", label: "Inventory", icon: Package },
   { id: "margins", label: "Margins", icon: Coins },
+  { id: "history", label: "History", icon: ClockCounterClockwise },
   { id: "settings", label: "Settings", icon: Gear },
 ];
 
@@ -180,6 +183,7 @@ export default function Home() {
           {currentTab === "dashboard" && <Dashboard />}
           {currentTab === "inventory" && <InventoryTab />}
           {currentTab === "margins" && <ProfitabilityDashboard />}
+          {currentTab === "history" && <PurchaseHistoryDashboard />}
           {currentTab === "settings" && <SettingsTab />}
         </main>
       )}

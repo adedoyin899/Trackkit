@@ -8,7 +8,7 @@ export async function waitForAppReady(page: Page) {
   );
 }
 
-export async function gotoTab(page: Page, tab: "Dashboard" | "Inventory" | "Margins" | "Settings") {
+export async function gotoTab(page: Page, tab: "Dashboard" | "Inventory" | "Margins" | "History" | "Settings") {
   await page.getByRole("button", { name: tab, exact: true }).click();
 }
 

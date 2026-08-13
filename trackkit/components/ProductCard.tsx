@@ -7,6 +7,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { useLocalInventory } from "@/hooks/useLocalInventory";
 import { useMarginCalculation } from "@/hooks/useMarginCalculation";
 import { isLowStock } from "@/lib/product-utils";
+import { RestockModal } from "@/components/RestockModal";
 import type { Product } from "@/lib/types";
 
 interface ProductCardProps {
@@ -21,12 +22,13 @@ export function ProductCard({ product }: ProductCardProps) {
   const lowStock = isLowStock(product);
 
   const [expanded, setExpanded] = useState(true);
+  const [showRestockModal, setShowRestockModal] = useState(false);
   const [editCost, setEditCost] = useState(
     product.cost_per_unit != null ? String(product.cost_per_unit) : ""
   );
 
-  const adjust = (type: "sale" | "restock", quantity = 1) => {
-    logTransaction({ type, quantity }).catch(() => {
+  const adjust = (type: "sale" | "restock", quantity = 1, supplier?: string, costPerUnit?: number) => {
+    logTransaction({ type, quantity, supplier, costPerUnit }).catch(() => {
       /* surfaced via query error state elsewhere */
     });
   };
@@ -124,8 +126,8 @@ export function ProductCard({ product }: ProductCardProps) {
         <button
           type="button"
           disabled={isLogging}
-          onClick={() => adjust("restock", 1)}
-          aria-label={`Increase ${product.name} by 1`}
+          onClick={() => setShowRestockModal(true)}
+          aria-label={`Restock ${product.name}`}
           className="flex flex-1 items-center justify-center gap-1.5 rounded-buttons bg-[var(--color-grass-green)] py-3 text-[16px] font-semibold text-white disabled:opacity-30"
         >
           <Plus /> 1
@@ -209,6 +211,20 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
       </div>
+
+      {showRestockModal && (
+        <RestockModal
+          product={product}
+          onClose={() => setShowRestockModal(false)}
+          onConfirm={async ({ quantity, supplier, costPerUnit, notes }) => {
+            // If cost changed, persist it on the product too
+            if (costPerUnit != null && costPerUnit !== product.cost_per_unit) {
+              await updateProduct(product.id, { cost_per_unit: costPerUnit });
+            }
+            await logTransaction({ type: "restock", quantity, supplier, costPerUnit, notes });
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -61,7 +61,36 @@ export interface Transaction {
   transaction_type: TransactionType;
   quantity: number;
   notes: string | null;
+  supplier: string | null;
+  cost_per_unit: number | null;
   created_at: string;
+}
+
+/** A restock transaction joined with product info for purchase history views. */
+export interface PurchaseHistoryEntry {
+  id: string;
+  product_id: string;
+  product_name: string;
+  product_unit: string;
+  quantity: number;
+  cost_per_unit: number | null;
+  total_cost: number | null;
+  supplier: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+/** Per-supplier aggregated stats for a product. */
+export interface SupplierStat {
+  name: string;
+  lastPrice: number | null;
+  lastDate: string | null;
+  totalSpent: number;
+  totalQty: number;
+  avgPrice: number | null;
+  purchaseCount: number;
+  savingsPercent: number; // vs. most expensive supplier
+  isCheapest: boolean;
 }
 
 export interface InventoryStats {

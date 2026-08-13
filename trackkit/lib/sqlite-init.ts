@@ -27,6 +27,8 @@ CREATE TABLE IF NOT EXISTS transactions (
   transaction_type TEXT NOT NULL CHECK (transaction_type IN ('sale', 'restock')),
   quantity INTEGER NOT NULL CHECK (quantity > 0),
   notes TEXT,
+  supplier TEXT DEFAULT NULL,
+  cost_per_unit DECIMAL(10, 2) DEFAULT NULL,
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
 
@@ -69,6 +71,7 @@ CREATE INDEX IF NOT EXISTS idx_products_user_id ON products(user_id);
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
 CREATE INDEX IF NOT EXISTS idx_transactions_product_id ON transactions(product_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON transactions(created_at);
+CREATE INDEX IF NOT EXISTS idx_transactions_supplier ON transactions(supplier);
 CREATE INDEX IF NOT EXISTS idx_sync_queue_synced_at ON sync_queue(synced_at);
 CREATE INDEX IF NOT EXISTS idx_prices_product_id ON prices(product_id);
 `;
@@ -86,11 +89,23 @@ async function loadDatabase(): Promise<Database> {
 
   db.run(SCHEMA_SQL);
 
-  // Migrate existing databases to add cost_per_unit if it doesn't exist yet
+  // Migrate existing databases to add cost_per_unit to products if missing
   try {
     db.exec("SELECT cost_per_unit FROM products LIMIT 1");
   } catch (e) {
     db.run("ALTER TABLE products ADD COLUMN cost_per_unit DECIMAL(10, 2) DEFAULT NULL");
+  }
+
+  // Migrate existing databases to add supplier + cost_per_unit to transactions if missing
+  try {
+    db.exec("SELECT supplier FROM transactions LIMIT 1");
+  } catch (e) {
+    db.run("ALTER TABLE transactions ADD COLUMN supplier TEXT DEFAULT NULL");
+  }
+  try {
+    db.exec("SELECT cost_per_unit FROM transactions LIMIT 1");
+  } catch (e) {
+    db.run("ALTER TABLE transactions ADD COLUMN cost_per_unit DECIMAL(10, 2) DEFAULT NULL");
   }
 
   if (!savedBytes) {
