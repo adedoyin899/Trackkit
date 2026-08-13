@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { Minus, PencilSimple, Plus, Warning } from "@phosphor-icons/react";
 import { useTrackkitStore } from "@/lib/store";
 import { useTransactions } from "@/hooks/useTransactions";
+import { useLocalInventory } from "@/hooks/useLocalInventory";
+import { useMarginCalculation } from "@/hooks/useMarginCalculation";
 import { isLowStock } from "@/lib/product-utils";
 import type { Product } from "@/lib/types";
 
@@ -11,15 +14,61 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { logTransaction, isLogging } = useTransactions(product.id);
+  const { logTransaction, isLogging, transactions } = useTransactions(product.id);
+  const { updateProduct } = useLocalInventory();
+  const { calculateMargin } = useMarginCalculation();
   const setSelectedProductId = useTrackkitStore((s) => s.setSelectedProductId);
   const lowStock = isLowStock(product);
+
+  const [expanded, setExpanded] = useState(true);
+  const [editCost, setEditCost] = useState(
+    product.cost_per_unit != null ? String(product.cost_per_unit) : ""
+  );
 
   const adjust = (type: "sale" | "restock", quantity = 1) => {
     logTransaction({ type, quantity }).catch(() => {
       /* surfaced via query error state elsewhere */
     });
   };
+
+  const handleSaveCost = async () => {
+    const costVal = editCost === "" ? null : Number(editCost);
+    if (costVal !== product.cost_per_unit) {
+      await updateProduct(product.id, { cost_per_unit: costVal });
+    }
+  };
+
+  // Calculate margin details
+  const { marginPercent, marginAmount, status } = calculateMargin(
+    product.cost_per_unit,
+    product.selling_price_per_unit
+  );
+
+  // Real-time recalculation preview
+  const costNum = Number(editCost);
+  const sellingNum = product.selling_price_per_unit ?? 0;
+  const showPreview =
+    editCost !== "" &&
+    !isNaN(costNum) &&
+    costNum > 0 &&
+    costNum !== product.cost_per_unit;
+  
+  let previewPercent = null;
+  let previewAmount = null;
+  if (showPreview) {
+    previewAmount = sellingNum - costNum;
+    previewPercent = Math.round((previewAmount / costNum) * 100);
+  }
+
+  // Calculate sales this week
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const weeklySales = transactions.filter(
+    (t) =>
+      t.transaction_type === "sale" &&
+      new Date(t.created_at) >= sevenDaysAgo
+  );
+  const unitsSoldThisWeek = weeklySales.reduce((acc, t) => acc + t.quantity, 0);
+  const totalProfitThisWeek = unitsSoldThisWeek * (marginAmount ?? 0);
 
   return (
     <div
@@ -81,6 +130,84 @@ export function ProductCard({ product }: ProductCardProps) {
         >
           <Plus /> 1
         </button>
+      </div>
+
+      {/* Pricing & Margins Section */}
+      <div className="mt-4 border-t border-stone-surface pt-3">
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          className="flex w-full items-center justify-between text-[13px] font-semibold text-body-brown hover:text-ink-black"
+        >
+          <span>Pricing & Margins</span>
+          <span className="text-[12px]">{expanded ? "Hide ▲" : "Show ▼"}</span>
+        </button>
+
+        {expanded && (
+          <div className="mt-3 space-y-2 rounded-lg bg-cream-canvas p-3">
+            <div className="flex items-center justify-between gap-3">
+              <label className="text-[12px] font-medium text-muted-gray">Cost Price:</label>
+              <div className="flex items-center gap-1">
+                <span className="text-[12px] text-muted-gray">₦</span>
+                <input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={editCost}
+                  onChange={(e) => setEditCost(e.target.value)}
+                  onBlur={handleSaveCost}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSaveCost();
+                  }}
+                  className="w-20 rounded border border-stone-surface bg-white px-2 py-0.5 text-right text-[13px] outline-none focus:border-[var(--color-link-blue)]"
+                  placeholder="Cost"
+                />
+              </div>
+            </div>
+
+            {showPreview && (
+              <div className="text-[11px] text-right font-medium text-blue-600">
+                New margin: ₦{previewAmount?.toFixed(2)} ({previewPercent}%)
+              </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <span className="text-[12px] font-medium text-muted-gray">Selling Price:</span>
+              <span className="text-[13px] font-semibold text-ink-black">
+                ₦{product.selling_price_per_unit?.toFixed(2) ?? "0.00"}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-[12px] font-medium text-muted-gray">Margin:</span>
+              <span
+                className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-[12px] font-semibold ${
+                  status === "green"
+                    ? "bg-[var(--color-grass-green)]/20 text-[var(--color-grass-green)]"
+                    : status === "yellow"
+                    ? "bg-[var(--color-honey)]/20 text-[var(--color-gold)]"
+                    : "bg-[var(--color-alert-red)]/20 text-[var(--color-alert-red)]"
+                }`}
+              >
+                {marginPercent !== null ? `${marginPercent}% (₦${marginAmount})` : "N/A"}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between border-t border-stone-surface pt-2">
+              <span className="text-[12px] font-medium text-muted-gray">Sold this week:</span>
+              <span className="text-[12px] font-medium text-ink-black">
+                {unitsSoldThisWeek} {product.unit}(s)
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-[12px] font-medium text-muted-gray">Weekly profit:</span>
+              <span className="text-[13px] font-bold text-ink-black">
+                ₦{totalProfitThisWeek.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

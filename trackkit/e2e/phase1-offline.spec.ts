@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { addProductViaInventoryTab, gotoTab, waitForAppReady } from "./helpers";
+import { addProductViaInventoryTab, gotoTab, waitForAppReady, mockAuthSession } from "./helpers";
 
 test.describe("Offline Mode (offline-first service worker, Prompt 3)", () => {
   test("app works fully offline after one prior online visit, and changes made offline survive reconnecting", async ({
@@ -17,6 +17,7 @@ test.describe("Offline Mode (offline-first service worker, Prompt 3)", () => {
     // can't precache content-hashed chunks ahead of time, so offline only
     // works from the *second* visit on; this is why the test explicitly
     // does one real online visit first rather than starting offline.
+    await mockAuthSession(page, context);
     await page.goto("/");
     await waitForAppReady(page);
     await page.waitForFunction(
@@ -26,6 +27,10 @@ test.describe("Offline Mode (offline-first service worker, Prompt 3)", () => {
       },
       { timeout: 15_000 },
     );
+
+    // Reload the page online while service worker is active to populate cache with static chunks
+    await page.reload();
+    await waitForAppReady(page);
 
     await addProductViaInventoryTab(page, { name: "Rice", quantity: 5, unit: "Carton" });
 
@@ -40,7 +45,7 @@ test.describe("Offline Mode (offline-first service worker, Prompt 3)", () => {
     // 3. Can still view/edit products while offline — SQLite/IndexedDB
     // never touches the network to begin with.
     await gotoTab(page, "Inventory");
-    await expect(page.getByText("RICE", { exact: false })).toBeVisible();
+    await expect(page.getByText("RICE (Carton)")).toBeVisible();
     await page.getByRole("button", { name: "Increase Rice by 1" }).click();
     await expect(page.getByText("6", { exact: true })).toBeVisible();
 
@@ -56,9 +61,9 @@ test.describe("Offline Mode (offline-first service worker, Prompt 3)", () => {
     await page.reload();
     await waitForAppReady(page);
     await gotoTab(page, "Inventory");
-    await expect(page.getByText("RICE", { exact: false })).toBeVisible();
+    await expect(page.getByText("RICE (Carton)")).toBeVisible();
     await expect(page.getByText("6", { exact: true })).toBeVisible();
-    await expect(page.getByText("BEANS", { exact: false })).toBeVisible();
+    await expect(page.getByText("BEANS (Bag)")).toBeVisible();
 
     expect(consoleErrors).toEqual([]);
   });

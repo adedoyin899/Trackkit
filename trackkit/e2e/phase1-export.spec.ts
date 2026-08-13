@@ -1,9 +1,10 @@
 import { test, expect } from "@playwright/test";
 import Papa from "papaparse";
 import { readFileSync } from "node:fs";
-import { addProductViaInventoryTab, gotoTab, waitForAppReady } from "./helpers";
+import { addProductViaInventoryTab, gotoTab, waitForAppReady, mockAuthSession } from "./helpers";
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ context, page }) => {
+  await mockAuthSession(page, context);
   await page.goto("/");
   await waitForAppReady(page);
 });

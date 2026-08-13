@@ -1,12 +1,20 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type Tab = "inventory" | "dashboard" | "settings";
+export type Tab = "inventory" | "dashboard" | "settings" | "margins";
+
+export interface User {
+  id: string;
+  phoneNumber: string;
+  shopName: string | null;
+  createdAt: string;
+}
 
 interface TrackkitStore {
   shopName: string | null;
   currency: string;
   syncEnabled: boolean;
+  user: User | null;
 
   currentTab: Tab;
   selectedProductId: string | null;
@@ -14,6 +22,7 @@ interface TrackkitStore {
   setShopName: (name: string) => void;
   setCurrentTab: (tab: Tab) => void;
   setSelectedProductId: (id: string | null) => void;
+  setUser: (user: User | null) => void;
 }
 
 export const useTrackkitStore = create<TrackkitStore>()(
@@ -22,6 +31,7 @@ export const useTrackkitStore = create<TrackkitStore>()(
       shopName: null,
       currency: "₦",
       syncEnabled: false,
+      user: null,
 
       currentTab: "dashboard",
       selectedProductId: null,
@@ -29,6 +39,7 @@ export const useTrackkitStore = create<TrackkitStore>()(
       setShopName: (name) => set({ shopName: name }),
       setCurrentTab: (tab) => set({ currentTab: tab }),
       setSelectedProductId: (id) => set({ selectedProductId: id }),
+      setUser: (user) => set({ user }),
     }),
     {
       name: "trackkit-store",
@@ -39,6 +50,7 @@ export const useTrackkitStore = create<TrackkitStore>()(
         currency: state.currency,
         syncEnabled: state.syncEnabled,
         currentTab: state.currentTab,
+        user: state.user,
       }),
     },
   ),

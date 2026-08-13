@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   CloudArrowUp,
   Gear,
@@ -8,6 +9,8 @@ import {
   Plus,
   SquaresFour,
   Storefront,
+  SignOut,
+  Coins,
   type Icon,
 } from "@phosphor-icons/react";
 import { useLocalInventory } from "@/hooks/useLocalInventory";
@@ -18,10 +21,13 @@ import { ProductCard } from "@/components/ProductCard";
 import { ProductForm } from "@/components/ProductForm";
 import { Dashboard } from "@/components/Dashboard";
 import { ExportButton } from "@/components/ExportButton";
+import { useAuth } from "@/hooks/useAuth";
+import { ProfitabilityDashboard } from "@/components/ProfitabilityDashboard";
 
 const TABS: { id: Tab; label: string; icon: Icon }[] = [
   { id: "dashboard", label: "Dashboard", icon: SquaresFour },
   { id: "inventory", label: "Inventory", icon: Package },
+  { id: "margins", label: "Margins", icon: Coins },
   { id: "settings", label: "Settings", icon: Gear },
 ];
 
@@ -40,7 +46,7 @@ function InventoryTab() {
         <button
           type="button"
           onClick={() => setShowAddForm(true)}
-          className="flex items-center gap-1.5 rounded-buttons bg-ink-black px-4 py-2 text-[14px] font-semibold text-white"
+          className="flex items-center gap-1.5 rounded-buttons bg-ink-black px-4 py-2 text-[14px] font-semibold text-white cursor-pointer"
         >
           <Plus /> Add Product
         </button>
@@ -77,6 +83,7 @@ function InventoryTab() {
 function SettingsTab() {
   const shopName = useTrackkitStore((s) => s.shopName);
   const setShopName = useTrackkitStore((s) => s.setShopName);
+  const { logout, isLoading: isLoggingOut } = useAuth();
 
   return (
     <div className="space-y-6">
@@ -101,18 +108,56 @@ function SettingsTab() {
         </p>
         <ExportButton />
       </div>
+
+      <div className="rounded-cards bg-white p-5 shadow-subtle-3">
+        <h3 className="mb-2 flex items-center gap-1.5 text-[15px] font-medium text-heading-charcoal">
+          <SignOut /> Session
+        </h3>
+        <p className="mb-4 text-[13px] text-muted-gray">
+          Tapping logout will securely close your active session on this device.
+        </p>
+        <button
+          type="button"
+          disabled={isLoggingOut}
+          onClick={logout}
+          className="w-full rounded-buttons bg-[var(--color-alert-red)] py-3 text-[15px] font-semibold text-white hover:opacity-90 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
+        >
+          <SignOut /> {isLoggingOut ? "Logging out..." : "Logout"}
+        </button>
+      </div>
     </div>
   );
 }
 
 export default function Home() {
+  const router = useRouter();
+  const { user } = useAuth();
   const currentTab = useTrackkitStore((s) => s.currentTab);
   const setCurrentTab = useTrackkitStore((s) => s.setCurrentTab);
   const { ready, error } = useDatabaseStatus();
 
+  // Guard redirection until hydration is complete on the client
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Client-side authentication gate
+  useEffect(() => {
+    if (mounted && !user) {
+      router.push("/auth/login");
+    }
+  }, [user, mounted, router]);
+
+  // Prevent flicker before redirecting
+  if (!mounted || !user) {
+    return null;
+  }
+
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-4 pb-24 pt-6 sm:px-6">
-      <header className="mb-6 flex items-center gap-2">
+      <header className="mb-6 mt-4 flex items-center gap-2">
         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink-black text-white">
           <Storefront weight="fill" size={18} />
         </span>
@@ -134,6 +179,7 @@ export default function Home() {
         <main className="flex-1">
           {currentTab === "dashboard" && <Dashboard />}
           {currentTab === "inventory" && <InventoryTab />}
+          {currentTab === "margins" && <ProfitabilityDashboard />}
           {currentTab === "settings" && <SettingsTab />}
         </main>
       )}
@@ -147,7 +193,7 @@ export default function Home() {
                 key={tab.id}
                 type="button"
                 onClick={() => setCurrentTab(tab.id)}
-                className={`flex flex-1 flex-col items-center gap-1 py-3 text-[13px] font-medium ${
+                className={`flex flex-1 flex-col items-center gap-1 py-3 text-[13px] font-medium cursor-pointer ${
                   currentTab === tab.id ? "text-ember-orange" : "text-muted-gray"
                 }`}
               >

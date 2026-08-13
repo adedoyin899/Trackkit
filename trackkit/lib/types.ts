@@ -23,6 +23,7 @@ export interface Product {
   unit: string;
   low_stock_threshold: number | null;
   selling_price_per_unit: number | null;
+  cost_per_unit: number | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
@@ -35,7 +36,7 @@ export type NewProduct = Pick<
   Partial<
     Pick<
       Product,
-      "category" | "low_stock_threshold" | "selling_price_per_unit"
+      "category" | "low_stock_threshold" | "selling_price_per_unit" | "cost_per_unit"
     >
   >;
 
@@ -48,6 +49,7 @@ export type ProductUpdate = Partial<
     | "unit"
     | "low_stock_threshold"
     | "selling_price_per_unit"
+    | "cost_per_unit"
   >
 >;
 

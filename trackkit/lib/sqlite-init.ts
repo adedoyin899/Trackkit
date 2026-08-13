@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS products (
   unit TEXT NOT NULL,
   low_stock_threshold INTEGER,
   selling_price_per_unit DECIMAL(10, 2),
+  cost_per_unit DECIMAL(10, 2) DEFAULT NULL,
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
   deleted_at TEXT DEFAULT NULL,
@@ -29,10 +30,47 @@ CREATE TABLE IF NOT EXISTS transactions (
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
 
+CREATE TABLE IF NOT EXISTS sync_metadata (
+  id INTEGER PRIMARY KEY DEFAULT 1,
+  last_synced_at TEXT,
+  last_sync_error TEXT,
+  pending_mutations_count INTEGER DEFAULT 0,
+  is_syncing INTEGER DEFAULT 0,
+  device_id TEXT UNIQUE,
+  updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+
+CREATE TABLE IF NOT EXISTS sync_queue (
+  id TEXT PRIMARY KEY,
+  table_name TEXT NOT NULL,
+  mutation_type TEXT NOT NULL CHECK (mutation_type IN ('CREATE', 'UPDATE', 'DELETE')),
+  record_id TEXT NOT NULL,
+  payload TEXT NOT NULL,
+  client_timestamp TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+  synced_at TEXT DEFAULT NULL,
+  retry_count INTEGER DEFAULT 0,
+  error TEXT
+);
+
+CREATE TABLE IF NOT EXISTS prices (
+  id TEXT PRIMARY KEY,
+  user_id TEXT DEFAULT NULL,
+  product_id TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  cost_per_unit DECIMAL(10, 2) NOT NULL,
+  selling_price_per_unit DECIMAL(10, 2) NOT NULL,
+  margin_percent INTEGER,
+  effective_date TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d', 'now')),
+  notes TEXT,
+  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+  updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+
 CREATE INDEX IF NOT EXISTS idx_products_user_id ON products(user_id);
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
 CREATE INDEX IF NOT EXISTS idx_transactions_product_id ON transactions(product_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON transactions(created_at);
+CREATE INDEX IF NOT EXISTS idx_sync_queue_synced_at ON sync_queue(synced_at);
+CREATE INDEX IF NOT EXISTS idx_prices_product_id ON prices(product_id);
 `;
 
 let dbInstance: Database | null = null;
@@ -48,7 +86,24 @@ async function loadDatabase(): Promise<Database> {
 
   db.run(SCHEMA_SQL);
 
+  // Migrate existing databases to add cost_per_unit if it doesn't exist yet
+  try {
+    db.exec("SELECT cost_per_unit FROM products LIMIT 1");
+  } catch (e) {
+    db.run("ALTER TABLE products ADD COLUMN cost_per_unit DECIMAL(10, 2) DEFAULT NULL");
+  }
+
   if (!savedBytes) {
+    db.run(
+      `INSERT OR IGNORE INTO sync_metadata (id, device_id) VALUES (1, :device_id)`,
+      {
+        ":device_id":
+          typeof crypto !== "undefined" && crypto.randomUUID
+            ? crypto.randomUUID()
+            : Math.random().toString(36).substring(2) +
+              Math.random().toString(36).substring(2),
+      }
+    );
     await persist(db);
   }
 

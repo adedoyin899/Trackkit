@@ -8,7 +8,7 @@ export async function waitForAppReady(page: Page) {
   );
 }
 
-export async function gotoTab(page: Page, tab: "Dashboard" | "Inventory" | "Settings") {
+export async function gotoTab(page: Page, tab: "Dashboard" | "Inventory" | "Margins" | "Settings") {
   await page.getByRole("button", { name: tab, exact: true }).click();
 }
 
@@ -19,6 +19,7 @@ export interface ProductInput {
   unit?: string;
   threshold?: number;
   price?: number;
+  cost?: number;
 }
 
 /** Opens the given "+ Add Product" trigger, fills the form, and saves. Assumes the form is already open. */
@@ -27,15 +28,21 @@ export async function fillProductForm(page: Page, product: ProductInput) {
   if (product.category) {
     await page.selectOption("select >> nth=0", product.category);
   }
-  await page.locator('input[type="number"]').nth(0).fill(String(product.quantity));
+  
+  // Use label-based selectors to find inputs robustly
+  await page.locator('div:has(> label:has-text("Current Qty")) >> input[type="number"]').fill(String(product.quantity));
+  
   if (product.unit) {
     await page.selectOption("select >> nth=1", product.unit);
   }
   if (product.threshold != null) {
-    await page.locator('input[type="number"]').nth(1).fill(String(product.threshold));
+    await page.locator('div:has(> label:has-text("Low-Stock Alert")) >> input[type="number"]').fill(String(product.threshold));
+  }
+  if (product.cost != null) {
+    await page.locator('div:has(> label:has-text("Cost per Unit")) >> input[type="number"]').fill(String(product.cost));
   }
   if (product.price != null) {
-    await page.locator('input[type="number"]').nth(2).fill(String(product.price));
+    await page.locator('div:has(> label:has-text("Selling Price")) >> input[type="number"]').fill(String(product.price));
   }
 }
 
@@ -48,4 +55,49 @@ export async function addProductViaInventoryTab(page: Page, product: ProductInpu
   await expect(page.getByText(product.name.toUpperCase(), { exact: false })).toBeVisible({
     timeout: 5_000,
   });
+}
+
+import type { BrowserContext } from "@playwright/test";
+
+/** Pre-seeds local storage with user session and sets auth token cookie to bypass redirects. */
+export async function mockAuthSession(page: Page, context: BrowserContext) {
+  // Intercept refresh call to return success so it doesn't wipe our mock session
+  await page.route("**/api/auth/refresh", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        token: "mock-jwt-token",
+        expiresIn: 3600,
+      }),
+    });
+  });
+
+  // Navigate to login page first to establish the localhost origin
+  await page.goto("/auth/login");
+  await page.evaluate(() => {
+    window.localStorage.setItem(
+      "trackkit-store",
+      JSON.stringify({
+        state: {
+          user: {
+            id: "550e8400-e29b-41d4-a716-446655440000",
+            phoneNumber: "+2348031234567",
+            shopName: null,
+            createdAt: "2026-08-11T10:00:00Z",
+          },
+          currentTab: "inventory",
+        },
+        version: 0,
+      })
+    );
+  });
+  await context.addCookies([
+    {
+      name: "token",
+      value: "mock-jwt-token",
+      domain: "localhost",
+      path: "/",
+    },
+  ]);
 }

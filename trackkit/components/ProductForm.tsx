@@ -27,6 +27,9 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
   const [price, setPrice] = useState(
     product?.selling_price_per_unit != null ? String(product.selling_price_per_unit) : "",
   );
+  const [cost, setCost] = useState(
+    product?.cost_per_unit != null ? String(product.cost_per_unit) : "",
+  );
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -49,6 +52,7 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
       unit,
       low_stock_threshold: threshold === "" ? null : Number(threshold),
       selling_price_per_unit: price === "" ? null : Number(price),
+      cost_per_unit: cost === "" ? null : Number(cost),
     };
 
     if (isEdit && product) {
@@ -154,19 +158,35 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
             />
           </div>
 
-          <div>
-            <label className="block text-[13px] font-medium text-body-brown">
-              Selling Price (optional)
-            </label>
-            <input
-              type="number"
-              min={0}
-              step="0.01"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-3 text-[16px]"
-              placeholder="₦"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[13px] font-medium text-body-brown">
+                Cost per Unit (optional)
+              </label>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                value={cost}
+                onChange={(e) => setCost(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-3 text-[16px] w-full"
+                placeholder="₦"
+              />
+            </div>
+            <div>
+              <label className="block text-[13px] font-medium text-body-brown">
+                Selling Price (optional)
+              </label>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-3 text-[16px] w-full"
+                placeholder="₦"
+              />
+            </div>
           </div>
 
           {error && <p className="text-[13px] text-[var(--color-alert-red)]">{error}</p>}
