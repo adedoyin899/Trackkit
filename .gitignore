@@ -1,0 +1,5 @@
+# Local Claude Code session config (machine-specific, not project config)
+.claude/
+
+# OS
+.DS_Store

@@ -1,0 +1,45 @@
+@import "tailwindcss";
+@import "../public/styles/tokens.css";
+
+@theme inline {
+  --color-cream-canvas: var(--color-cream-canvas);
+  --color-stone-surface: var(--color-stone-surface);
+  --color-sand-surface: var(--color-sand-surface);
+  --color-ink-black: var(--color-ink-black);
+  --color-heading-charcoal: var(--color-heading-charcoal);
+  --color-body-brown: var(--color-body-brown);
+  --color-muted-gray: var(--color-muted-gray);
+  --color-stone-border: var(--color-stone-border);
+  --color-link-blue: var(--color-link-blue);
+  --color-sky-blue: var(--color-sky-blue);
+  --color-alt-blue: var(--color-alt-blue);
+  --color-grass-green: var(--color-grass-green);
+  --color-mint: var(--color-mint);
+  --color-ember-orange: var(--color-ember-orange);
+  --color-sun-yellow: var(--color-sun-yellow);
+  --color-gold: var(--color-gold);
+  --color-honey: var(--color-honey);
+  --color-coral-pink: var(--color-coral-pink);
+  --color-plum-violet: var(--color-plum-violet);
+  --color-alert-red: var(--color-alert-red);
+
+  --font-display: var(--font-family-display);
+  --font-inter: var(--font-inter);
+
+  --radius-nav: var(--radius-nav);
+  --radius-cards: var(--radius-cards);
+  --radius-pills: var(--radius-pills);
+  --radius-badges: var(--radius-badges);
+  --radius-buttons: var(--radius-buttons);
+
+  --shadow-subtle-3: var(--shadow-subtle-3);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-lg: var(--shadow-lg);
+}
+
+body {
+  background: var(--color-cream-canvas);
+  color: var(--color-heading-charcoal);
+  font-family: var(--font-inter);
+  -webkit-font-smoothing: antialiased;
+}

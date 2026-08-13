@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MarketMate — Design System</title>
+<meta name="description" content="Live design tokens and component gallery for MarketMate, sourced from styles/tokens.css." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<!-- Single source of truth: editing styles/tokens.css updates this page AND the live app (app/globals.css imports the same file). -->
+<link rel="stylesheet" href="./styles/tokens.css" />
+<!-- Phosphor Icons (MIT) — same pack as the live app's @phosphor-icons/react. Web-font build for this static page; loads all six weights. -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--surface-canvas);
+    color: var(--text-heading);
+    font-family: var(--font-inter);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .wrap { max-width: 1100px; margin: 0 auto; padding: var(--spacing-32) var(--spacing-24) var(--spacing-96); }
+
+  header.topbar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--spacing-16) var(--spacing-24);
+    background: var(--surface-canvas);
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  header.topbar .brand { font-size: 19px; font-weight: 500; letter-spacing: -0.02em; }
+  header.topbar .brand span { color: var(--action-accent-text); }
+
+  .theme-toggle {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--action-secondary-bg);
+    color: var(--action-secondary-text);
+    border: none; cursor: pointer;
+    padding: 8px 16px; border-radius: var(--radius-buttons);
+    font-family: var(--font-inter); font-size: 13px; font-weight: 600;
+  }
+  [class^="ph-"], [class*=" ph-"] { line-height: 1; vertical-align: -2px; }
+
+  nav.toc { display: flex; flex-wrap: wrap; gap: var(--spacing-12); margin: var(--spacing-24) 0 var(--spacing-48); }
+  nav.toc a {
+    font-size: 13px; font-weight: 500; color: var(--text-body);
+    text-decoration: none; padding: 6px 12px; border-radius: var(--radius-pills);
+    background: var(--surface-card-secondary);
+  }
+  nav.toc a:hover { color: var(--action-accent-text); }
+
+  section { margin-bottom: var(--spacing-80); scroll-margin-top: 80px; }
+  section > h2 {
+    font-size: var(--text-heading-lg); line-height: var(--leading-heading-lg);
+    letter-spacing: var(--tracking-heading-lg); font-weight: 500; margin: 0 0 8px;
+  }
+  section > p.lede { color: var(--text-muted); font-size: 15px; margin: 0 0 var(--spacing-32); max-width: 640px; }
+
+  h3.sub { font-size: 15px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin: var(--spacing-32) 0 var(--spacing-16); }
+
+  /* ---- Color swatches ---- */
+  .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--spacing-16); }
+  .swatch { border-radius: var(--radius-cards); overflow: hidden; box-shadow: var(--shadow-subtle-3); background: var(--surface-card); }
+  .swatch .fill { height: 72px; }
+  .swatch .meta { padding: 10px 12px; }
+  .swatch .name { font-size: 13px; font-weight: 600; }
+  .swatch .hex { font-size: 12px; color: var(--text-muted); font-family: ui-monospace, monospace; }
+  .swatch .token { font-size: 11px; color: var(--text-muted); font-family: ui-monospace, monospace; word-break: break-all; }
+
+  /* ---- Type scale ---- */
+  .type-row { display: flex; align-items: baseline; gap: var(--spacing-24); padding: var(--spacing-16) 0; border-bottom: 1px solid var(--border-hairline); }
+  .type-row .label { width: 140px; flex-shrink: 0; font-size: 12px; color: var(--text-muted); font-family: ui-monospace, monospace; }
+  .type-row .sample { color: var(--text-heading); }
+
+  /* ---- Spacing / radius / shadow swatches ---- */
+  .token-row { display: flex; align-items: center; gap: var(--spacing-16); padding: 10px 0; }
+  .token-row .bar { background: var(--color-ember-orange); height: 12px; border-radius: 3px; }
+  .token-row .box { background: var(--surface-card-secondary); border: 1px solid var(--border-hairline); width: 56px; height: 56px; flex-shrink: 0; }
+  .token-row .lbl { font-size: 13px; color: var(--text-body); width: 140px; flex-shrink: 0; }
+  .token-row .val { font-size: 12px; color: var(--text-muted); font-family: ui-monospace, monospace; }
+  .shadow-box { width: 96px; height: 56px; border-radius: var(--radius-cards); background: var(--surface-card); flex-shrink: 0; }
+
+  /* ---- Icon gallery ---- */
+  .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--spacing-12); }
+  .icon-tile { display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--surface-card); border-radius: var(--radius-cards); box-shadow: var(--shadow-subtle-3); padding: 16px 8px; }
+  .icon-tile i { font-size: 24px; color: var(--text-heading); }
+  .icon-tile .iname { font-size: 11px; color: var(--text-muted); font-family: ui-monospace, monospace; text-align: center; word-break: break-all; }
+  .weight-row { display: flex; gap: var(--spacing-24); align-items: center; flex-wrap: wrap; }
+  .weight-row .w { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .weight-row .w i { font-size: 28px; color: var(--text-heading); }
+  .weight-row .w span { font-size: 12px; color: var(--text-muted); font-family: ui-monospace, monospace; }
+
+  /* ---- Component gallery ---- */
+  .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--spacing-24); }
+  .demo-block { background: var(--surface-card-secondary); border-radius: var(--radius-cards); padding: var(--spacing-24); display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-16); }
+  .demo-block .caption { font-size: 12px; color: var(--text-muted); font-family: ui-monospace, monospace; }
+
+  .btn-primary {
+    background: var(--action-primary-bg); color: var(--action-primary-text);
+    border: none; border-radius: var(--radius-buttons); padding: 11px 18px;
+    font-family: var(--font-inter); font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .btn-secondary {
+    background: var(--action-secondary-bg); color: var(--action-secondary-text);
+    border: none; border-radius: var(--radius-buttons); padding: 11px 18px;
+    font-family: var(--font-inter); font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .btn-ghost { background: transparent; color: var(--text-heading); border: none; font-size: 14px; font-family: var(--font-inter); cursor: pointer; }
+  .link-demo { color: var(--color-ember-orange); font-size: 15px; text-decoration: underline; }
+
+  .badge { display: inline-block; border-radius: var(--radius-pills); padding: 6px 12px; font-size: 12px; font-weight: 600; }
+  .badge-mint { background: var(--color-mint); color: #ffffff; }
+  .badge-honey { background: var(--color-honey); color: var(--color-ink-black); }
+  .badge-red { background: var(--color-alert-red); color: #ffffff; }
+
+  .feature-card {
+    background: var(--surface-card); border-radius: var(--radius-cards);
+    box-shadow: var(--shadow-subtle-3); padding: var(--spacing-32); width: 100%;
+  }
+  .feature-card h4 { font-size: var(--text-heading-size); font-weight: 500; margin: 0 0 8px; }
+  .feature-card p { font-size: 16px; color: var(--text-body); margin: 0 0 12px; line-height: 1.5; }
+
+  /* ---- Live component replicas (mirror components/*.tsx) ---- */
+  .product-card { background: var(--surface-card); border-radius: var(--radius-cards); box-shadow: var(--shadow-subtle-3); padding: 20px; width: 100%; max-width: 280px; }
+  .product-card .name { font-size: 19px; font-weight: 500; letter-spacing: -0.019em; }
+  .product-card .unit { font-size: 13px; font-weight: 400; color: var(--text-muted); }
+  .product-card .low-badge { margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; border-radius: var(--radius-badges); background: color-mix(in srgb, var(--color-honey) 20%, transparent); padding: 2px 8px; font-size: 12px; font-weight: 500; color: var(--color-gold); }
+  .product-card .qty { font-size: 44px; font-weight: 500; line-height: 1; letter-spacing: -0.02em; color: var(--surface-dark); }
+  .product-card .alert-text { font-size: 13px; color: var(--text-muted); margin-left: 8px; }
+  .product-card .actions { display: flex; gap: 12px; margin-top: 16px; }
+  .product-card .actions button { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: none; border-radius: var(--radius-buttons); padding: 12px; font-size: 16px; font-weight: 600; color: #fff; font-family: var(--font-inter); cursor: pointer; }
+  .product-card .minus { background: var(--color-alert-red); }
+  .product-card .plus { background: var(--color-grass-green); }
+
+  .lowstock-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface-card); border-radius: var(--radius-cards); box-shadow: var(--shadow-subtle-3); padding: 16px; width: 100%; }
+  .lowstock-row .qty-chip button { border: none; background: var(--surface-sand); color: var(--surface-dark); border-radius: var(--radius-badges); padding: 6px 12px; font-size: 13px; font-weight: 600; margin-left: 8px; cursor: pointer; }
+
+  .tab-nav { display: flex; width: 100%; max-width: 360px; border-top: 1px solid var(--border-hairline); background: var(--surface-card); border-radius: var(--radius-cards) var(--radius-cards) 0 0; overflow: hidden; }
+  .tab-nav button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; padding: 12px 0; font-size: 13px; font-weight: 500; color: var(--text-muted); font-family: var(--font-inter); cursor: pointer; }
+  .tab-nav button i { font-size: 18px; }
+  .tab-nav button br { display: none; }
+  .tab-nav button.active { color: var(--action-accent-text); }
+
+  .input-demo { display: flex; flex-direction: column; gap: 6px; width: 100%; max-width: 260px; }
+  .input-demo label { font-size: 13px; font-weight: 500; color: var(--text-body); }
+  .input-demo input { border: 1px solid var(--border-hairline); background: var(--surface-canvas); color: var(--text-heading); border-radius: 8px; padding: 12px; font-size: 16px; font-family: var(--font-inter); }
+
+  .dodont { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-24); }
+  .dodont .col { background: var(--surface-card); border-radius: var(--radius-cards); box-shadow: var(--shadow-subtle-3); padding: var(--spacing-24); }
+  .dodont .col h4 { margin: 0 0 12px; font-size: 15px; }
+  .dodont .col.do h4 { color: var(--color-mint); }
+  .dodont .col.dont h4 { color: var(--color-alert-red); }
+  .dodont ul { margin: 0; padding-left: 18px; font-size: 14px; color: var(--text-body); line-height: 1.6; }
+
+  footer { border-top: 1px solid var(--border-hairline); padding-top: var(--spacing-24); font-size: 13px; color: var(--text-muted); }
+  footer code { background: var(--surface-card-secondary); padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, monospace; }
+
+  @media (max-width: 640px) {
+    .dodont { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Market<span>Mate</span> — Design System</div>
+    <button class="theme-toggle" id="themeToggle" type="button"><i class="ph-bold ph-moon"></i> Dark mode</button>
+  </header>
+
+  <div class="wrap">
+    <p class="lede" style="margin-top: 32px;">
+      Live reference for every color, type size, spacing/radius/shadow token, and core component
+      used in MarketMate. Source of truth is <code>styles/tokens.css</code> — this page links that
+      file directly (see the <code>&lt;link&gt;</code> tag in <code>&lt;head&gt;</code>), and so does
+      the live app's <code>app/globals.css</code>. Change a value once, both update.
+    </p>
+
+    <nav class="toc">
+      <a href="#colors">Colors</a>
+      <a href="#typography">Typography</a>
+      <a href="#spacing">Spacing</a>
+      <a href="#radius">Radius</a>
+      <a href="#shadows">Shadows</a>
+      <a href="#icons">Icons</a>
+      <a href="#components">Components</a>
+      <a href="#patterns">App Patterns</a>
+      <a href="#guidance">Do / Don't</a>
+    </nav>
+
+    <section id="colors">
+      <h2>Colors</h2>
+      <p class="lede">Brand accents stay the same hex in both themes. Neutrals and surfaces flip for dark mode — toggle above to compare.</p>
+
+      <h3 class="sub">Neutrals &amp; Surfaces</h3>
+      <div class="swatch-grid" id="neutralSwatches"></div>
+
+      <h3 class="sub">Brand Accents</h3>
+      <div class="swatch-grid" id="accentSwatches"></div>
+    </section>
+
+    <section id="typography">
+      <h2>Typography</h2>
+      <p class="lede">Family's display face isn't shipped as a font file — substituted with Inter per the source doc's own fallback (Druk Wide Medium / GT America Compressed Medium also listed as substitutes).</p>
+      <div id="typeRows"></div>
+    </section>
+
+    <section id="spacing">
+      <h2>Spacing</h2>
+      <p class="lede">Base unit: 4px.</p>
+      <div id="spacingRows"></div>
+    </section>
+
+    <section id="radius">
+      <h2>Radius</h2>
+      <div class="swatch-grid" id="radiusRows"></div>
+    </section>
+
+    <section id="shadows">
+      <h2>Shadows</h2>
+      <p class="lede">Flat by design — no shadow exceeds <code>rgba(0,0,0,0.15)</code>. Cards are defined by a 1px inset hairline, not elevation.</p>
+      <div id="shadowRows" style="display:flex; gap: 24px; flex-wrap: wrap;"></div>
+    </section>
+
+    <section id="icons">
+      <h2>Icons</h2>
+      <p class="lede">
+        <a href="https://phosphoricons.com" target="_blank" rel="noopener">Phosphor Icons</a>
+        (MIT license, free) — replaced the emoji placeholders (✎ ⚠️ 🔴 🟡 ✕) used in the
+        first pass. The live app uses <code>@phosphor-icons/react</code> with a global
+        <code>IconContext</code> default of <code>weight="bold"</code> for legibility on
+        small screens; this page loads the equivalent <code>@phosphor-icons/web</code>
+        font build via CDN so the same glyphs are checkable without a build step.
+      </p>
+
+      <h3 class="sub">Weights</h3>
+      <p class="lede">Bold is the app-wide default. Fill is used selectively for status icons (warnings) to read as "alert" rather than outline. Tab-nav icons switch outline → fill on the active tab.</p>
+      <div class="weight-row">
+        <div class="w"><i class="ph-thin ph-warning"></i><span>thin</span></div>
+        <div class="w"><i class="ph-light ph-warning"></i><span>light</span></div>
+        <div class="w"><i class="ph ph-warning"></i><span>regular</span></div>
+        <div class="w"><i class="ph-bold ph-warning"></i><span>bold (app default)</span></div>
+        <div class="w"><i class="ph-fill ph-warning" style="color: var(--color-honey);"></i><span>fill (status icons)</span></div>
+        <div class="w"><i class="ph-duotone ph-warning"></i><span>duotone</span></div>
+      </div>
+
+      <h3 class="sub">Used in this app</h3>
+      <div class="icon-grid" id="iconUsageGrid"></div>
+    </section>
+
+    <section id="components">
+      <h2>Components</h2>
+
+      <h3 class="sub">Buttons &amp; Pills</h3>
+      <div class="demo-block">
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+          <button class="btn-primary">Get Started</button>
+          <button class="btn-secondary">Watch the Video</button>
+          <button class="btn-ghost">Log In</button>
+          <a class="link-demo" href="#">Watch the demo</a>
+        </div>
+        <div class="caption">.btn-primary · .btn-secondary · .btn-ghost · .link-demo</div>
+      </div>
+
+      <h3 class="sub">Status Badges</h3>
+      <div class="demo-block">
+        <div style="display:flex; gap:12px;">
+          <span class="badge badge-mint">Backing Up</span>
+          <span class="badge badge-honey">Pending</span>
+          <span class="badge badge-red">Error</span>
+        </div>
+        <div class="caption">.badge-mint · .badge-honey · .badge-red</div>
+      </div>
+
+      <h3 class="sub">Feature Card</h3>
+      <div class="demo-block">
+        <div class="feature-card">
+          <h4>Easy</h4>
+          <p>Hairline-bordered card — 1px inset border in stone surface, 10px radius, 32px padding.</p>
+          <a class="link-demo" href="#">Watch the demo</a>
+        </div>
+        <div class="caption">.feature-card</div>
+      </div>
+
+      <h3 class="sub">Form Input</h3>
+      <div class="demo-block">
+        <div class="input-demo">
+          <label>Product Name *</label>
+          <input placeholder="e.g. Noodles" />
+        </div>
+        <div class="caption">.input-demo</div>
+      </div>
+    </section>
+
+    <section id="patterns">
+      <h2>App Patterns</h2>
+      <p class="lede">Live replicas of the actual MarketMate components (components/ProductCard.tsx, LowStockAlert.tsx, and the tab nav in app/page.tsx) so changes to tokens.css are checkable against real UI, not just abstract swatches.</p>
+
+      <h3 class="sub">Product Card</h3>
+      <div class="gallery">
+        <div class="demo-block">
+          <div class="product-card">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+              <div>
+                <div class="name">MILK <span class="unit">(Tin)</span></div>
+                <div class="low-badge"><i class="ph-fill ph-warning"></i> LOW STOCK</div>
+              </div>
+              <i class="ph-bold ph-pencil-simple" style="color: var(--text-muted); flex-shrink:0;"></i>
+            </div>
+            <div style="margin-top:12px;">
+              <span class="qty">2</span><span class="alert-text">Alert: 3</span>
+            </div>
+            <div class="actions">
+              <button class="minus"><i class="ph-bold ph-minus"></i> 1</button>
+              <button class="plus"><i class="ph-bold ph-plus"></i> 1</button>
+            </div>
+          </div>
+          <div class="caption">Low-stock state — honey ring, gold badge text</div>
+        </div>
+        <div class="demo-block">
+          <div class="product-card">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+              <div class="name">NOODLES <span class="unit">(Carton)</span></div>
+              <i class="ph-bold ph-pencil-simple" style="color: var(--text-muted); flex-shrink:0;"></i>
+            </div>
+            <div style="margin-top:12px;">
+              <span class="qty">7</span><span class="alert-text">Alert: 5</span>
+            </div>
+            <div class="actions">
+              <button class="minus"><i class="ph-bold ph-minus"></i> 1</button>
+              <button class="plus"><i class="ph-bold ph-plus"></i> 1</button>
+            </div>
+          </div>
+          <div class="caption">Healthy stock state</div>
+        </div>
+      </div>
+
+      <h3 class="sub">Low Stock Row</h3>
+      <div class="demo-block" style="gap: 8px;">
+        <div class="lowstock-row">
+          <span style="display:flex; align-items:center; gap:8px;">
+            <i class="ph-fill ph-warning-octagon" style="color: var(--color-alert-red);"></i> Milk: 0/10 tins
+          </span>
+          <span class="qty-chip"><button>+5</button><button>+10</button></span>
+        </div>
+        <div class="lowstock-row">
+          <span style="display:flex; align-items:center; gap:8px;">
+            <i class="ph-fill ph-warning-circle" style="color: var(--color-honey);"></i> Sugar: 8/12 bags
+          </span>
+          <span class="qty-chip"><button>+5</button><button>+10</button></span>
+        </div>
+      </div>
+
+      <h3 class="sub">Tab Navigation</h3>
+      <div class="demo-block">
+        <div class="tab-nav">
+          <button class="active"><i class="ph-fill ph-squares-four"></i><br/>Dashboard</button>
+          <button><i class="ph-bold ph-package"></i><br/>Inventory</button>
+          <button><i class="ph-bold ph-gear"></i><br/>Settings</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="guidance">
+      <h2>Do / Don't</h2>
+      <div class="dodont">
+        <div class="col do">
+          <h4>Do</h4>
+          <ul>
+            <li>Use 10px radius as the default for cards and nav surfaces; 32–9999px only for pills and badges.</li>
+            <li>Build card definition with a 1px inset border, not a drop shadow.</li>
+            <li>Reserve ember orange (#ff3e00) for inline links / demo-link text, never a filled button.</li>
+            <li>Set body text in Inter 400 at 16–17px, line-height 1.42–1.53.</li>
+          </ul>
+        </div>
+        <div class="col dont">
+          <h4>Don't</h4>
+          <ul>
+            <li>Never use a drop shadow stronger than <code>rgba(0,0,0,0.04)</code> on cards.</li>
+            <li>Don't use link blue (#0086fc) as a filled CTA background.</li>
+            <li>Don't introduce gradients — strictly flat, hairline borders only.</li>
+            <li>Don't use alert red (#ff2b3a) outside destructive/error states.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Tokens defined in <code>styles/tokens.css</code>, linked by both this page and
+      <code>app/globals.css</code> (the live Next.js app). Dark mode here is toggled via a
+      <code>data-theme="dark"</code> attribute on <code>&lt;html&gt;</code> — the live app doesn't
+      switch themes yet since its components still hardcode light surfaces (e.g. <code>bg-white</code>);
+      wiring that up is tracked as a follow-up. Icons are
+      <a href="https://phosphoricons.com" target="_blank" rel="noopener">Phosphor Icons</a>
+      (MIT) — <code>@phosphor-icons/react</code> in the app, <code>@phosphor-icons/web</code>
+      via CDN on this page.
+    </footer>
+  </div>
+
+  <script>
+    const NEUTRALS = [
+      ["Cream Canvas", "--color-cream-canvas"],
+      ["Stone Surface", "--color-stone-surface"],
+      ["Sand Surface", "--color-sand-surface"],
+      ["Pure White / Card", "--color-pure-white"],
+      ["Ink Black", "--color-ink-black"],
+      ["Heading Charcoal", "--color-heading-charcoal"],
+      ["Body Brown", "--color-body-brown"],
+      ["Muted Gray", "--color-muted-gray"],
+      ["Stone Border", "--color-stone-border"],
+    ];
+    const ACCENTS = [
+      ["Link Blue", "--color-link-blue"],
+      ["Sky Blue", "--color-sky-blue"],
+      ["Alt Blue", "--color-alt-blue"],
+      ["Grass Green", "--color-grass-green"],
+      ["Mint", "--color-mint"],
+      ["Ember Orange", "--color-ember-orange"],
+      ["Sun Yellow", "--color-sun-yellow"],
+      ["Gold", "--color-gold"],
+      ["Honey", "--color-honey"],
+      ["Coral Pink", "--color-coral-pink"],
+      ["Plum Violet", "--color-plum-violet"],
+      ["Alert Red", "--color-alert-red"],
+    ];
+    const TYPE_SCALE = [
+      ["display", "--text-display", "68 / 500"],
+      ["heading-lg", "--text-heading-lg", "44 / 500"],
+      ["heading", "--text-heading-size", "23 / 500"],
+      ["subheading", "--text-subheading", "19 / 400"],
+      ["body", "--text-body-size", "17 / 400"],
+      ["caption", "--text-caption", "15 / 400"],
+      ["micro", "--text-micro", "12 / 400"],
+    ];
+    const SPACING = ["4","8","12","16","20","24","28","32","36","48","60","76","80","92","96","104"];
+    const RADIUS = [
+      ["small", "--radius-sm"], ["badges", "--radius-badges"], ["nav / cards", "--radius-cards"],
+      ["buttons", "--radius-buttons"], ["pills", "--radius-pills"], ["illustration", "--radius-illustration"],
+    ];
+    const SHADOWS = [["subtle-3", "--shadow-subtle-3"], ["sm", "--shadow-sm"], ["lg", "--shadow-lg"]];
+    const ICON_USAGE = [
+      ["ph-bold ph-pencil-simple", "pencil-simple", "Edit product (ProductCard)"],
+      ["ph-fill ph-warning", "warning (fill)", "Low-stock badge (ProductCard)"],
+      ["ph-bold ph-minus", "minus", "Sale button (ProductCard)"],
+      ["ph-bold ph-plus", "plus", "Restock / Add Product buttons"],
+      ["ph-fill ph-warning-circle", "warning-circle (fill)", "Low-stock row, non-critical"],
+      ["ph-fill ph-warning-octagon", "warning-octagon (fill)", "Low-stock row, qty = 0"],
+      ["ph-bold ph-x", "x", "Close modal (ProductForm)"],
+      ["ph-bold ph-trash", "trash", "Delete product (ProductForm)"],
+      ["ph-bold ph-download-simple", "download-simple", "Export CSV (ExportButton)"],
+      ["ph-bold ph-squares-four", "squares-four", "Dashboard tab"],
+      ["ph-bold ph-package", "package", "Inventory tab"],
+      ["ph-bold ph-gear", "gear", "Settings tab"],
+      ["ph-bold ph-storefront", "storefront", "Header logo, Shop Name field"],
+      ["ph-bold ph-cloud-arrow-up", "cloud-arrow-up", "Backup section (Settings)"],
+    ];
+
+    function resolvedColor(token) {
+      return getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+    }
+
+    function renderSwatches(containerId, list) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = list.map(([name, token]) => `
+        <div class="swatch">
+          <div class="fill" style="background: var(${token})"></div>
+          <div class="meta">
+            <div class="name">${name}</div>
+            <div class="hex">${resolvedColor(token)}</div>
+            <div class="token">var(${token})</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderTypeRows() {
+      document.getElementById("typeRows").innerHTML = TYPE_SCALE.map(([label, sizeToken, meta]) => `
+        <div class="type-row">
+          <div class="label">${label}<br/>${meta}px/wt</div>
+          <div class="sample" style="font-size: var(${sizeToken}); font-weight: 500; letter-spacing: -0.01em;">MarketMate</div>
+        </div>
+      `).join("");
+    }
+
+    function renderSpacingRows() {
+      document.getElementById("spacingRows").innerHTML = SPACING.map((px) => `
+        <div class="token-row">
+          <div class="lbl">--spacing-${px}</div>
+          <div class="bar" style="width: var(--spacing-${px});"></div>
+          <div class="val">${px}px</div>
+        </div>
+      `).join("");
+    }
+
+    function renderRadiusRows() {
+      document.getElementById("radiusRows").innerHTML = RADIUS.map(([label, token]) => `
+        <div class="swatch">
+          <div class="fill" style="background: var(--surface-card-secondary); display:flex; align-items:center; justify-content:center;">
+            <div style="width:56px;height:56px;background:var(--color-ember-orange);border-radius:var(${token});"></div>
+          </div>
+          <div class="meta">
+            <div class="name">${label}</div>
+            <div class="token">var(${token})</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderShadowRows() {
+      document.getElementById("shadowRows").innerHTML = SHADOWS.map(([label, token]) => `
+        <div style="text-align:center;">
+          <div class="shadow-box" style="box-shadow: var(${token});"></div>
+          <div class="caption" style="margin-top:8px;">${label}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderIconUsage() {
+      document.getElementById("iconUsageGrid").innerHTML = ICON_USAGE.map(([cls, name, usage]) => `
+        <div class="icon-tile">
+          <i class="${cls}"></i>
+          <div class="iname">${name}</div>
+          <div class="iname" style="opacity:0.7;">${usage}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderAll() {
+      renderSwatches("neutralSwatches", NEUTRALS);
+      renderSwatches("accentSwatches", ACCENTS);
+      renderTypeRows();
+      renderSpacingRows();
+      renderRadiusRows();
+      renderShadowRows();
+      renderIconUsage();
+    }
+
+    const toggle = document.getElementById("themeToggle");
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      toggle.innerHTML = theme === "dark"
+        ? '<i class="ph-bold ph-sun"></i> Light mode'
+        : '<i class="ph-bold ph-moon"></i> Dark mode';
+      localStorage.setItem("marketmate-ds-theme", theme);
+      renderAll();
+    }
+    toggle.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+      applyTheme(current === "dark" ? "light" : "dark");
+    });
+
+    applyTheme(localStorage.getItem("marketmate-ds-theme") || "light");
+  </script>
+</body>
+</html>

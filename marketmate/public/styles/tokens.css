@@ -1,0 +1,173 @@
+/*
+  MarketMate design tokens — single source of truth.
+
+  Source: "family DESIGN (1).md" (Family style reference), theme: light only.
+  Dark-mode values below are NOT in the source doc — they're an extrapolation
+  that keeps the same accent hues and swaps the neutral/surface scale, following
+  the doc's own "one moment of darkness" contrast principle (inverted for dark
+  canvases). Treat dark mode as a proposal, not a spec, until a designer signs off.
+
+  Lives under public/ so it's reachable two ways at once: imported at build
+  time by app/globals.css (live app — light only, dark tokens unused today),
+  and served as a plain static file at /styles/tokens.css so
+  public/design-system.html can <link> it directly. One file, one URL.
+
+  Consumed by:
+    - app/globals.css → @import "../public/styles/tokens.css"
+    - public/design-system.html → <link href="./styles/tokens.css">, has a working light/dark toggle
+
+  Edit here once; both the app and the style-guide page pick it up automatically.
+*/
+
+:root {
+  /* ---- Brand palette (theme-invariant — same hex in light & dark) ---- */
+  --color-link-blue: #0086fc;
+  --color-sky-blue: #64c6ff;
+  --color-alt-blue: #00b2ff;
+  --color-grass-green: #00c978;
+  --color-mint: #00ca48;
+  --color-ember-orange: #ff3e00;
+  --color-sun-yellow: #ffcd6c;
+  --color-gold: #d48f00;
+  --color-honey: #ffbb26;
+  --color-coral-pink: #ff58ae;
+  --color-plum-violet: #9f4fff;
+  --color-alert-red: #ff2b3a;
+
+  /* ---- Neutral palette (light) ---- */
+  --color-cream-canvas: #fbfaf9;
+  --color-stone-surface: #f2f0ed;
+  --color-sand-surface: #f6f4ef;
+  --color-ink-black: #121212;
+  --color-heading-charcoal: #343433;
+  --color-body-brown: #474645;
+  --color-muted-gray: #7e7e7d;
+  --color-stone-border: #e5d5c3;
+  --color-pure-white: #ffffff;
+  --color-full-black: #000000;
+
+  /* ---- Semantic surface/text/action roles — light (default) ---- */
+  --surface-canvas: var(--color-cream-canvas);
+  --surface-card: var(--color-pure-white);
+  --surface-card-secondary: var(--color-stone-surface);
+  --surface-sand: var(--color-sand-surface);
+  --surface-dark: var(--color-ink-black);
+
+  --text-heading: var(--color-heading-charcoal);
+  --text-body: var(--color-body-brown);
+  --text-muted: var(--color-muted-gray);
+  --text-on-dark: var(--color-cream-canvas);
+
+  --border-hairline: var(--color-stone-surface);
+
+  --action-primary-bg: var(--color-ink-black);
+  --action-primary-text: var(--color-pure-white);
+  --action-secondary-bg: var(--color-sand-surface);
+  --action-secondary-text: var(--color-ink-black);
+  --action-accent-text: var(--color-ember-orange);
+
+  /* ---- Fonts ---- */
+  /* "Family" display face unavailable — substitute per source doc: Druk Wide
+     Medium / GT America Compressed Medium. Falls back to Inter. */
+  --font-family-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-inter: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* ---- Type scale ---- */
+  --text-micro: 12px;
+  --leading-micro: 19px;
+  --tracking-micro: -0.01px;
+  --text-caption: 15px;
+  --leading-caption: 22px;
+  --tracking-caption: -0.14px;
+  --text-body-size: 17px;
+  --leading-body: 26px;
+  --tracking-body: -0.22px;
+  --text-subheading: 19px;
+  --leading-subheading: 27px;
+  --tracking-subheading: -0.3px;
+  --text-heading-size: 23px;
+  --leading-heading: 25px;
+  --tracking-heading: -0.44px;
+  --text-heading-lg: 44px;
+  --leading-heading-lg: 53px;
+  --tracking-heading-lg: -0.88px;
+  --text-display: 68px;
+  --leading-display: 75px;
+  --tracking-display: -2.1px;
+
+  /* ---- Spacing (base unit 4px) ---- */
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-28: 28px;
+  --spacing-32: 32px;
+  --spacing-36: 36px;
+  --spacing-48: 48px;
+  --spacing-60: 60px;
+  --spacing-76: 76px;
+  --spacing-80: 80px;
+  --spacing-92: 92px;
+  --spacing-96: 96px;
+  --spacing-104: 104px;
+
+  /* ---- Radius ---- */
+  --radius-sm: 2px;
+  --radius-badges: 6px;
+  --radius-nav: 10px;
+  --radius-cards: 10px;
+  --radius-icons: 40px;
+  --radius-buttons: 32px;
+  --radius-illustration: 72px;
+  --radius-pills: 9999px;
+
+  /* ---- Shadows (light) ---- */
+  --shadow-subtle-3: 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 6px 0 rgba(0, 0, 0, 0.04), 0 0 24px 0 rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 0 24px 0 rgba(0, 0, 0, 0.15);
+}
+
+/*
+  Dark mode is opt-in via [data-theme="dark"] only — deliberately NOT wired to
+  prefers-color-scheme yet. Most live app components still hardcode light
+  surfaces (bg-white, etc.), so auto-flipping on OS dark mode would half-theme
+  the app and look broken. Flip this to a `@media (prefers-color-scheme: dark)`
+  guard once components are migrated to the semantic tokens above.
+*/
+:root[data-theme="dark"] {
+  --color-cream-canvas: #121212;
+  --color-stone-surface: #232326;
+  --color-sand-surface: #29292c;
+  --color-ink-black: #fbfaf9;
+  --color-heading-charcoal: #f5f3f1;
+  --color-body-brown: #c9c6c2;
+  --color-muted-gray: #8b8987;
+  --color-stone-border: #3a3a3d;
+  --color-pure-white: #1c1c1e;
+  --color-full-black: #000000;
+
+  --surface-canvas: #121212;
+  --surface-card: #1c1c1e;
+  --surface-card-secondary: #232326;
+  --surface-sand: #29292c;
+  --surface-dark: #fbfaf9;
+
+  --text-heading: #f5f3f1;
+  --text-body: #c9c6c2;
+  --text-muted: #8b8987;
+  --text-on-dark: #121212;
+
+  --border-hairline: rgba(255, 255, 255, 0.08);
+
+  --action-primary-bg: #fbfaf9;
+  --action-primary-text: #121212;
+  --action-secondary-bg: #29292c;
+  --action-secondary-text: #fbfaf9;
+  --action-accent-text: var(--color-ember-orange);
+
+  --shadow-subtle-3: 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --shadow-sm: 0 1px 6px 0 rgba(0, 0, 0, 0.24), 0 0 24px 0 rgba(0, 0, 0, 0.32);
+  --shadow-lg: 0 0 24px 0 rgba(0, 0, 0, 0.5);
+}
