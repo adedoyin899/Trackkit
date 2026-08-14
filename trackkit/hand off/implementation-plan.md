@@ -413,3 +413,66 @@ pre-compute or cache.
 seasonality, margin optimization, supplier procurement) and the
 `analytics_daily`/`analytics_seasonal` tables themselves (no code reads
 or writes them, so they were never created).
+
+---
+
+## 12. Phase 3 — Reorder Recommendations (Story 3)
+
+Source: `../PHASE-3-AI.md` Story 3. Built 2026-08-14, same session as §10–11,
+same gate caveat as those. This prompt also arrived truncated mid-Task-3
+(cut off right after "Example:") — proceeded the same way as §11, filling
+the gap from PHASE-3-AI.md's Story 3.
+
+**Placement decision:** the literal prompt said "Create Reorder
+Recommendations Screen" (`pages/reorder.tsx`, its own urgency filter/list/
+summary), but PHASE-3-AI.md's own acceptance criteria frame this as a
+**Dashboard** enhancement ("Dashboard shows: 'Milk: 5 tins left...'"), and
+the bottom nav was already at 7 tabs (Dashboard/Inventory/Margins/History/
+Trends/AI/Settings) after §10–11 — an 8th risked real crowding on a phone
+screen. Built the full detailed component (urgency filter chips, per-item
+cards, summary) but added it to the **Dashboard tab**, above the existing
+`LowStockAlert` section (kept untouched, still covers the simpler
+"already below threshold" case with its own quick +5/+10 restock
+buttons — `phase1-low-stock.spec.ts` still passes unmodified).
+
+**What's built and verified:**
+- `lib/reorder-recommendation.ts` — for each product with recent sales
+  history: 7-day daily velocity, a day-of-week multiplier computed from
+  the product's *own* actual history (not the prompt's hardcoded example
+  "Friday 1.5x, Sunday 0.5x" — presenting an invented number as fact for
+  every user would just be a fabricated stat dressed up as data; falls
+  back to no adjustment without 2+ weeks of history), projected run-out
+  date, urgency (high/medium/low by days-of-stock), recommended reorder
+  date and quantity (2 weeks + 20% buffer, per the prompt's formula), and
+  a suggested supplier via the existing `fetchSupplierStats()`.
+- `components/ReorderRecommendations.tsx` — urgency filter chips, one
+  card per recommendation (message, reorder-by date, estimated cost,
+  confidence, "Mark as ordered"), and a summary line.
+- `lib/reorder-dismissed-store.ts` — "Mark as ordered" snoozes a
+  recommendation for 3 days (persisted). There's no real supplier-order
+  integration to confirm against ("Order online" from the prompt was
+  skipped — nothing to integrate with), so this is a lightweight "stop
+  showing me this, I've handled it" rather than real order tracking.
+- `e2e/phase3-reorder.spec.ts` — 5 tests: no section without sales
+  history, correct math end-to-end (3 sales/7 days → 8-unit
+  recommendation → ₦5,600 at ₦700/unit, verified by hand first), urgency
+  filter chips, dismiss + reload persistence, and that the existing
+  Low Stock section still works alongside it.
+
+**One real bug found and fixed during manual verification:** "Mark as
+ordered" didn't hide the recommendation until a full page reload — the
+component subscribed to the dismissed-store's data (`dismissedUntil`) only
+to force a re-render, but the `useMemo` computing the recommendation list
+depended on `isDismissed` (a stable function reference that never changes)
+instead of the actual `dismissedUntil` data, so the memoized list never
+actually recomputed on dismiss. Caught by clicking the button in a browser
+and watching nothing happen, not by reading the code. Fixed by adding
+`dismissedUntil` itself to the memo's dependency array.
+
+**Same architectural deviation as §10–11:** no `/api/reorder/recommendations`
+route or 6-hourly cron job — pure local computation from SQLite, same
+reasoning (no server-side transaction data to query, cheap enough to
+recompute on demand). Supplier lead time is a single global constant
+(1 day) rather than the spec's per-supplier configurable setting — kept
+simple for this pass; flagged here rather than silently built as fixed
+with no note.

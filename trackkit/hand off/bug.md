@@ -1071,6 +1071,39 @@ profit in both the "All Products" and single-product views.
 
 ---
 
+## 2026-08-14 — Built Phase 3's Reorder Recommendations; found and fixed a stale-memo dismiss bug
+
+**Severity:** Minor (the bug — UI didn't update until reload, no data
+loss) inside an otherwise N/A feature-addition entry.
+
+**What was built:** `lib/reorder-recommendation.ts` (velocity + real
+day-of-week pattern from the product's own history + urgency + supplier
+suggestion) and `components/ReorderRecommendations.tsx`, added to the
+**Dashboard** tab (not a new nav tab — PHASE-3-AI.md's own spec frames
+this as a Dashboard enhancement, and the nav was already at 7 tabs after
+the Trends/AI additions). Full writeup: implementation-plan.md §12.
+
+**The bug:** clicking "Mark as ordered" correctly wrote the dismissal to
+the persisted store, and the component correctly re-rendered — but the
+recommendation stayed visible until a full page reload. The `useMemo`
+computing the filtered list depended on `isDismissed` (the store's
+function reference, which never changes between renders) instead of the
+actual `dismissedUntil` data behind it, so React never saw a reason to
+recompute the memoized value even though the underlying data had changed.
+Caught by clicking the button in a real browser and watching nothing
+happen — the code looked correct on a read since `isDismissed()` itself
+was being called correctly inside the memo, just never re-invoked.
+
+**Fix:** added `dismissedUntil` itself to the dependency array. Re-verified:
+dismissing now hides the recommendation immediately, and it stays hidden
+after a reload (checked both, not just one).
+
+**Files involved:** `lib/reorder-recommendation.ts`,
+`lib/reorder-dismissed-store.ts`, `components/ReorderRecommendations.tsx`,
+`components/Dashboard.tsx`, `e2e/phase3-reorder.spec.ts`
+
+---
+
 <!--
 Next entry template:
 

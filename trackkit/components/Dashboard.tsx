@@ -5,6 +5,7 @@ import { Plus, Warning } from "@phosphor-icons/react";
 import { useInventoryStats } from "@/hooks/useInventoryStats";
 import { useTrackkitStore } from "@/lib/store";
 import { LowStockAlert } from "./LowStockAlert";
+import { ReorderRecommendations } from "./ReorderRecommendations";
 import { ProductForm } from "./ProductForm";
 
 export function Dashboard() {
@@ -60,6 +61,8 @@ export function Dashboard() {
           View All
         </button>
       </div>
+
+      <ReorderRecommendations />
 
       <LowStockAlert items={lowStockItems} />
 
