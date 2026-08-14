@@ -32,6 +32,17 @@ export async function POST(request: Request) {
       });
     }
 
+    // See verify-otp/route.ts — the OTP_BYPASS_CODE session isn't a real
+    // Supabase token, so it can't go through refreshSession(). Keeping the
+    // same userId-derived token alive here just re-issues it.
+    if (refreshToken.startsWith("bypass-refresh:")) {
+      const userId = refreshToken.slice("bypass-refresh:".length);
+      return NextResponse.json({
+        token: `bypass-token:${userId}`,
+        expiresIn: 3600,
+      });
+    }
+
     // Call Supabase refreshSession
     const { data, error } = await supabase.auth.refreshSession({
       refresh_token: refreshToken,

@@ -139,12 +139,12 @@ export function PurchaseHistoryDashboard() {
     return d.toISOString().slice(0, 10);
   });
   const [endDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [applied, setApplied] = useState({
+  const [applied, setApplied] = useState(() => ({
     productId: "",
     supplier: "",
     startDate: new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10),
     endDate: new Date().toISOString().slice(0, 10),
-  });
+  }));
   const [view, setView] = useState<"history" | "suppliers">("history");
 
   const { data, isLoading } = usePurchaseHistory({

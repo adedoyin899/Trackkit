@@ -63,18 +63,19 @@ test.describe("Phase 2: Purchase History & Supplier Intelligence", () => {
 
     // Restock with Lagos Dairy @ ₦800 × 20 units
     await page.getByRole("button", { name: "Restock DAIRY MILK", exact: false }).first().click();
-    await page.fill('input[placeholder="e.g. Lagos Dairy, Kano Wholesale"]', "Lagos Dairy");
-    await page.locator('input[type="number"]').first().fill("20");
-    // Fill cost field
-    const costFields = page.locator('input[type="number"]');
-    await costFields.nth(1).fill("800");
-    await page.getByRole("button", { name: /Restock \+20/i }).click();
+    const dialog = page.getByRole("dialog");
+    await dialog.getByPlaceholder("e.g. Lagos Dairy, Kano Wholesale").fill("Lagos Dairy");
+    const dialogNumberFields = dialog.locator('input[type="number"]');
+    await dialogNumberFields.first().fill("20");
+    await dialogNumberFields.nth(1).fill("800");
+    await dialog.getByRole("button", { name: /Restock \+20/i }).click();
 
     // Navigate to History tab
     await gotoTab(page, "History");
 
-    // Should show the restock entry
-    await expect(page.getByText("DAIRY MILK", { exact: false })).toBeVisible({
+    // Should show the restock entry — scoped to <p> to avoid also matching
+    // the "DAIRY MILK (Tin)" <option> in the product filter <select> above.
+    await expect(page.locator("p", { hasText: "DAIRY MILK" })).toBeVisible({
       timeout: 5_000,
     });
     await expect(page.getByText("Lagos Dairy", { exact: false })).toBeVisible();
@@ -122,19 +123,21 @@ test.describe("Phase 2: Purchase History & Supplier Intelligence", () => {
 
     // Log Lagos Dairy @ ₦800
     await page.getByRole("button", { name: "Restock WHOLE MILK", exact: false }).first().click();
-    await page.fill('input[placeholder="e.g. Lagos Dairy, Kano Wholesale"]', "Lagos Dairy");
-    const qtyFields = page.locator('input[type="number"]');
+    const dialog1 = page.getByRole("dialog");
+    await dialog1.getByPlaceholder("e.g. Lagos Dairy, Kano Wholesale").fill("Lagos Dairy");
+    const qtyFields = dialog1.locator('input[type="number"]');
     await qtyFields.first().fill("10");
     await qtyFields.nth(1).fill("800");
-    await page.getByRole("button", { name: /Restock \+10/i }).click();
+    await dialog1.getByRole("button", { name: /Restock \+10/i }).click();
 
     // Log Kano @ ₦790
     await page.getByRole("button", { name: "Restock WHOLE MILK", exact: false }).first().click();
-    await page.fill('input[placeholder="e.g. Lagos Dairy, Kano Wholesale"]', "Kano Wholesale");
-    const qtyFields2 = page.locator('input[type="number"]');
+    const dialog2 = page.getByRole("dialog");
+    await dialog2.getByPlaceholder("e.g. Lagos Dairy, Kano Wholesale").fill("Kano Wholesale");
+    const qtyFields2 = dialog2.locator('input[type="number"]');
     await qtyFields2.first().fill("15");
     await qtyFields2.nth(1).fill("790");
-    await page.getByRole("button", { name: /Restock \+15/i }).click();
+    await dialog2.getByRole("button", { name: /Restock \+15/i }).click();
 
     // Go to History, select WHOLE MILK product, switch to Suppliers view
     await gotoTab(page, "History");
@@ -142,11 +145,14 @@ test.describe("Phase 2: Purchase History & Supplier Intelligence", () => {
     await page.getByRole("button", { name: "Apply Filters", exact: false }).click();
     await page.getByRole("button", { name: "Suppliers", exact: false }).click();
 
-    // Kano should be marked cheapest
-    await expect(page.getByText("CHEAPEST", { exact: false })).toBeVisible({
+    // Kano should be marked cheapest — exact match to avoid also matching
+    // the "💡 Cheapest for WHOLE MILK:" summary sentence elsewhere on the page.
+    await expect(page.getByText("CHEAPEST", { exact: true })).toBeVisible({
       timeout: 5_000,
     });
-    await expect(page.getByText("Kano Wholesale", { exact: false })).toBeVisible();
+    // Exact match to avoid also matching the "💡 Cheapest for WHOLE MILK:
+    // Kano Wholesale" summary sentence elsewhere on the page.
+    await expect(page.getByText("Kano Wholesale", { exact: true })).toBeVisible();
 
     // Lagos should show "more expensive" notice
     await expect(page.getByText(/more expensive/i)).toBeVisible();
@@ -164,10 +170,11 @@ test.describe("Phase 2: Purchase History & Supplier Intelligence", () => {
     // Log 3 × 10 units @ ₦80
     for (let i = 0; i < 3; i++) {
       await page.getByRole("button", { name: "Restock NOODLES", exact: false }).first().click();
-      const qtyF = page.locator('input[type="number"]');
+      const dialog = page.getByRole("dialog");
+      const qtyF = dialog.locator('input[type="number"]');
       await qtyF.first().fill("10");
       await qtyF.nth(1).fill("80");
-      await page.getByRole("button", { name: /Restock \+10/i }).click();
+      await dialog.getByRole("button", { name: /Restock \+10/i }).click();
       await page.waitForTimeout(200);
     }
 

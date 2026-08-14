@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import { useMarginCalculation } from "@/hooks/useMarginCalculation";
 import { useLocalInventory } from "@/hooks/useLocalInventory";

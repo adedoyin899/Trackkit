@@ -24,6 +24,19 @@ export async function POST(request: Request) {
       );
     }
 
+    // Temporary bypass while no SMS provider is configured in Supabase
+    // (real signInWithOtp currently fails with "Unsupported phone
+    // provider" for every number). Only active when OTP_BYPASS_CODE is
+    // set — unset it once a provider is configured to restore the real
+    // flow. See hand off/bug.md for the full writeup.
+    if (process.env.OTP_BYPASS_CODE) {
+      return NextResponse.json({
+        success: true,
+        message: `OTP sent to ${phoneNumber}`,
+        expiresIn: 600,
+      });
+    }
+
     // Call Supabase to trigger phone OTP
     const { error } = await supabase.auth.signInWithOtp({
       phone: phoneNumber,

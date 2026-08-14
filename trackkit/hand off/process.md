@@ -527,8 +527,303 @@ URL, offline/PWA verified on that URL, first real push through the pipeline)
 **Files added:** `.github/workflows/deploy.yml`. **Files changed:**
 `package.json` (engines field), `.github/workflows/e2e.yml` (trigger).
 
+## 15. GitHub sync — deploy key, repo merge, first push
+
+None of this was logged at the time (tracked only in conversation, not
+here) — reconstructed from git history for completeness.
+
+The actual GitHub repo is `github.com/adedoyin899/Trackkit` — one level up
+from this app (`trackkit/` is a subfolder of it, alongside all the
+`PHASE-*.md`/`PRODUCT-OVERVIEW.md` planning docs). It already existed with
+one commit (`10c240e`, vendoring a `.agent/skills/gstack` toolkit) before
+this app's code touched it.
+
+1. **Auth: dedicated SSH deploy key**, not a personal key. Generated
+   `~/.ssh/id_ed25519_trackkit`, added a `Host github.com-trackkit` alias in
+   `~/.ssh/config` (matching a `github.com-<project>` convention the
+   machine already had for other repos), had the project owner add the
+   public key as a repo Deploy Key (write access) via GitHub's UI —
+   nothing about SSH keys can happen without that manual step. Verified
+   with `ssh -T git@github.com-trackkit`.
+2. **Merged `marketmate/`'s standalone git history into the one repo.**
+   `marketmate/` (as it was still named then) had its own separate `.git`
+   with a single "Initial commit from Create Next App" and everything
+   since sitting uncommitted. Removed that nested `.git`, `git init`'d at
+   the `Trackkit/` root instead, fetched the existing remote history,
+   checked it out as the local `main`, then `git add -A` + commit — folding
+   the app in as regular tracked files alongside the docs, on top of the
+   pre-existing gstack commit. Confirmed via `git status --short` before
+   committing that `node_modules`/`.next`/etc. were correctly excluded
+   (the nested `marketmate/.gitignore` still applies to that subtree even
+   without its own repo).
+3. Added a root-level `.gitignore` for `.claude/` (local Claude Code
+   session config — a permission allowlist with zero secrets, but still
+   machine-specific, not project config) and `.DS_Store`.
+4. Pushed. Verified local/remote `HEAD` matched via `git ls-remote`.
+
+## 16. Renamed the project from MarketMate to Trackkit
+
+Also not logged live. The product docs were written under a placeholder
+name ("MarketMate"); the actual repo/project is Trackkit, so unified on
+that everywhere per the project owner's request.
+
+1. Inventoried every occurrence first: `grep -rliE "marketmate"` across
+   the whole tree (excluding `node_modules`/build output) — 29 files, only
+   two case variants used (`MarketMate`, `marketmate`), no stray
+   ALL-CAPS or partial-word variants.
+2. `git mv marketmate trackkit` (preserves rename detection in the
+   subsequent commit).
+3. Bulk `sed -i '' -e 's/MarketMate/Trackkit/g' -e 's/marketmate/trackkit/g'`
+   across all 29 files. First attempt actually ran as a single bogus
+   sed invocation against one giant concatenated "filename" — this
+   shell's `for f in $FILES` (unquoted) doesn't word-split the way bash
+   does; fixed by using a real array (`files=(...)`; `for f in
+   "${files[@]}"`), which behaves correctly in both.
+4. **The blind text replace missed one real occurrence**: `public/design-system.html`'s
+   header had the wordmark split across HTML for accent-color styling —
+   `Market<span>Mate</span>` — so the literal string `MarketMate` never
+   appeared as one token for `sed` to match. Caught during a full diff
+   review afterward (searched for any standalone `Market`/`Mate` word left
+   over) and fixed by hand to `Track<span>kit</span>`, preserving the same
+   "accent-color the last syllable" pattern.
+5. Also renamed the `useMarketMateStore` hook to `useTrackkitStore`
+   (the sed replace caught this too, since `MarketMate` is a literal
+   substring of the old hook name) and regenerated `package-lock.json` via
+   a clean `npm install` after changing `package.json`'s `name` field,
+   rather than trusting a blind text edit on a generated file.
+6. Re-verified after: clean `npm ci`, `npm run build`, `npm run lint`,
+   full `npm run test:e2e` (17/17 at the time), plus a real-browser
+   screenshot check of both the live app header and `design-system.html`
+   in both themes to visually confirm the rename read correctly, not just
+   pass automated checks.
+
+## 17. Vercel 404 — Root Directory misconfigured
+
+The project owner reported a Vercel 404 (`NOT_FOUND`, the `cpt1::...` ID
+format that confirms it's a genuine Vercel-served response) shortly after
+connecting the repo via Vercel's dashboard. Diagnosed and fixed via the
+Vercel CLI, installed fresh for this (`npm install -g vercel`, then
+`vercel login` — prints a device-auth URL, project owner confirmed it in
+their own browser, CLI picked up the authenticated session automatically).
+
+1. `vercel project inspect trackkit` showed the actual misconfiguration:
+   **Root Directory: `.`** (the whole `Trackkit` repo root) and
+   **Framework Preset: "Other."** Since the Next.js app lives in the
+   `trackkit/` subfolder, Vercel found no app to build at the repo root
+   and fell back to serving nothing there — hence the 404. (The dashboard
+   "Import" flow evidently didn't prompt for/detect this — worth manually
+   checking Root Directory any time a repo's app isn't at the repo root.)
+2. `vercel project update trackkit --root-directory trackkit --framework nextjs`
+   fixed both settings directly via CLI flags, no dashboard clicking
+   needed.
+3. **First redeploy attempt failed differently**: ran `vercel --prod` from
+   inside `trackkit/` itself, which uploads only that folder's contents as
+   the deployment source — so the *uploaded* artifact has no `trackkit/`
+   subfolder for the "Root Directory: trackkit" setting to descend into,
+   producing "The specified Root Directory 'trackkit' does not exist."
+   Fixed by re-linking (`vercel link`) and deploying from the *parent*
+   `Trackkit/` directory instead, matching what the real git-integration
+   deploy path uploads.
+4. Deploy succeeded — clean Next.js build, Vercel's own API reported
+   `readyState: "READY"`, aliased to `trackkit-psi.vercel.app`.
+5. **Could not personally curl-verify the live URL** — this sandboxed
+   environment's network blocks DNS resolution to `*.vercel.app` (same
+   category of restriction that blocked `api.github.com` earlier in the
+   session; git protocol and npm registry access work, generic HTTPS to
+   other hosts often doesn't). Asked the project owner to confirm the URL
+   loads from their own machine instead of asserting it worked based on
+   the API response alone.
+6. **Found `ssoProtection: "all_except_custom_domains"` while checking
+   protection settings** — Vercel's account-login wall currently covers
+   the production URL too, since it's on the default `.vercel.app` domain
+   (no custom domain yet). Flagged to the project owner as contradicting
+   Phase 1's "no login needed" design; **they chose to leave it on for
+   now** (their call — noted as a deliberate decision, not an oversight,
+   in case it looks surprising later).
+
+## 18. Phase 2 audit (2026-08-13) — reconstructing 5 undocumented commits
+
+Opened this session to find `git log` showing 5 commits
+(`b750096`..`112f701`) implementing most of Phase 2 — cost tracking,
+margins, purchase history, supplier comparison, restock flow, SMS auth,
+Sentry, unit tests, security headers — none of which happened in this
+conversation, and **none of which touched bug.md, process.md, or
+implementation-plan.md**. (`ls -la` on the three handoff files showed
+`bug.md`/`process.md` "modified" the same day as a `hand off/` folder
+move, but diffing confirmed their *content* was untouched since Prompt
+5 — the timestamp was just from being moved into the new folder.)
+
+Rather than assume anything about what was built or how it was verified,
+re-derived it directly from the code and from running verification fresh:
+
+1. **Read the diff stats for all 5 commits** (`git show --stat` each) to
+   get an inventory before reading any actual code — auth API routes
+   (`request-otp`/`verify-otp`/`refresh`/`logout`), a `margins` API +
+   page, `AuthFlow`/`PriceUpdateModal`/`ProfitabilityDashboard` components,
+   `useAuth`/`useMarginCalculation` hooks, `lib/supabase.ts`,
+   `middleware.ts`; then purchase-history/supplier API routes,
+   `PurchaseHistoryDashboard`/`RestockModal`; then Vitest + 3 unit test
+   files, a `/api/health` route, `lib/sentry.ts`, security headers in
+   `next.config.ts`; then the actual `@sentry/nextjs` wiring
+   (`instrumentation.ts`, `sentry.*.config.ts`); then a CSP fix for
+   Sentry's US ingest domain.
+2. **Read the root `README.md`** (242 lines, new — written as part of the
+   "Phase 2: Final" commit) since it's the most complete existing
+   description of what the build claims to do, then treated every claim
+   in it as something to verify rather than trust — this is what
+   surfaced the "Cloud sync — Live ✅" vs. zero-Supabase-anything
+   discrepancy (see bug.md).
+3. **Re-ran the full verification stack from a clean state**: `rm -rf
+   node_modules && npm install`, `npm run build` (passes, one new
+   deprecation warning — Next.js wants `proxy.ts` instead of
+   `middleware.ts` in this version), `npm run lint` (**11 errors, 5
+   warnings — clearly never run since Phase 2 started**, same failure
+   mode as the Prompt 3/4 `OfflineIndicator` lint miss, just at 5x the
+   commit count this time), `npm test` (Vitest — 43/43 pass, 3 files),
+   `npm run test:e2e` (28 tests now, up from 17 — **8 failed**).
+4. **Root-caused every one of the 8 E2E failures individually** rather
+   than assuming they were pre-existing flakiness — each turned out to
+   trace to one of a small number of real causes, all written up in
+   bug.md: the auth gate blocking the whole app (and offline reload
+   specifically wiping the session), the `+1` button silently becoming a
+   "open Restock modal" button, an ambiguous `input[type="number"]`
+   selector in 3 of the new Phase 2 tests caused by `ProductCard` keeping
+   its own cost field always visible, and one genuine app bug
+   (`RestockModal`'s "Quick +1" discarding already-typed supplier/cost
+   data).
+5. **Did not fix any of it yet.** This audit's job was to establish
+   ground truth and document it accurately — see implementation-plan.md
+   for the prioritized list, surfaced to the project owner for a decision
+   on what to fix first rather than unilaterally rewriting a large amount
+   of code from a different working session.
+
+**No files changed in this section** — audit and documentation only.
+
+## 19. Working through the §18 priority list (2026-08-14)
+
+Fixed items 1, 2, 4, 5, 6, 7, 8 from implementation-plan.md's priority
+list in order, re-verifying after each before moving to the next rather
+than batching changes and hoping. Item 3 (Supabase) is blocked on the
+project owner's account — asked them how they wanted to handle it; they'll
+create the project and share credentials, at which point running the
+already-written migration and setting env vars is a short follow-up.
+
+**Auth gate (§18 Blocker) and the lint fixes were done together** since 3
+of the 9 lint errors lived in the same files the gate fix touched anyway,
+same reasoning bug.md already flagged. Full before/after code for each is
+in bug.md's individual entries — this section covers *how* each was
+verified, not what changed.
+
+**A genuinely tricky one: `phase1-offline.spec.ts` kept failing after the
+auth-gate fix**, with the same "product missing after offline reload"
+symptom the original audit had (incorrectly) attributed entirely to the
+auth gate. Chased this down properly rather than assuming the fix would
+also happen to resolve it:
+- Reproduced with a throwaway Playwright script mirroring the test's exact
+  steps — confirmed the failure wasn't about auth at all (auth was already
+  fixed by this point).
+- Direct `window.__db` and raw `indexedDB.open()` checks at each step
+  showed the underlying SQLite data was intact and correctly written.
+- Temporarily instrumented `persist()`/`loadDatabase()` in
+  `lib/sqlite-init.ts` with `Date.now()` timestamps (removed before
+  committing) to see the actual event ordering — confirmed the app's own
+  `await persist(db)` genuinely does complete before the test proceeds,
+  but a `page.reload()` issued immediately after can still race the
+  browser's actual IndexedDB commit in headless Chromium. Confirmed this
+  empirically: adding *any* extra scheduling gap (even a synchronous
+  `console.log`) between the write and the reload reliably prevented the
+  failure, and removing it reliably reproduced it.
+- Fixed at the test level with a deterministic wait — `page.waitForFunction`
+  polling the actual IndexedDB entry until it's confirmed present, instead
+  of a guessed fixed delay. Full writeup in bug.md.
+
+**Two real product bugs were found while re-verifying, not while reading
+code for the audit** — both fixed and logged in bug.md:
+- The supplier-comparison `savingsPercent` formula was computing against
+  the wrong baseline (most expensive instead of cheapest), so the "X% more
+  expensive than cheapest" warning silently never appeared for the
+  supplier it's meant to flag. Same bug existed in both the local SQLite
+  query (`lib/transactions.ts`) and the server API route
+  (`app/api/suppliers/[productId]/route.ts`) — fixed both.
+- `phase2-auth.spec.ts` had two tests asserting the *old*, mandatory-login
+  behavior the auth-gate fix deliberately removed — rewrote both to assert
+  the corrected, opt-in behavior instead of just deleting them, since they
+  still cover real regressions (e.g. logout should clear the session
+  without navigating anywhere).
+
+**Full suite verification, done properly rather than declared from a
+single green run:**
+- `npm run build` — clean.
+- `npm run lint` — 0 errors, 0 warnings (down from 9 errors / 5 warnings).
+- `npm test` (Vitest) — 43/43 pass.
+- `npx playwright test` — 28/28 pass, but not reliably on the first few
+  attempts: some runs showed 1-2 unrelated failures (an offline test, a
+  logout test) that didn't reproduce when re-run alone. Chased this too
+  rather than dismissing it as "flaky": running the same suite with
+  `--workers=1` (this repo's own `playwright.config.ts` already caps
+  workers to 1 on CI, specifically "for the runner's resource limits, not
+  correctness") passed 28/28 reliably across multiple runs, while the
+  local default (5 parallel workers on a 10-core machine, all hammering a
+  single dev server) intermittently didn't. Concluded this is genuine
+  local-machine resource contention from this session's unusually heavy
+  repeated test invocations, not a real bug — CI already avoids the
+  triggering condition by design.
+
+**Files changed this session:** `app/page.tsx`, `app/margins/page.tsx`,
+`app/auth/login/page.tsx`, `hooks/useAuth.ts`, `components/ProductCard.tsx`,
+`components/RestockModal.tsx`, `components/ProfitabilityDashboard.tsx`,
+`components/PurchaseHistoryDashboard.tsx`, `lib/sqlite-init.ts`,
+`lib/transactions.ts`, `app/api/suppliers/[productId]/route.ts`,
+`middleware.ts` → `proxy.ts` (renamed), `e2e/phase1-offline.spec.ts`,
+`e2e/phase2-auth.spec.ts`, `e2e/phase2-history.spec.ts`, `README.md`, plus
+the new `trackkit/supabase/migrations/001_init_schema.sql`.
+
+## 20. Supabase provisioning, completed with the project owner (2026-08-14)
+
+The project owner created a real Supabase project and shared its
+credentials in stages: URL + publishable key first, then a pooler
+connection string, then the DB password, then the service role key.
+
+- **Direct DB connection failed first** — `db.zrhftcgvnlltisaurgoa.supabase.co`
+  only has an IPv6 DNS record (`host db....supabase.co` returned an
+  `AAAA` only, no `A` record), and this environment has no outbound IPv6
+  route (`supabase db push --dry-run` against it failed with
+  `hostname resolving error`). Supabase's **Session Pooler** connection
+  string (`aws-0-eu-west-2.pooler.supabase.com`) resolves over IPv4 and
+  worked — this is Supabase's own documented workaround for IPv4-only
+  networks, not something specific to this sandbox.
+- Ran `supabase db push --db-url "<pooler connection string with real password>" --dry-run`
+  first to confirm connectivity before applying anything, then re-ran
+  without `--dry-run`. `supabase migration list` afterward confirmed
+  `001` applied both locally and remotely.
+- **Verified the schema is actually live**, not just that the CLI
+  reported success: queried `https://<project>.supabase.co/rest/v1/products`
+  directly (via Node's `fetch`, since `curl` in this environment
+  couldn't resolve the `*.supabase.co` REST host even though Node could
+  — an unexplained but consistent asymmetry, worth knowing about if this
+  comes up again) and got back `[]`, an empty-but-real table.
+- Set all 3 env vars (`NEXT_PUBLIC_SUPABASE_URL`,
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`) in both
+  `.env.local` and Vercel (all 3 environments via `vercel env add`,
+  invoked from the parent `Trackkit/` directory where `.vercel/project.json`
+  actually lives — same gotcha as the earlier 404 fix in §17).
+- **Found one more real gap while verifying end-to-end rather than
+  stopping at "env vars are set":** `POST /api/auth/request-otp` against
+  the live project returns `{"error":"Unsupported phone provider"}` —
+  Supabase's phone OTP needs an SMS provider (Twilio/MessageBird/Vonage)
+  configured in its dashboard, a separate prerequisite from the project
+  itself existing. Flagged in bug.md and implementation-plan.md rather
+  than left undiscovered; needs the project owner to set up a provider
+  account, not resolvable from here.
+- The DB password and the pooler connection string were used only
+  transiently (CLI flags, shell history) — never written into any
+  repository file or committed. Only the 3 documented env var names went
+  into `.env.local`/Vercel.
+
 ## What's next
 
-Prompt 5's actual deployment (the account-gated part) is the only thing left
-in the official Phase 1 sequence. See
-[implementation-plan.md](./implementation-plan.md) for full status.
+Only one thing is left across the entire priority list: **configure an
+SMS provider in Supabase's dashboard** so phone OTP requests stop failing
+with "Unsupported phone provider" — see §20 and implementation-plan.md §9.
+Everything else, including the Supabase project/schema/env vars
+themselves, is done and verified live.

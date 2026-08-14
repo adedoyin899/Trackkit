@@ -34,6 +34,28 @@ test.describe("Offline Mode (offline-first service worker, Prompt 3)", () => {
 
     await addProductViaInventoryTab(page, { name: "Rice", quantity: 5, unit: "Carton" });
 
+    // The app's own persist() await (see sqlite-init.ts) already resolves
+    // after IndexedDB's transaction "complete" event fires, but a reload
+    // issued immediately after can still race the storage layer's actual
+    // commit in headless Chromium under load — confirmed via timestamped
+    // instrumentation. Rather than guess a fixed delay, poll the ground
+    // truth directly: don't go offline until the write has verifiably
+    // landed in IndexedDB.
+    await page.waitForFunction(
+      () =>
+        new Promise<boolean>((resolve) => {
+          const req = indexedDB.open("keyval-store");
+          req.onsuccess = () => {
+            const tx = req.result.transaction("keyval", "readonly");
+            const getReq = tx.objectStore("keyval").get("trackkit-db");
+            getReq.onsuccess = () => resolve(!!getReq.result && getReq.result.byteLength > 0);
+            getReq.onerror = () => resolve(false);
+          };
+          req.onerror = () => resolve(false);
+        }),
+      { timeout: 5_000 },
+    );
+
     // 2. Go offline, then reload — this is the actual "disable network,
     // does the app still load" check.
     await context.setOffline(true);

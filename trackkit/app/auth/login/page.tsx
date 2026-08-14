@@ -1,18 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { AuthFlow } from "@/components/AuthFlow";
 import { useTrackkitStore } from "@/lib/store";
 
+const noopSubscribe = () => () => {};
+
+// Zustand's persisted `user` isn't available during SSR, so the first client
+// render must match the server (null) before checking it — this detects
+// "past hydration" without the setState-in-effect cascading-render pattern.
+function useMounted() {
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const user = useTrackkitStore((s) => s.user);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   useEffect(() => {
     if (mounted && user) {

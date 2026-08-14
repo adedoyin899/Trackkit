@@ -38,8 +38,16 @@ Built for the realities of Lagos markets:
 - **Purchase history** — full log of all restocks with dates and costs
 - **Supplier comparison** — compare prices across suppliers, highlight cheapest
 - **Restock modal** — log supplier + purchase cost when restocking
-- **Cloud sync** — optional SMS login syncs data to Supabase (offline-first)
-- **Multi-device support** — same inventory on multiple phones
+
+**Cloud sync (provisioned, SMS delivery not yet live 🚧)** — the Supabase project
+is created, the schema is migrated, and `NEXT_PUBLIC_SUPABASE_URL` /
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` are set in both
+local and Vercel environments. What's still missing: an SMS provider
+(Twilio/MessageBird/Vonage) hasn't been configured in Supabase's Auth settings
+yet, so `POST /api/auth/request-otp` currently fails with
+"Unsupported phone provider" — phone login and multi-device sync aren't usable
+until that's added. Everything above this section works fully offline
+regardless.
 
 ### Phase 3 — AI Insights (Roadmap 🔮)
 - AI-powered pricing suggestions

@@ -19,7 +19,9 @@ export async function POST(request: Request) {
       token = cookieStore.get("token")?.value || "";
     }
 
-    if (token && supabaseUrl && supabaseAnonKey) {
+    // Bypass-session tokens (see verify-otp/route.ts) were never issued by
+    // Supabase, so there's nothing real to sign out of there.
+    if (token && !token.startsWith("bypass-token:") && supabaseUrl && supabaseAnonKey) {
       const client = createClient(supabaseUrl, supabaseAnonKey, {
         global: {
           headers: {

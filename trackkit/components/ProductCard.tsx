@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Minus, PencilSimple, Plus, Warning } from "@phosphor-icons/react";
+import { ArrowsClockwise, Minus, PencilSimple, Plus, Warning } from "@phosphor-icons/react";
 import { useTrackkitStore } from "@/lib/store";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useLocalInventory } from "@/hooks/useLocalInventory";
@@ -62,8 +62,10 @@ export function ProductCard({ product }: ProductCardProps) {
     previewPercent = Math.round((previewAmount / costNum) * 100);
   }
 
-  // Calculate sales this week
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  // Calculate sales this week. useState's initializer form runs exactly
+  // once per mount, so this reads Date.now() without the impure-during-
+  // render issue a plain `new Date(Date.now() - ...)` in the body would have.
+  const [sevenDaysAgo] = useState(() => new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
   const weeklySales = transactions.filter(
     (t) =>
       t.transaction_type === "sale" &&
@@ -126,13 +128,23 @@ export function ProductCard({ product }: ProductCardProps) {
         <button
           type="button"
           disabled={isLogging}
-          onClick={() => setShowRestockModal(true)}
-          aria-label={`Restock ${product.name}`}
+          onClick={() => adjust("restock", 1)}
+          aria-label={`Increase ${product.name} by 1`}
           className="flex flex-1 items-center justify-center gap-1.5 rounded-buttons bg-[var(--color-grass-green)] py-3 text-[16px] font-semibold text-white disabled:opacity-30"
         >
           <Plus /> 1
         </button>
       </div>
+
+      <button
+        type="button"
+        disabled={isLogging}
+        onClick={() => setShowRestockModal(true)}
+        aria-label={`Restock ${product.name} with supplier and cost details`}
+        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-stone-surface py-2 text-[13px] font-medium text-muted-gray hover:bg-cream-canvas disabled:opacity-30"
+      >
+        <ArrowsClockwise size={14} /> Restock with details
+      </button>
 
       {/* Pricing & Margins Section */}
       <div className="mt-4 border-t border-stone-surface pt-3">

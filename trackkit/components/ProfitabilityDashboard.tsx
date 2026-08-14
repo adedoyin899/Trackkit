@@ -6,6 +6,7 @@ import { Warning, ArrowLeft, Coins } from "@phosphor-icons/react";
 import { useLocalInventory } from "@/hooks/useLocalInventory";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useMarginCalculation } from "@/hooks/useMarginCalculation";
+import { useAuth } from "@/hooks/useAuth";
 import { PriceUpdateModal } from "./PriceUpdateModal";
 import type { Product } from "@/lib/types";
 
@@ -17,10 +18,15 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
   const { products } = useLocalInventory();
   const { transactions } = useTransactions();
   const { calculateMargin, suggestTargetPrice } = useMarginCalculation();
+  const { user } = useAuth();
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  // Fetch margins data from backend API as an option/cache
+  // Fetch margins data from backend API as an option/cache — only attempted
+  // for signed-in users. Auth is opt-in (see app/page.tsx's SettingsTab), so
+  // most visits have no session at all; skipping this avoids a guaranteed
+  // 401 on every load for the common case. Local computation below covers
+  // everyone regardless.
   const { data: apiData } = useQuery({
     queryKey: ["margins-api"],
     queryFn: async () => {
@@ -28,12 +34,16 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
       if (!res.ok) throw new Error("API failed");
       return res.json();
     },
+    enabled: Boolean(user),
     retry: false,
     refetchOnWindowFocus: false,
   });
 
-  // Calculate local margins fallback for offline capability
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  // Calculate local margins fallback for offline capability. useState's
+  // initializer form runs exactly once per mount, avoiding the impure
+  // Date.now() call a plain `new Date(Date.now() - ...)` would make on
+  // every render.
+  const [sevenDaysAgo] = useState(() => new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
   const salesMap: Record<string, number> = {};
   transactions.forEach((t) => {
     if (t.transaction_type === "sale" && new Date(t.created_at) >= sevenDaysAgo) {
@@ -41,28 +51,13 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
     }
   });
 
-  let profitableCount = 0;
-  let totalMarginThisWeek = 0;
-  let marginSum = 0;
-  let marginCount = 0;
-
   const localProductsWithMargin = products.map((p) => {
     const costPerUnit = p.cost_per_unit;
     const sellingPrice = p.selling_price_per_unit ?? 0;
     const unitsSold = salesMap[p.id] || 0;
 
     const { marginPercent, marginAmount, status } = calculateMargin(costPerUnit, sellingPrice);
-
-    if (marginPercent !== null) {
-      if (marginPercent > 0) {
-        profitableCount++;
-      }
-      marginSum += marginPercent;
-      marginCount++;
-    }
-
     const totalProfitThisWeek = unitsSold * (marginAmount ?? 0);
-    totalMarginThisWeek += totalProfitThisWeek;
 
     return {
       productId: p.id,
@@ -79,13 +74,28 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
     };
   });
 
-  // Sort local products by marginPercent (lowest first)
-  localProductsWithMargin.sort((a, b) => {
+  // Sort local products by marginPercent (lowest first) — sort a copy so
+  // the map result above stays untouched.
+  const sortedLocalProductsWithMargin = [...localProductsWithMargin].sort((a, b) => {
     if (a.marginPercent === null && b.marginPercent === null) return 0;
     if (a.marginPercent === null) return -1;
     if (b.marginPercent === null) return 1;
     return a.marginPercent - b.marginPercent;
   });
+
+  const { profitableCount, totalMarginThisWeek, marginSum, marginCount } =
+    localProductsWithMargin.reduce(
+      (acc, p) => {
+        if (p.marginPercent !== null) {
+          if (p.marginPercent > 0) acc.profitableCount++;
+          acc.marginSum += p.marginPercent;
+          acc.marginCount++;
+        }
+        acc.totalMarginThisWeek += p.total_profit_this_week;
+        return acc;
+      },
+      { profitableCount: 0, totalMarginThisWeek: 0, marginSum: 0, marginCount: 0 },
+    );
 
   const localSummary = {
     totalProducts: products.length,
@@ -94,10 +104,17 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
     averageMargin: marginCount > 0 ? Math.round(marginSum / marginCount) : 0,
   };
 
+  type DisplayProduct = (typeof sortedLocalProductsWithMargin)[number] & {
+    productId: string;
+    marginPercent: number | null;
+  };
+
   // Combine local calculations and API results
   const displaySummary = apiData?.summary ?? localSummary;
-  const displayProducts = (apiData?.products ?? localProductsWithMargin).map((dp: any) => {
-    const localMatch = localProductsWithMargin.find((lp) => lp.productId === dp.productId);
+  const displayProducts: DisplayProduct[] = (
+    apiData?.products ?? sortedLocalProductsWithMargin
+  ).map((dp: DisplayProduct) => {
+    const localMatch = sortedLocalProductsWithMargin.find((lp) => lp.productId === dp.productId);
     // Attach original product object and status
     return {
       ...dp,
@@ -110,7 +127,7 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
 
   // Find products with low margin (<10% or null) for warning section
   const lowMarginProducts = displayProducts.filter(
-    (dp: any) => dp.marginPercent === null || dp.marginPercent < 10
+    (dp) => dp.marginPercent === null || dp.marginPercent < 10
   );
 
   return (
@@ -166,7 +183,7 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
             <Warning weight="fill" className="text-red-600" /> Action Required: Low Margin Products
           </h3>
           <div className="divide-y divide-red-100">
-            {lowMarginProducts.slice(0, 3).map((lp: any) => {
+            {lowMarginProducts.slice(0, 3).map((lp) => {
               const targetPrice = lp.costPerUnit ? suggestTargetPrice(lp.costPerUnit, 30) : null;
               return (
                 <div
@@ -221,7 +238,7 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
                   </td>
                 </tr>
               ) : (
-                displayProducts.map((p: any) => (
+                displayProducts.map((p) => (
                   <tr
                     key={p.productId}
                     onClick={() => p._original && setSelectedProduct(p._original)}

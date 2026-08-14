@@ -9,19 +9,31 @@ export function useAuth() {
   const user = useTrackkitStore((s) => s.user);
   const setUser = useTrackkitStore((s) => s.setUser);
 
-  // Auto-refresh token on initial mount
+  // Auto-refresh token on initial mount — but only if there's actually a
+  // cached session to refresh. Auth is opt-in (see app/page.tsx), so most
+  // visits have no user at all; firing a network request on every single
+  // load for people who've never logged in works against "instant offline
+  // load" for no benefit.
   useEffect(() => {
+    if (!useTrackkitStore.getState().user) return;
+
     async function initSession() {
       try {
         const res = await fetch("/api/auth/refresh", { method: "POST" });
         if (res.ok) {
           const data = await res.json();
           setToken(data.token);
-        } else {
-          // If refresh fails, session is expired
+        } else if (res.status === 401) {
+          // Only a genuinely invalid/expired token (the server's explicit
+          // "you're not authenticated" signal) should sign the user out.
           setUser(null);
         }
+        // Any other non-ok status (5xx, etc.) — couldn't reach the server
+        // right now, not "you're logged out." Leave the cached session alone.
       } catch (err) {
+        // Network failure (offline, etc.) — also not a logout signal. This
+        // app is offline-first; losing connectivity must never sign anyone
+        // out of their own local data.
         console.error("Auth session initialization error:", err);
       }
     }

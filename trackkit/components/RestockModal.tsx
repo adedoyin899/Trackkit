@@ -92,7 +92,14 @@ export function RestockModal({ product, onConfirm, onClose }: RestockModalProps)
   const handleQuickLog = async () => {
     setSaving(true);
     try {
-      await onConfirm({ quantity: 1 });
+      if (supplier.trim()) saveRecentSupplier(supplier.trim());
+      await onConfirm({
+        quantity: 1,
+        supplier: supplier.trim() || undefined,
+        costPerUnit:
+          costStr !== "" && !isNaN(costNum) && costNum > 0 ? costNum : undefined,
+        notes: notes.trim() || undefined,
+      });
       onClose();
     } finally {
       setSaving(false);
@@ -113,7 +120,12 @@ export function RestockModal({ product, onConfirm, onClose }: RestockModalProps)
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-md rounded-t-2xl bg-white px-5 pt-5 pb-8 shadow-2xl sm:rounded-2xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Restock ${product.name}`}
+        className="w-full max-w-md rounded-t-2xl bg-white px-5 pt-5 pb-8 shadow-2xl sm:rounded-2xl"
+      >
         {/* Header */}
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">

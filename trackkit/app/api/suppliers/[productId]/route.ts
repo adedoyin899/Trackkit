@@ -90,13 +90,15 @@ export async function GET(
   // Sort cheapest first
   suppliers.sort((a, b) => (a.avgPrice ?? Infinity) - (b.avgPrice ?? Infinity));
 
-  const maxAvg = suppliers.reduce((mx, s) => Math.max(mx, s.avgPrice ?? 0), 0);
+  // Cheapest supplier's avg price is the baseline — every other supplier's
+  // savingsPercent is how much MORE they cost relative to it.
+  const minAvg = suppliers.reduce((mn, s) => Math.min(mn, s.avgPrice ?? Infinity), Infinity);
 
   const result = suppliers.map((s, idx) => ({
     ...s,
     savingsPercent:
-      maxAvg > 0 && s.avgPrice != null
-        ? Math.round(((maxAvg - s.avgPrice) / maxAvg) * 100)
+      minAvg > 0 && minAvg !== Infinity && s.avgPrice != null
+        ? Math.round(((s.avgPrice - minAvg) / minAvg) * 100)
         : 0,
     isCheapest: idx === 0 && suppliers.length > 1,
   }));

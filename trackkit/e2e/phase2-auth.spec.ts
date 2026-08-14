@@ -28,10 +28,13 @@ test.describe("Phase 2 Authentication Flow", () => {
     });
   });
 
-  test("should redirect unauthenticated users to login page", async ({ page }) => {
-    // Attempting to access dashboard should yield redirect
+  test("should let unauthenticated users use the app without redirecting to login", async ({ page }) => {
+    // Auth is opt-in (see app/page.tsx) — Trackkit is offline-first and every
+    // tab works from local SQLite with no session at all. Signing in only
+    // unlocks cloud sync; it must never be required just to open the app.
     await page.goto("/");
-    await expect(page).toHaveURL(/\/auth\/login/);
+    await expect(page).toHaveURL("http://localhost:3000/");
+    await expect(page.getByRole("heading", { name: "Trackkit" })).toBeVisible();
   });
 
   test("should validate invalid phone numbers", async ({ page }) => {
@@ -134,7 +137,7 @@ test.describe("Phase 2 Authentication Flow", () => {
     expect(verifyOtpCalled).toBe(true);
   });
 
-  test("should logout successfully and redirect to login page", async ({ page, context }) => {
+  test("should logout successfully and stay on the app (auth is opt-in, not required)", async ({ page, context }) => {
     await mockAuthSession(page, context);
 
     await page.route("**/api/auth/logout", async (route) => {
@@ -147,14 +150,16 @@ test.describe("Phase 2 Authentication Flow", () => {
     });
 
     await page.goto("/");
-    
+
     // Switch to Settings tab
     await page.click('button:has-text("Settings")');
 
     // Click logout button
     await page.click('button:has-text("Logout")');
 
-    // Should redirect to login
-    await expect(page).toHaveURL(/\/auth\/login/);
+    // Logging out clears the session but never navigates away — the app
+    // stays usable offline-first. Settings now offers to sign back in.
+    await expect(page).toHaveURL("http://localhost:3000/");
+    await expect(page.getByText("Sign in to cloud backup")).toBeVisible();
   });
 });

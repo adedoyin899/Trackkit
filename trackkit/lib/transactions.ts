@@ -258,16 +258,17 @@ export function fetchSupplierStats(productId: string): SupplierStat[] {
 
   if (rows.length === 0) return [];
 
-  // Find max avg price to compute savings vs cheapest
-  const maxAvg = rows.reduce(
-    (mx, r) => Math.max(mx, r.avg_price ?? 0),
-    0,
+  // Find min avg price (the cheapest supplier) — every other supplier's
+  // savingsPercent is how much MORE they cost relative to this baseline.
+  const minAvg = rows.reduce(
+    (mn, r) => Math.min(mn, r.avg_price ?? Infinity),
+    Infinity,
   );
 
   return rows.map((row, idx) => {
     const avg = row.avg_price ?? 0;
     const savingsPercent =
-      maxAvg > 0 ? Math.round(((maxAvg - avg) / maxAvg) * 100) : 0;
+      minAvg > 0 && minAvg !== Infinity ? Math.round(((avg - minAvg) / minAvg) * 100) : 0;
     return {
       name: row.supplier ?? "Unknown",
       lastPrice: row.last_price,

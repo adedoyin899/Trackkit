@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
   CloudArrowUp,
   Gear,
@@ -9,6 +9,7 @@ import {
   Plus,
   SquaresFour,
   Storefront,
+  SignIn,
   SignOut,
   Coins,
   ClockCounterClockwise,
@@ -86,7 +87,7 @@ function InventoryTab() {
 function SettingsTab() {
   const shopName = useTrackkitStore((s) => s.shopName);
   const setShopName = useTrackkitStore((s) => s.setShopName);
-  const { logout, isLoading: isLoggingOut } = useAuth();
+  const { user, logout, isLoading: isLoggingOut } = useAuth();
 
   return (
     <div className="space-y-6">
@@ -112,51 +113,56 @@ function SettingsTab() {
         <ExportButton />
       </div>
 
-      <div className="rounded-cards bg-white p-5 shadow-subtle-3">
-        <h3 className="mb-2 flex items-center gap-1.5 text-[15px] font-medium text-heading-charcoal">
-          <SignOut /> Session
-        </h3>
-        <p className="mb-4 text-[13px] text-muted-gray">
-          Tapping logout will securely close your active session on this device.
-        </p>
-        <button
-          type="button"
-          disabled={isLoggingOut}
-          onClick={logout}
-          className="w-full rounded-buttons bg-[var(--color-alert-red)] py-3 text-[15px] font-semibold text-white hover:opacity-90 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
-        >
-          <SignOut /> {isLoggingOut ? "Logging out..." : "Logout"}
-        </button>
-      </div>
+      {user ? (
+        <div className="rounded-cards bg-white p-5 shadow-subtle-3">
+          <h3 className="mb-2 flex items-center gap-1.5 text-[15px] font-medium text-heading-charcoal">
+            <SignOut /> Session
+          </h3>
+          <p className="mb-4 text-[13px] text-muted-gray">
+            Signed in as {user.phoneNumber}. Tapping logout will securely close
+            your active session on this device — your data stays saved locally.
+          </p>
+          <button
+            type="button"
+            disabled={isLoggingOut}
+            onClick={logout}
+            className="w-full rounded-buttons bg-[var(--color-alert-red)] py-3 text-[15px] font-semibold text-white hover:opacity-90 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
+          >
+            <SignOut /> {isLoggingOut ? "Logging out..." : "Logout"}
+          </button>
+        </div>
+      ) : (
+        <div className="rounded-cards bg-white p-5 shadow-subtle-3">
+          <h3 className="mb-2 flex items-center gap-1.5 text-[15px] font-medium text-heading-charcoal">
+            <SignIn /> Cloud Backup
+          </h3>
+          <p className="mb-4 text-[13px] text-muted-gray">
+            Optional: sign in with your phone number to back up your inventory
+            to the cloud and use it on more than one phone. Trackkit works
+            fully offline without this — sign in only if you want it.
+          </p>
+          <Link
+            href="/auth/login"
+            className="block w-full rounded-buttons bg-ink-black py-3 text-center text-[15px] font-semibold text-white hover:opacity-90"
+          >
+            Sign in to cloud backup
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
 
 export default function Home() {
-  const router = useRouter();
-  const { user } = useAuth();
   const currentTab = useTrackkitStore((s) => s.currentTab);
   const setCurrentTab = useTrackkitStore((s) => s.setCurrentTab);
   const { ready, error } = useDatabaseStatus();
 
-  // Guard redirection until hydration is complete on the client
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Client-side authentication gate
-  useEffect(() => {
-    if (mounted && !user) {
-      router.push("/auth/login");
-    }
-  }, [user, mounted, router]);
-
-  // Prevent flicker before redirecting
-  if (!mounted || !user) {
-    return null;
-  }
+  // No auth gate here on purpose: Trackkit is offline-first and login is
+  // opt-in (see SettingsTab's "Cloud Backup" section) — every tab below
+  // works entirely from local SQLite. Signing in only unlocks cloud sync,
+  // it was never meant to be required to use the app at all. See bug.md,
+  // "Every screen requires login," for what this replaced and why.
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-4 pb-24 pt-6 sm:px-6">

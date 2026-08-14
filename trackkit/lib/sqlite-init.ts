@@ -92,19 +92,19 @@ async function loadDatabase(): Promise<Database> {
   // Migrate existing databases to add cost_per_unit to products if missing
   try {
     db.exec("SELECT cost_per_unit FROM products LIMIT 1");
-  } catch (e) {
+  } catch {
     db.run("ALTER TABLE products ADD COLUMN cost_per_unit DECIMAL(10, 2) DEFAULT NULL");
   }
 
   // Migrate existing databases to add supplier + cost_per_unit to transactions if missing
   try {
     db.exec("SELECT supplier FROM transactions LIMIT 1");
-  } catch (e) {
+  } catch {
     db.run("ALTER TABLE transactions ADD COLUMN supplier TEXT DEFAULT NULL");
   }
   try {
     db.exec("SELECT cost_per_unit FROM transactions LIMIT 1");
-  } catch (e) {
+  } catch {
     db.run("ALTER TABLE transactions ADD COLUMN cost_per_unit DECIMAL(10, 2) DEFAULT NULL");
   }
 

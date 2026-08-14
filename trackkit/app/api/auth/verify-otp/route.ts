@@ -41,6 +41,86 @@ export async function POST(request: Request) {
       );
     }
 
+    // Temporary bypass while no SMS provider is configured (see
+    // request-otp/route.ts and hand off/bug.md). Real OTPs never get
+    // generated right now, so this can't go through supabase.auth.verifyOtp
+    // at all — instead it finds-or-creates the phone number's row directly
+    // in the public `users` table via the admin client and issues an
+    // app-level session. This is intentionally NOT a real Supabase Auth
+    // JWT (only Supabase's own Auth service can mint those) — routes that
+    // require one (e.g. /api/margins) will fail closed and fall back to
+    // their existing local-only computation rather than erroring visibly.
+    const bypassCode = process.env.OTP_BYPASS_CODE;
+    if (bypassCode) {
+      if (otp !== bypassCode) {
+        const newAttempts = attempts - 1;
+        attemptsStore.set(phoneNumber, newAttempts);
+        return NextResponse.json(
+          {
+            error: "Invalid or expired OTP",
+            code: "INVALID_OTP",
+            attemptsRemaining: Math.max(0, newAttempts),
+          },
+          { status: 400 }
+        );
+      }
+
+      attemptsStore.delete(phoneNumber);
+
+      const { data: existingUser } = await supabaseAdmin
+        .from("users")
+        .select("*")
+        .eq("phone_number", phoneNumber)
+        .single();
+
+      let dbUser = existingUser;
+      if (!dbUser) {
+        const { data: newUser, error: insertError } = await supabaseAdmin
+          .from("users")
+          .insert({ id: crypto.randomUUID(), phone_number: phoneNumber, shop_name: null })
+          .select()
+          .single();
+        if (insertError) {
+          return NextResponse.json(
+            { error: insertError.message, code: "DB_ERROR" },
+            { status: 500 }
+          );
+        }
+        dbUser = newUser;
+      }
+
+      const bypassToken = `bypass-token:${dbUser.id}`;
+      const bypassRefreshToken = `bypass-refresh:${dbUser.id}`;
+      const expiresIn = 3600;
+
+      const cookieStore = await cookies();
+      cookieStore.set("token", bypassToken, {
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: expiresIn,
+      });
+      cookieStore.set("refreshToken", bypassRefreshToken, {
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 30 * 24 * 60 * 60,
+      });
+
+      return NextResponse.json({
+        success: true,
+        token: bypassToken,
+        refreshToken: bypassRefreshToken,
+        expiresIn,
+        user: {
+          id: dbUser.id,
+          phoneNumber: dbUser.phone_number,
+          shopName: dbUser.shop_name,
+          createdAt: dbUser.created_at,
+        },
+      });
+    }
+
     // Verify OTP with Supabase
     const { data, error } = await supabase.auth.verifyOtp({
       phone: phoneNumber,
