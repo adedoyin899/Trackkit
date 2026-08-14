@@ -1000,6 +1000,46 @@ correctly connected end to end.
 
 ---
 
+## 2026-08-14 — Built Phase 3's AI Chat (Task 1–6 of the Phase 3 prompt pack)
+
+**Severity:** N/A — feature addition. Full detail in implementation-plan.md
+§10 (what was built, the three deliberate deviations from the literal
+prompt and why, what's explicitly out of scope, what's needed from the
+project owner). Logged here too for the same reason as the Google OAuth
+entry above: so the reasoning survives past the commit diff.
+
+**Quick summary:** `app/api/ai/chat/route.ts` (App Router, not the
+prompt's Pages Router path), `components/AIChat.tsx` +
+`hooks/useAIChat.ts` + `lib/chat-store.ts`, a new auth-gated "AI" tab, and
+`supabase/migrations/003_add_ai_cache.sql` (applied). The backend never
+queries Supabase for inventory data — the client sends a local-SQLite
+summary in the request instead, since Supabase's `products`/`transactions`
+tables aren't actually populated yet (no sync engine). AI chat requires
+sign-in, unlike the rest of the app — deliberate, since it's an inherently
+cloud-only, costs-money-per-call, explicitly-paid-tier feature per
+PHASE-3-AI.md, not a repeat of the earlier auth-gate Blocker.
+
+**Verified:** build/lint clean, 43 unit + 34 E2E tests pass (6 new,
+`e2e/phase3-ai-chat.spec.ts`, mocking `/api/ai/chat` at the browser level
+since Playwright can't intercept the server's own outbound Anthropic
+call), and the real route was manually exercised end-to-end with no
+`ANTHROPIC_API_KEY` set — confirms the sign-in gate, empty state, and the
+"AI Assistant isn't set up yet" fallback all work correctly. The actual
+Claude round-trip is unverified pending a real API key.
+
+**Needs the project owner:** an Anthropic API key
+([console.anthropic.com](https://console.anthropic.com) → API Keys) as
+`ANTHROPIC_API_KEY` in `.env.local` + Vercel (server-side only). Not
+completable from this environment — needs their account.
+
+**Files involved:** `app/api/ai/chat/route.ts`, `lib/ai-context.ts`,
+`lib/auth-server.ts`, `lib/chat-store.ts`, `hooks/useAIChat.ts`,
+`components/AIChat.tsx`, `app/page.tsx`, `lib/store.ts`,
+`supabase/migrations/003_add_ai_cache.sql`, `e2e/phase3-ai-chat.spec.ts`,
+`e2e/helpers.ts`
+
+---
+
 <!--
 Next entry template:
 

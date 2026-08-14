@@ -20,6 +20,11 @@ tests all green — see process.md §19). Item 3 (Supabase) has its migration
 written and ready but provisioning the actual project is blocked on the
 project owner's Supabase account — see §2 and §7.3.
 
+**2026-08-14 (later): Phase 3 Task 1–6 (AI Chat) built** — see §10. Google
+OAuth added as a secondary sign-in method, and Supabase itself was fully
+provisioned (project created, migrations applied, all env vars live) in
+between the above and this — see bug.md for both.
+
 ---
 
 ## 1. The 3-phase product roadmap
@@ -30,7 +35,7 @@ Source: `../PRODUCT-OVERVIEW.md`. Full detail in `../PHASE-2-PROFIT.md` / `../PH
 |---|---|---|---|
 | **1 — Know Your Stock** | Offline inventory tracking, low-stock alerts | Free | ✅ Feature-complete, tested, deployed (see §3–4) |
 | **2 — Know Your Profit** | Cost tracking, margins, cloud sync | ₦500/mo | 🟡 Code-complete-looking, **one Blocker bug, cloud half not provisioned** — see §5 |
-| **3 — Make Smarter Decisions** | AI chat, demand trends, reorder hints | ₦1,500/mo | ⬜ Not started |
+| **3 — Make Smarter Decisions** | AI chat, demand trends, reorder hints | ₦1,500/mo | 🟡 AI chat built (§10); trend charts/forecasting/seasonality not started |
 
 Per `DELIVERY-SUMMARY.md`, Phase 2 was only supposed to start after Phase 1
 was validated with real users (§6's gate) — that validation never happened
@@ -281,3 +286,76 @@ end-to-end (any phone number + that fixed code) without a real SMS
 provider — see bug.md for exactly what it does and does not cover, and
 remove it (from `.env.local` and all 3 Vercel environments) once a real
 provider is live.
+
+---
+
+## 10. Phase 3 — AI Chat (Task 1–6 of the Phase 3 prompt pack)
+
+Source: `../PHASE-3-AI.md` Story 1. Built 2026-08-14. **Note the spec's own
+gate:** "Only start Phase 3 if Phase 2 achieves 60%+ retention, 15%+ paid
+conversion" — that gate hasn't been measured (no real user cohort exists
+yet), same situation as the Phase 1→2 gate in §6. Built anyway per the
+project owner's direction; flagging for the same reason as §6, not as a
+blocker.
+
+**What's built and verified:**
+- `app/api/ai/chat/route.ts` — POST endpoint, requires a session (see
+  "Auth requirement" below), checks `ai_cache` for a hit before calling
+  Claude, calls `claude-3-5-sonnet-20241022` via `@anthropic-ai/sdk` on a
+  miss, caches successful responses for 7 days.
+- `components/AIChat.tsx` + `hooks/useAIChat.ts` + `lib/chat-store.ts` —
+  chat UI (message bubbles, suggested-prompt chips, loading state, clear
+  history), backed by a dedicated Zustand store persisted to localStorage.
+- New "AI" tab in the bottom nav, gated behind sign-in with a
+  "Sign in to ask questions..." prompt when signed out.
+- `supabase/migrations/003_add_ai_cache.sql` (applied) — the `ai_cache`
+  table from the spec, RLS enabled.
+- `e2e/phase3-ai-chat.spec.ts` — 6 tests covering the sign-in gate, empty
+  state, sending a message (optimistic UI + response), suggested-prompt
+  clicks, error handling, and history persistence/clearing. All mock
+  `/api/ai/chat` at the browser level rather than the real Claude call —
+  see the file's header comment for why (Playwright can't intercept the
+  Next.js server's own outbound HTTPS calls, only what the browser does).
+- Manually verified end-to-end against the real route (no mocking) with
+  no `ANTHROPIC_API_KEY` set: signed-out → sign-in prompt; signed-in →
+  empty state with prompts; sending a message → graceful "AI Assistant
+  isn't set up yet" fallback, exactly the designed behavior for a missing
+  key, not a crash.
+
+**Three deliberate deviations from the literal Phase 3 prompt, each with a
+concrete reason:**
+1. **Routes live at `app/api/ai/chat/route.ts`, not `pages/api/ai/chat.ts`**
+   — this project uses the App Router throughout; there is no `pages/`
+   directory.
+2. **The backend never queries Supabase for the user's products/transactions.**
+   The real data lives in local SQLite — Supabase's `products`/
+   `transactions` tables aren't populated (no sync engine pushes to them
+   yet). A server-side query would return nothing for almost every user.
+   Instead `lib/ai-context.ts` builds a compact summary client-side and
+   sends it in the request body — which is what the spec's own "Technical
+   Notes" already said to do ("Send to `/api/ai/chat` with context
+   (user's data)"), just made explicit.
+3. **AI chat requires sign-in; the rest of the app doesn't.** This is not
+   a re-introduction of the auth-gate Blocker from §7.1/bug.md — that bug
+   was about *offline-first core features* (inventory, margins) being
+   wrongly locked. AI chat is inherently cloud-only (a live Claude call,
+   real per-message cost, explicitly the new paid tier per the spec) and
+   can never work offline regardless of auth, so gating just this one tab
+   is a different, defensible call, not the same mistake.
+
+**Not built from the full Phase 3 spec — intentionally out of scope for
+this prompt's 6 tasks, left for the "next: trend visualization" work the
+project owner flagged:** Story 2–6 (demand trends, reorder timing,
+seasonality, margin optimization, supplier procurement), the
+`analytics_daily`/`analytics_seasonal` tables, and the response's `sources`/
+`suggestions` structured fields from the spec's example JSON (kept the
+response to plain prose + a confidence score — asking Claude to reliably
+emit a second structured field on every call adds fragility for a v1
+feature without a clear payoff yet).
+
+**What's needed from the project owner, not completable from this
+environment:** an Anthropic API key
+([console.anthropic.com](https://console.anthropic.com) → API Keys),
+set as `ANTHROPIC_API_KEY` in `.env.local` and Vercel (server-side only,
+no `NEXT_PUBLIC_` prefix). Until then, `/api/ai/chat` returns the
+"isn't set up yet" fallback rather than erroring — verified, not assumed.
