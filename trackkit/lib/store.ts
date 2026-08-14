@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type Tab = "inventory" | "dashboard" | "settings" | "margins" | "history" | "ai";
+export type Tab = "inventory" | "dashboard" | "settings" | "margins" | "history" | "trends" | "ai";
 
 export interface User {
   id: string;

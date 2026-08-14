@@ -1040,6 +1040,37 @@ completable from this environment — needs their account.
 
 ---
 
+## 2026-08-14 — Built Phase 3's Sales Trends tab; found and fixed a real ₦0-revenue bug
+
+**Severity:** Major (the bug itself — real data, silently wrong number,
+no error) inside an otherwise N/A feature-addition entry.
+
+**What was built:** `components/TrendsView.tsx` + `components/SalesChart.tsx`
+(Recharts line chart) + `lib/analytics.ts`, a new "Trends" tab, not
+auth-gated (pure local computation — unlike AI chat, this has no cloud
+dependency at all). Full writeup: implementation-plan.md §11.
+
+**The bug:** the first version computed each chart bucket's revenue/profit
+using one `product` variable resolved from the *selected* product filter
+— which is `null` in the default "All Products" view. Every bucket's
+`salesValue` silently evaluated to `0` regardless of real sales, with no
+error thrown anywhere (`sellingPrice != null ? qty * sellingPrice : 0`
+happily returned `0`). Manually verified in a browser (added a product,
+logged 4 sales, checked the actual rendered numbers) rather than trusting
+the code — that's what caught it; a pure code read would likely have
+missed it, since the logic looks locally reasonable in isolation.
+
+**Fix:** look up each *transaction's own* product (via an id → product
+`Map`) for its price/margin when aggregating, instead of one shared
+value assumed to apply to every sale in the bucket. Re-verified: 4 units
+sold at ₦800 with ₦100 margin correctly shows ₦3,200 revenue / ₦400
+profit in both the "All Products" and single-product views.
+
+**Files involved:** `lib/analytics.ts`, `components/TrendsView.tsx`,
+`components/SalesChart.tsx`, `e2e/phase3-trends.spec.ts`
+
+---
+
 <!--
 Next entry template:
 

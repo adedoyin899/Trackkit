@@ -13,6 +13,7 @@ import {
   SignOut,
   Coins,
   ClockCounterClockwise,
+  ChartLineUp,
   Sparkle,
   type Icon,
 } from "@phosphor-icons/react";
@@ -28,12 +29,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { ProfitabilityDashboard } from "@/components/ProfitabilityDashboard";
 import { PurchaseHistoryDashboard } from "@/components/PurchaseHistoryDashboard";
 import { AIChat } from "@/components/AIChat";
+import { TrendsView } from "@/components/TrendsView";
 
 const TABS: { id: Tab; label: string; icon: Icon }[] = [
   { id: "dashboard", label: "Dashboard", icon: SquaresFour },
   { id: "inventory", label: "Inventory", icon: Package },
   { id: "margins", label: "Margins", icon: Coins },
   { id: "history", label: "History", icon: ClockCounterClockwise },
+  { id: "trends", label: "Trends", icon: ChartLineUp },
   { id: "ai", label: "AI", icon: Sparkle },
   { id: "settings", label: "Settings", icon: Gear },
 ];
@@ -193,6 +196,7 @@ export default function Home() {
           {currentTab === "inventory" && <InventoryTab />}
           {currentTab === "margins" && <ProfitabilityDashboard />}
           {currentTab === "history" && <PurchaseHistoryDashboard />}
+          {currentTab === "trends" && <TrendsView />}
           {currentTab === "ai" && <AIChat />}
           {currentTab === "settings" && <SettingsTab />}
         </main>

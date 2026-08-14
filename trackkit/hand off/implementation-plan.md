@@ -359,3 +359,57 @@ environment:** an Anthropic API key
 set as `ANTHROPIC_API_KEY` in `.env.local` and Vercel (server-side only,
 no `NEXT_PUBLIC_` prefix). Until then, `/api/ai/chat` returns the
 "isn't set up yet" fallback rather than erroring — verified, not assumed.
+
+---
+
+## 11. Phase 3 — Sales Trends (Story 2, "trend visualization")
+
+Source: `../PHASE-3-AI.md` Story 2. Built 2026-08-14, same session as §10,
+same Phase 3 gate caveat applies (not measured, built anyway per
+direction). This prompt arrived truncated mid-Task-3 (cut off right after
+"Example:", no Task 4–6 or acceptance criteria) — proceeded on the
+strength of Tasks 1–3 plus PHASE-3-AI.md's Story 2 for the rest, rather
+than waiting, and flagged the truncation at the time.
+
+**What's built and verified:**
+- New "Trends" tab (7th tab in the bottom nav — checked at a 390px mobile
+  viewport that it doesn't crowd; labels stay legible). Unlike AI chat,
+  this does **not** require sign-in — it's pure local computation, no
+  cloud dependency, consistent with Margins/History.
+- `lib/analytics.ts`'s `computeTrends()` — daily (week/month) or weekly
+  (quarter) buckets, revenue/profit computed **per-transaction** using
+  each sale's own product's current price (not a single shared price —
+  see the bug below), plus a simple linear-regression forecast with a
+  confidence score gated on having enough data points.
+- `components/SalesChart.tsx` — a Recharts line chart (quantity/revenue/
+  profit toggle, matching PHASE-3-AI.md's blue/green/orange color coding),
+  `components/TrendsView.tsx` — the tab itself (product selector, period
+  buttons, metric toggle, summary cards, forecast text).
+- `e2e/phase3-trends.spec.ts` — 4 tests: works signed-out, real sales
+  data flows through to the chart/summary correctly, product filter
+  works, period/metric toggle buttons work.
+
+**One real bug found and fixed during manual verification, not by
+inspection:** the first pass computed revenue/profit using a single
+`product` variable that was `null` whenever no specific product was
+selected (the default "All Products" view) — so Revenue showed **₦0**
+even with real sales recorded, silently, no error. Caught by actually
+looking at the rendered numbers in a browser rather than trusting the
+code read. Fixed by looking up each transaction's own product for its
+price/margin rather than one shared value, and confirmed the corrected
+math (4 units × ₦800 = ₦3,200 revenue, × ₦100 margin = ₦400 profit) in
+both the "All Products" and single-product views.
+
+**Same architectural deviation as §10, for the same reason:** the spec
+calls for a server-side `analytics_daily` materialized view refreshed by
+a nightly cron job (`pages/api/admin/refresh-analytics.ts` in the
+prompt). Skipped entirely — there's no server-side transaction data to
+aggregate (Supabase's tables aren't populated, no sync engine), and a
+market trader's local transaction volume (hundreds to low-thousands of
+rows) is fast enough to aggregate on demand in the browser. Nothing to
+pre-compute or cache.
+
+**Not built — out of scope for this prompt:** Story 3–6 (reorder timing,
+seasonality, margin optimization, supplier procurement) and the
+`analytics_daily`/`analytics_seasonal` tables themselves (no code reads
+or writes them, so they were never created).
