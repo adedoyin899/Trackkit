@@ -56,7 +56,7 @@ function toDateKey(iso: string, bucketDays: number, rangeStart: number): string 
 }
 
 /** Simple linear regression (least squares) over (index, value) pairs. */
-function linearRegression(values: number[]): { slope: number; intercept: number; r2: number } {
+export function linearRegression(values: number[]): { slope: number; intercept: number; r2: number } {
   const n = values.length;
   if (n < 2) return { slope: 0, intercept: values[0] ?? 0, r2: 0 };
 

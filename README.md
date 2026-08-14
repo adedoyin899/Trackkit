@@ -42,17 +42,33 @@ Built for the realities of Lagos markets:
 **Cloud sync (provisioned, SMS delivery not yet live 🚧)** — the Supabase project
 is created, the schema is migrated, and `NEXT_PUBLIC_SUPABASE_URL` /
 `NEXT_PUBLIC_SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` are set in both
-local and Vercel environments. What's still missing: an SMS provider
-(Twilio/MessageBird/Vonage) hasn't been configured in Supabase's Auth settings
-yet, so `POST /api/auth/request-otp` currently fails with
-"Unsupported phone provider" — phone login and multi-device sync aren't usable
-until that's added. Everything above this section works fully offline
-regardless.
+local and Vercel environments. Sign-in works two ways: **Google** (fully live —
+Supabase's OAuth provider is configured) and **phone OTP** (an SMS provider —
+Twilio/MessageBird/Vonage — hasn't been configured in Supabase's Auth settings
+yet, so `POST /api/auth/request-otp` currently fails with "Unsupported phone
+provider"; a temporary `OTP_BYPASS_CODE` lets phone sign-in work end-to-end in
+the meantime). **Actual cross-device data sync isn't built yet** — Supabase's
+`products`/`transactions` tables exist and are RLS-protected, but nothing
+currently pushes local mutations to them; each device's data still lives only
+in its own local SQLite. Everything above this section works fully offline
+regardless of any of this.
 
-### Phase 3 — AI Insights (Roadmap 🔮)
-- AI-powered pricing suggestions
-- Sales trend forecasting
-- Seasonal demand analysis
+### Phase 3 — Smarter Decisions (Live ✅, pending one API key 🚧)
+- **AI Assistant** — ask questions in plain English ("How much milk sold this
+  week?", "Which products need restocking?"); answers are grounded only in
+  your actual local inventory/sales data, cached per-question for 7 days.
+  Requires sign-in (unlike everything else in the app) since each message is
+  a real, paid Claude API call. **Needs `ANTHROPIC_API_KEY`** — without it,
+  the tab works but responses are a plain "not set up yet" message instead of
+  a real answer.
+- **Sales Trends** — a line chart (quantity/revenue/profit) over 1 week/1
+  month/3 months, per-product or across everything, with a lightweight
+  forecast. Pure local computation, no sign-in needed.
+- **Reorder Recommendations** — on the Dashboard: predicted stock-out dates,
+  suggested reorder quantity/timing/supplier, urgency-ranked, computed from
+  each product's own recent sales velocity (including its actual day-of-week
+  pattern, not a generic assumption). Pure local computation, no sign-in
+  needed.
 
 ---
 
@@ -64,8 +80,10 @@ regardless.
 | Language | TypeScript |
 | Local DB | SQLite via sql.js + IndexedDB |
 | Cloud DB | Supabase (PostgreSQL + RLS) |
-| Auth | Supabase Phone OTP (SMS) |
-| Sync | Custom offline-first sync engine |
+| Auth | Supabase — Google OAuth (live) + Phone OTP (SMS, pending a provider) |
+| Sync | Not yet built — cloud tables exist but nothing pushes local mutations to them |
+| AI | Anthropic Claude (`claude-3-5-sonnet`), pending `ANTHROPIC_API_KEY` |
+| Charts | Recharts |
 | Hosting | Vercel |
 | Testing | Vitest (unit) + Playwright (E2E) |
 | Icons | Phosphor Icons |

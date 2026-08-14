@@ -1104,6 +1104,38 @@ after a reload (checked both, not just one).
 
 ---
 
+## 2026-08-14 — AI chat route echoed raw internal error messages to the client
+
+**Severity:** Minor (information disclosure, not data access — found
+during a security audit, not by inspection during the original build)
+
+**Symptom:** `app/api/ai/chat/route.ts`'s outer `catch` block did
+`err instanceof Error ? err.message : "Internal server error"` and sent
+that straight back in the JSON error response. An unexpected failure
+(e.g. a malformed Supabase query, a schema mismatch) could return
+something like `duplicate key value violates unique constraint
+"ai_cache_user_id_query_hash_key"` directly to the browser — not a data
+leak, but confirms Postgres/Supabase usage and column/constraint names to
+anyone who can trigger the error path.
+
+**Scope note:** this exact pattern (`err.message` in the outer catch,
+sent verbatim to the client) exists in every API route built this
+session — `request-otp`, `verify-otp`, `refresh`, `logout`,
+`oauth-session`, `margins`. Fixed only in the AI chat route here, since
+that's what the security-audit task was actually scoped to; the same
+pattern elsewhere is a known, pre-existing characteristic of the app, not
+newly introduced, and is flagged here rather than silently patched
+everywhere without being asked.
+
+**Fix:** the AI chat route now logs the real error server-side
+(`console.error`) and returns a fixed generic message
+("Something went wrong. Please try again.") to the client regardless of
+what actually failed.
+
+**Files involved:** `app/api/ai/chat/route.ts`
+
+---
+
 <!--
 Next entry template:
 

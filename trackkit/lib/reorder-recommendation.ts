@@ -68,6 +68,50 @@ function dayOfWeekMultiplier(productId: string, targetDate: Date): number {
   return targetDayAvg / overallAvg;
 }
 
+export interface StockOutProjection {
+  daysOfStock: number;
+  runOutDate: Date;
+  urgency: ReorderUrgency;
+  recommendedReorderDate: Date;
+  recommendedQty: number;
+  worthFlagging: boolean;
+}
+
+/**
+ * The pure forecast math — no SQLite/DB access, so it's directly unit
+ * testable (unlike getReorderRecommendations() itself, which reads
+ * transactions/products/supplier stats from local SQLite and is covered
+ * by e2e/phase3-reorder.spec.ts instead). `now` is injectable so tests
+ * don't depend on the real clock.
+ */
+export function computeStockOutProjection(
+  currentQty: number,
+  dailyVelocity: number,
+  leadTimeDays: number,
+  now: number = Date.now(),
+): StockOutProjection {
+  const daysOfStock = currentQty / dailyVelocity;
+  const runOutDate = new Date(now + daysOfStock * DAY_MS);
+
+  let urgency: ReorderUrgency;
+  if (daysOfStock < 3) urgency = "high";
+  else if (daysOfStock < 7) urgency = "medium";
+  else urgency = "low";
+
+  const recommendedReorderDate = new Date(runOutDate.getTime() - (leadTimeDays + 0.5) * DAY_MS);
+  const recommendedQty = Math.ceil(dailyVelocity * REORDER_BUFFER_DAYS * REORDER_BUFFER_MULTIPLIER);
+
+  return {
+    daysOfStock,
+    runOutDate,
+    urgency,
+    recommendedReorderDate,
+    recommendedQty,
+    // Skip products that aren't worth flagging at all — plenty of runway.
+    worthFlagging: daysOfStock < 21,
+  };
+}
+
 function getRecommendationForProduct(
   product: Product,
   options: { leadTimeDays: number },
@@ -78,21 +122,10 @@ function getRecommendationForProduct(
   const weekdayFactor = dayOfWeekMultiplier(product.id, new Date());
   const dailyVelocity = Math.round(baseVelocity * weekdayFactor * 100) / 100;
 
-  const daysOfStock = product.current_quantity / dailyVelocity;
-  const runOutDate = new Date(Date.now() + daysOfStock * DAY_MS);
+  const { daysOfStock, runOutDate, urgency, recommendedReorderDate, recommendedQty, worthFlagging } =
+    computeStockOutProjection(product.current_quantity, dailyVelocity, options.leadTimeDays);
 
-  let urgency: ReorderUrgency;
-  if (daysOfStock < 3) urgency = "high";
-  else if (daysOfStock < 7) urgency = "medium";
-  else urgency = "low";
-
-  // Skip products that aren't worth flagging at all — plenty of runway.
-  if (daysOfStock >= 21) return null;
-
-  const recommendedReorderDate = new Date(
-    runOutDate.getTime() - (options.leadTimeDays + 0.5) * DAY_MS,
-  );
-  const recommendedQty = Math.ceil(dailyVelocity * REORDER_BUFFER_DAYS * REORDER_BUFFER_MULTIPLIER);
+  if (!worthFlagging) return null;
 
   const supplierStats = fetchSupplierStats(product.id);
   const bestSupplier = supplierStats.find((s) => s.isCheapest) ?? supplierStats[0] ?? null;

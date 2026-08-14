@@ -476,3 +476,88 @@ recompute on demand). Supplier lead time is a single global constant
 (1 day) rather than the spec's per-supplier configurable setting — kept
 simple for this pass; flagged here rather than silently built as fixed
 with no note.
+
+---
+
+## 13. "Test + Deploy" audit (2026-08-14) — what was real vs. what wasn't
+
+Source: a 10-task "Phase 3 final: test + deploy" prompt covering test
+coverage, monitoring setup, a 50-user soft launch, AI tuning, performance,
+security, and success metrics. **Roughly half of it described things that
+don't exist in this project** — this repo has never had a real user
+cohort (the Phase 1→2 gate in §6 was skipped, and nothing in bug.md or
+this file has ever recorded real usage data), so there's no "Phase 2
+cohort" to invite, no Telegram group, and no Grafana/Uptimerobot
+monitoring stack was ever set up. Rather than fabricate any of that —
+invented adoption numbers, a fictional NPS score, a made-up testimonial —
+this section separates what was actually done from what simply can't be,
+without a real user base, from this environment.
+
+### What was actually done and verified
+
+- **Full regression**: 57 unit tests (14 new — see below) + 43 E2E tests,
+  build and lint clean, across Phase 1, 2, and 3 together in one run.
+- **Closed a real test-coverage gap**: `lib/analytics.ts`'s
+  `linearRegression()` and a newly-extracted
+  `lib/reorder-recommendation.ts`'s `computeStockOutProjection()` had only
+  E2E/manual coverage before this — both call into SQLite internally, so
+  weren't directly unit-testable. Refactored to pull the pure math
+  (forecast slope/r², stock-out date, urgency thresholds, recommended
+  quantity) into functions with no DB dependency, then wrote
+  `__tests__/analytics.test.ts` (5 tests) and
+  `__tests__/reorder-recommendation.test.ts` (9 tests) against them
+  directly — exactly the "forecast calculations (stock-out dates)"
+  coverage the prompt asked for, done properly rather than only through
+  the UI.
+- **A real security audit, not a checklist tick**: read exactly what
+  `lib/ai-context.ts` sends to Claude (confirmed: per-product rollups —
+  name, price, cost, margin, units sold in the last 7/30 days, last
+  restock's supplier/cost — never raw transactions, and notably never a
+  transaction's freetext `notes` field, which isn't in the payload type
+  at all). Then *empirically* verified `ai_cache`'s RLS isolation rather
+  than assuming the policy works: inserted a real row via the service-role
+  key (bypassing RLS, simulating the app's own backend), confirmed the
+  anon key genuinely cannot read it back (not just "table happens to be
+  empty" — a row provably existed), then cleaned up. Found and fixed one
+  real issue: the AI route's outer error handler was echoing raw
+  `err.message` to the client, which could leak Postgres/Supabase
+  implementation details on an unexpected failure — same pattern exists
+  across every other API route in this app (pre-existing, not introduced
+  this session), fixed only in the AI route since that's what this task
+  was actually about; the broader pattern is flagged here, not silently
+  fixed everywhere without being asked.
+- **Real performance numbers, not assumed-fine**: seeded 10 products with
+  realistic sales history via the actual UI (not synthetic data), then
+  measured in a real browser: Trends chart renders in ~70–90ms (target
+  <500ms), Dashboard including Reorder Recommendations in ~40ms (target
+  <1s). Both comfortably under target.
+- **AI guardrails, made real rather than cosmetic**: the "confidence <0.5
+  → don't guess" ask was implemented as an actual instruction injected
+  into the Claude prompt when confidence is low (computed from data
+  availability *before* the call — is the focused product even in the
+  inventory, does it have any recorded sales — not just "did we send any
+  products at all"), not just a number attached to the response after the
+  fact. Also tightened the system prompt against inventing suppliers/
+  numbers not in the provided data, and against generic/irrelevant
+  suggestions.
+- **README corrected**: Phase 3 section now describes what's actually
+  built (AI chat, Trends, Reorder — not "Roadmap 🔮"), and the "Sync |
+  Custom offline-first sync engine" tech-stack claim — never true, per
+  §10–12's repeated finding that nothing pushes local mutations to
+  Supabase — was corrected to say so plainly, found while updating this
+  same table for Phase 3, not by a separate audit pass.
+
+### What genuinely can't be done from here — flagged, not faked
+
+- **50-user soft launch, 2-week metrics, NPS, testimonials, "% who
+  upgraded to premium"**: no real users exist. Doing any of this for real
+  needs the project owner to actually recruit testers.
+- **Grafana dashboard, Uptimerobot, Sentry alert rules**: Sentry itself is
+  configured (DSN set, confirmed earlier this session) but alert-rule
+  configuration needs dashboard/account access this environment doesn't
+  have. Grafana/Uptimerobot were never set up at all — no evidence either
+  ever existed in this repo.
+- **"Zero critical bugs" / "Sentry clean" as launch-readiness claims**:
+  the E2E/unit/lint/build results above are real and clean, but "zero
+  bugs" in the sense the checklist means (validated against real usage)
+  isn't a claim this environment can honestly make either way.
