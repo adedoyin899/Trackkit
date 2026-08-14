@@ -924,6 +924,82 @@ removed before committing)
 
 ---
 
+## 2026-08-14 — Added Google OAuth as a secondary sign-in method
+
+**Severity:** N/A — feature addition, logged here for the same reason
+everything else in this file is: so the next person reading this repo
+doesn't have to reconstruct what happened from commit diffs alone.
+
+**Why:** phone OTP needs an SMS provider Supabase doesn't have configured
+yet (see the "Unsupported phone provider" entry above); Google sign-in
+needs no SMS at all and is free, so it's a way to get real auth working
+now without waiting on that, while keeping phone as the primary/default
+method for the actual target users (informal Nigerian market traders,
+for whom phone number is a much more universal identity than a Google
+account — this was discussed explicitly with the project owner before
+building it as *secondary*, not a replacement).
+
+**What was built:**
+- `supabase/migrations/002_add_google_auth.sql` (applied to the live
+  project) — `phone_number` is no longer `NOT NULL` (Google accounts may
+  have none), added a uniqueness constraint on the pre-existing (but
+  previously unconstrained) `email` column, and added `auth_provider`
+  (`'phone' | 'google'`, defaults to `'phone'`) to record which method
+  created each account.
+- `lib/supabase-browser.ts` — a new browser-only Supabase client (PKCE
+  flow, persists its own session) used solely to run the OAuth redirect.
+  Kept separate from `lib/supabase.ts`'s server-side client rather than
+  changing that one, since server routes import it too and don't need
+  browser-session behavior.
+- `app/auth/callback/page.tsx` — where Google redirects back to. Calls
+  `exchangeCodeForSession()`, then POSTs the resulting tokens to a new
+  API route rather than using Supabase's client-side session directly.
+- `app/api/auth/oauth-session/route.ts` — verifies the token is real via
+  `supabaseAdmin.auth.getUser()`, finds-or-creates the `public.users` row,
+  and sets the *same* httpOnly `token`/`refreshToken` cookies the phone
+  flow already sets. This is the key integration point: it means
+  `useAuth.ts`, `/api/auth/refresh`, and everything downstream never needs
+  to know or care which method a user signed in with — both paths converge
+  on one cookie-based session model rather than the app having two
+  parallel auth systems.
+- `components/AuthFlow.tsx` — a "Continue with Google" button above the
+  phone form (phone step only), with an inline SVG Google "G" mark rather
+  than reaching for a brand-asset package.
+- `lib/store.ts`'s `User` type: `phoneNumber` is now `string | null`,
+  added optional `email`. Only one display site needed updating for this
+  (`app/page.tsx`'s "Signed in as..." line, now falls back to email).
+
+**Verified:** build/lint clean, all 28 E2E tests still pass unaffected,
+and the redirect itself confirmed working end-to-end up to Supabase's
+side — clicking the button correctly navigates to
+`https://<project>.supabase.co/auth/v1/authorize?provider=google&...`
+with a PKCE `code_challenge`, which currently returns
+`{"error_code":"validation_failed","msg":"Unsupported provider: provider
+is not enabled"}` because Google isn't turned on in Supabase yet. That
+response is the expected, correct state until the next step below happens
+— it confirms every piece of app code is wired correctly.
+
+**Completed 2026-08-14:** the project owner created the Google Cloud OAuth
+Client ID and enabled it in Supabase → Authentication → Providers →
+Google. Verified live, not just "should work": the "Continue with Google"
+button now redirects all the way to `accounts.google.com`'s real sign-in
+page with the correct `client_id`
+(`48988626089-...apps.googleusercontent.com`) and the right Supabase
+callback URI — checked both by hitting Supabase's `/auth/v1/authorize`
+endpoint directly (302 to Google, not the earlier "provider not enabled"
+error) and by clicking through the actual login button in a browser.
+Nobody has completed a full sign-in yet (that requires a real Google
+account choosing to authorize), but every piece of the pipe — button →
+Supabase → Google → callback → session → cookies — is now confirmed
+correctly connected end to end.
+
+**Files involved:** `supabase/migrations/002_add_google_auth.sql`,
+`lib/supabase-browser.ts`, `app/auth/callback/page.tsx`,
+`app/api/auth/oauth-session/route.ts`, `hooks/useAuth.ts`,
+`components/AuthFlow.tsx`, `lib/store.ts`, `app/page.tsx`
+
+---
+
 <!--
 Next entry template:
 

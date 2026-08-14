@@ -119,7 +119,7 @@ function SettingsTab() {
             <SignOut /> Session
           </h3>
           <p className="mb-4 text-[13px] text-muted-gray">
-            Signed in as {user.phoneNumber}. Tapping logout will securely close
+            Signed in as {user.phoneNumber ?? user.email}. Tapping logout will securely close
             your active session on this device — your data stays saved locally.
           </p>
           <button

@@ -161,6 +161,19 @@ see process.md §19.
   reachability. **Not yet fully live:** phone OTP requests fail with
   "Unsupported phone provider" until an SMS provider is configured in
   Supabase's dashboard — see §2 and bug.md.
+- **Google OAuth added as a secondary sign-in method, live 2026-08-14.** A
+  "Continue with Google" button sits above the phone form in
+  `AuthFlow.tsx`. Full flow verified working end to end through Supabase's
+  side: clicking it now lands on Google's real sign-in page with the
+  correct Client ID and Supabase callback URI (previously returned
+  "provider is not enabled" until the project owner created the Google
+  Cloud OAuth credentials and enabled the provider in Supabase's
+  dashboard). Nobody has completed a full sign-in yet since that needs a
+  real person authorizing with their own Google account, but every hop in
+  the pipe is confirmed correctly connected. Migration
+  `002_add_google_auth.sql` (applied) made `phone_number` nullable and
+  added `auth_provider` + a uniqueness constraint on the pre-existing
+  `email` column, since Google accounts won't have a phone number.
 
 ### Cross-cutting Phase 2 findings
 - **Vitest:** 43/43 unit tests pass across 3 files (`productUtils`,

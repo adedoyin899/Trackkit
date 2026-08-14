@@ -5,7 +5,8 @@ export type Tab = "inventory" | "dashboard" | "settings" | "margins" | "history"
 
 export interface User {
   id: string;
-  phoneNumber: string;
+  phoneNumber: string | null;
+  email?: string | null;
   shopName: string | null;
   createdAt: string;
 }

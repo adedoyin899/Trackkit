@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTrackkitStore } from "@/lib/store";
+import { supabaseBrowser } from "@/lib/supabase-browser";
 
 export function useAuth() {
   const [isLoading, setIsLoading] = useState(false);
@@ -88,6 +89,22 @@ export function useAuth() {
     }
   };
 
+  const signInWithGoogle = async () => {
+    setError(null);
+    const { error } = await supabaseBrowser.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) {
+      setError(error.message);
+      throw error;
+    }
+    // On success this redirects the whole page to Google — nothing more
+    // to do here; app/auth/callback/page.tsx picks up when it returns.
+  };
+
   const logout = async () => {
     setIsLoading(true);
     try {
@@ -111,6 +128,7 @@ export function useAuth() {
     error,
     requestOtp,
     verifyOtp,
+    signInWithGoogle,
     logout,
   };
 }
