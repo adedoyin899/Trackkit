@@ -80,10 +80,10 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
           <button
             type="button"
             onClick={onClose}
-            className="text-muted-gray hover:text-heading-charcoal cursor-pointer"
+            className="-mr-2 flex h-11 w-11 items-center justify-center rounded-lg text-muted-gray hover:text-heading-charcoal hover:bg-[var(--surface-canvas)] transition-colors cursor-pointer"
             aria-label="Close"
           >
-            <X />
+            <X size={20} />
           </button>
         </div>
 

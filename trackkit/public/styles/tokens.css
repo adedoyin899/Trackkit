@@ -140,7 +140,7 @@
   --color-ink-black: #fbfaf9;
   --color-heading-charcoal: #f5f3f1;
   --color-body-brown: #c9c6c2;
-  --color-muted-gray: #8b8987;
+  --color-muted-gray: #a3a19e;
   --color-stone-border: #3a3a3d;
   --color-pure-white: #1c1c1e;
   --color-full-black: #000000;
@@ -153,7 +153,7 @@
 
   --text-heading: #f5f3f1;
   --text-body: #c9c6c2;
-  --text-muted: #8b8987;
+  --text-muted: #a3a19e;
   --text-on-dark: #121212;
 
   --border-hairline: rgba(255, 255, 255, 0.08);

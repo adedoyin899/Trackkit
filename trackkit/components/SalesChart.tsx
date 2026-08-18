@@ -50,6 +50,16 @@ interface SalesChartProps {
 
 export function SalesChart({ data, metric }: SalesChartProps) {
   const config = METRIC_CONFIG[metric];
+  const hasData = data && data.length > 0 && data.some((point) => point[metric] > 0);
+
+  if (!hasData) {
+    return (
+      <div className="flex h-[220px] w-full flex-col items-center justify-center rounded-xl border border-dashed border-[var(--border-hairline)] bg-[var(--surface-canvas)] p-6 text-center">
+        <p className="text-[13px] font-medium text-heading-charcoal">No sales recorded yet</p>
+        <p className="mt-1 text-[11px] text-muted-gray">Log sales or adjust the date range to see trend data.</p>
+      </div>
+    );
+  }
 
   return (
     <ResponsiveContainer width="100%" height={220}>
