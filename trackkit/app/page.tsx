@@ -148,6 +148,29 @@ function SettingsTab() {
 
       <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3">
         <h3 className="mb-2 flex items-center gap-1.5 text-[15px] font-medium text-heading-charcoal">
+          <Storefront /> Marketing Page & Setup
+        </h3>
+        <p className="mb-4 text-[13px] text-muted-gray">
+          Visit the Trackkit marketing landing page or restart shop onboarding setup.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link
+            href="/welcome"
+            className="flex-1 rounded-buttons border border-[var(--border-hairline)] bg-[var(--surface-canvas)] py-2.5 px-4 text-center text-[14px] font-semibold text-heading-charcoal hover:bg-[var(--surface-card-secondary)] transition-colors"
+          >
+            Visit Landing Page
+          </Link>
+          <Link
+            href="/onboarding"
+            className="flex-1 rounded-buttons bg-ink-black py-2.5 px-4 text-center text-[14px] font-semibold text-[var(--color-ink-black-text)] hover:opacity-90 transition-opacity"
+          >
+            Re-run Setup Wizard
+          </Link>
+        </div>
+      </div>
+
+      <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3">
+        <h3 className="mb-2 flex items-center gap-1.5 text-[15px] font-medium text-heading-charcoal">
           <CloudArrowUp /> Backup
         </h3>
         <p className="mb-4 text-[13px] text-muted-gray">

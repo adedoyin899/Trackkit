@@ -21,6 +21,7 @@ interface TrackkitStore {
   selectedProductId: string | null;
 
   setShopName: (name: string) => void;
+  setCurrency: (currency: string) => void;
   setCurrentTab: (tab: Tab) => void;
   setSelectedProductId: (id: string | null) => void;
   setUser: (user: User | null) => void;
@@ -38,6 +39,7 @@ export const useTrackkitStore = create<TrackkitStore>()(
       selectedProductId: null,
 
       setShopName: (name) => set({ shopName: name }),
+      setCurrency: (currency) => set({ currency }),
       setCurrentTab: (tab) => set({ currentTab: tab }),
       setSelectedProductId: (id) => set({ selectedProductId: id }),
       setUser: (user) => set({ user }),
