@@ -18,8 +18,10 @@ export function ProductCard({ product }: ProductCardProps) {
   const { logTransaction, isLogging, transactions } = useTransactions(product.id);
   const { updateProduct } = useLocalInventory();
   const { calculateMargin } = useMarginCalculation();
+  const selectedProductId = useTrackkitStore((s) => s.selectedProductId);
   const setSelectedProductId = useTrackkitStore((s) => s.setSelectedProductId);
   const lowStock = isLowStock(product);
+  const isSelected = selectedProductId === product.id;
 
   const [expanded, setExpanded] = useState(true);
   const [showRestockModal, setShowRestockModal] = useState(false);
@@ -62,9 +64,7 @@ export function ProductCard({ product }: ProductCardProps) {
     previewPercent = Math.round((previewAmount / costNum) * 100);
   }
 
-  // Calculate sales this week. useState's initializer form runs exactly
-  // once per mount, so this reads Date.now() without the impure-during-
-  // render issue a plain `new Date(Date.now() - ...)` in the body would have.
+  // Calculate sales this week
   const [sevenDaysAgo] = useState(() => new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
   const weeklySales = transactions.filter(
     (t) =>
@@ -76,8 +76,13 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div
-      className={`rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3 ${
-        lowStock ? "ring-2 ring-[var(--color-honey)]" : ""
+      onClick={() => setSelectedProductId(product.id)}
+      className={`rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3 transition-all ${
+        isSelected
+          ? "ring-2 ring-[var(--color-link-blue)]"
+          : lowStock
+          ? "ring-2 ring-[var(--color-honey)]"
+          : ""
       }`}
     >
       <div className="flex items-start justify-between gap-3">
