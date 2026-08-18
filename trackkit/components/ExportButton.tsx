@@ -21,7 +21,7 @@ export function ExportButton() {
     <button
       type="button"
       onClick={handleExport}
-      className="flex w-full items-center justify-center gap-2 rounded-buttons bg-ink-black px-4 py-3 text-[15px] font-semibold text-white"
+      className="flex w-full items-center justify-center gap-2 rounded-buttons bg-ink-black px-4 py-3 text-[15px] font-semibold text-[var(--color-ink-black-text)] hover:opacity-90 cursor-pointer transition-opacity"
     >
       <DownloadSimple /> Export Data to CSV
     </button>

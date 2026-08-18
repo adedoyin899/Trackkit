@@ -32,8 +32,8 @@ export function AIChat() {
 
   if (!user) {
     return (
-      <div className="rounded-cards bg-white p-8 text-center shadow-subtle-3">
-        <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-ink-black text-white">
+      <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-8 text-center shadow-subtle-3">
+        <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-ink-black text-[var(--color-ink-black-text)]">
           <Sparkle weight="fill" size={22} />
         </span>
         <h2 className="text-[17px] font-semibold text-heading-charcoal">AI Assistant</h2>
@@ -42,7 +42,7 @@ export function AIChat() {
         </p>
         <Link
           href="/auth/login"
-          className="mt-4 inline-flex items-center gap-1.5 rounded-buttons bg-ink-black px-4 py-2.5 text-[14px] font-semibold text-white hover:opacity-90"
+          className="mt-4 inline-flex items-center gap-1.5 rounded-buttons bg-ink-black px-4 py-2.5 text-[14px] font-semibold text-[var(--color-ink-black-text)] hover:opacity-90 transition-opacity"
         >
           <SignIn /> Sign in
         </Link>
@@ -57,8 +57,8 @@ export function AIChat() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-180px)] flex-col rounded-cards bg-white shadow-subtle-3">
-      <div className="flex items-center justify-between border-b border-stone-surface px-4 py-3">
+    <div className="flex h-[calc(100vh-180px)] flex-col rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] shadow-subtle-3">
+      <div className="flex items-center justify-between border-b border-[var(--border-hairline)] px-4 py-3">
         <div className="flex items-center gap-2">
           <Sparkle weight="fill" size={18} className="text-ember-orange" />
           <h2 className="text-[16px] font-semibold text-heading-charcoal">AI Assistant</h2>
@@ -68,7 +68,7 @@ export function AIChat() {
             type="button"
             onClick={clearChat}
             aria-label="Clear chat history"
-            className="flex items-center gap-1 text-[12px] font-medium text-muted-gray hover:text-[var(--color-alert-red)]"
+            className="flex items-center gap-1 text-[12px] font-medium text-muted-gray hover:text-[var(--color-alert-red)] cursor-pointer"
           >
             <Trash size={14} /> Clear
           </button>
@@ -79,10 +79,10 @@ export function AIChat() {
         {messages.length === 0 && (
           <div className="space-y-4">
             <div className="flex items-start gap-2">
-              <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-ink-black text-white">
+              <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-ink-black text-[var(--color-ink-black-text)]">
                 <ChatCircle size={14} />
               </span>
-              <div className="rounded-2xl rounded-tl-sm bg-cream-canvas px-3.5 py-2.5 text-[14px] text-body-brown">
+              <div className="rounded-2xl rounded-tl-sm bg-[var(--surface-canvas)] border border-[var(--border-hairline)] px-3.5 py-2.5 text-[14px] text-body-brown">
                 Hi! Ask me about your sales, margins, or reorder strategy.
               </div>
             </div>
@@ -92,7 +92,7 @@ export function AIChat() {
                   key={prompt}
                   type="button"
                   onClick={() => handleSend(prompt)}
-                  className="rounded-full border border-stone-surface bg-white px-3 py-1.5 text-[12px] font-medium text-body-brown hover:bg-cream-canvas"
+                  className="rounded-full border border-[var(--border-hairline)] bg-[var(--surface-card)] px-3 py-1.5 text-[12px] font-medium text-body-brown hover:bg-[var(--surface-canvas)] cursor-pointer transition-colors"
                 >
                   {prompt}
                 </button>
@@ -108,7 +108,7 @@ export function AIChat() {
           >
             <span
               className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ${
-                m.role === "user" ? "bg-[var(--color-link-blue)] text-white" : "bg-ink-black text-white"
+                m.role === "user" ? "bg-[var(--color-link-blue)] text-white" : "bg-ink-black text-[var(--color-ink-black-text)]"
               }`}
             >
               {m.role === "user" ? (
@@ -124,8 +124,8 @@ export function AIChat() {
                 m.role === "user"
                   ? "rounded-tr-sm bg-[var(--color-link-blue)] text-white"
                   : m.isError
-                  ? "rounded-tl-sm bg-red-50 text-[var(--color-alert-red)] flex items-start gap-1.5"
-                  : "rounded-tl-sm bg-cream-canvas text-body-brown"
+                  ? "rounded-tl-sm bg-[var(--color-alert-red)]/10 text-[var(--color-alert-red)] border border-[var(--color-alert-red)]/20 flex items-start gap-1.5"
+                  : "rounded-tl-sm bg-[var(--surface-canvas)] border border-[var(--border-hairline)] text-heading-charcoal"
               }`}
             >
               {m.isError && m.role === "assistant" && (
@@ -138,10 +138,10 @@ export function AIChat() {
 
         {isLoading && (
           <div className="flex items-start gap-2">
-            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-ink-black text-white">
+            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-ink-black text-[var(--color-ink-black-text)]">
               <ChatCircle size={14} />
             </span>
-            <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm bg-cream-canvas px-3.5 py-3">
+            <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm bg-[var(--surface-canvas)] border border-[var(--border-hairline)] px-3.5 py-3">
               <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-gray [animation-delay:-0.3s]" />
               <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-gray [animation-delay:-0.15s]" />
               <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-gray" />
@@ -156,7 +156,7 @@ export function AIChat() {
           e.preventDefault();
           handleSend(input);
         }}
-        className="flex items-center gap-2 border-t border-stone-surface p-3"
+        className="flex items-center gap-2 border-t border-[var(--border-hairline)] p-3"
       >
         <input
           type="text"
@@ -164,13 +164,13 @@ export function AIChat() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask something…"
           disabled={isLoading}
-          className="flex-1 rounded-full border border-stone-surface bg-cream-canvas px-4 py-2.5 text-[14px] outline-none focus:border-[var(--color-link-blue)] disabled:opacity-50"
+          className="flex-1 rounded-full border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-4 py-2.5 text-[14px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)] disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={isLoading || !input.trim()}
           aria-label="Send message"
-          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-ink-black text-white disabled:opacity-30"
+          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-ink-black text-[var(--color-ink-black-text)] disabled:opacity-30 cursor-pointer hover:opacity-90 transition-opacity"
         >
           <PaperPlaneRight weight="fill" size={16} />
         </button>

@@ -77,14 +77,14 @@ export function PriceUpdateModal({ product, onClose }: PriceUpdateModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center">
-      <div className="w-full max-w-sm rounded-t-cards bg-white p-6 shadow-lg sm:rounded-cards">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs sm:items-center">
+      <div className="w-full max-w-sm rounded-t-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 shadow-lg sm:rounded-cards">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-[19px] font-medium text-heading-charcoal">Update Pricing</h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-muted-gray hover:text-heading-charcoal"
+            className="text-muted-gray hover:text-heading-charcoal cursor-pointer"
             aria-label="Close"
           >
             <X />
@@ -94,7 +94,7 @@ export function PriceUpdateModal({ product, onClose }: PriceUpdateModalProps) {
         <form onSubmit={handleSave} className="space-y-4">
           <div>
             <label className="block text-[13px] font-medium text-body-brown">Product Name</label>
-            <div className="mt-1 text-[16px] font-semibold text-ink-black uppercase">
+            <div className="mt-1 text-[16px] font-semibold text-heading-charcoal uppercase">
               {product.name}
             </div>
           </div>
@@ -149,7 +149,7 @@ export function PriceUpdateModal({ product, onClose }: PriceUpdateModalProps) {
                   setSellingPrice(e.target.value);
                   setError(null);
                 }}
-                className="w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-3 text-[16px] outline-none focus:border-[var(--color-link-blue)]"
+                className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-3 text-[16px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
                 placeholder="Selling Price"
                 required
               />
@@ -160,14 +160,14 @@ export function PriceUpdateModal({ product, onClose }: PriceUpdateModalProps) {
             <button
               type="button"
               onClick={handleSuggestPrice}
-              className="text-[13px] font-semibold text-blue-600 hover:text-blue-800"
+              className="text-[13px] font-semibold text-[var(--color-link-blue)] hover:opacity-80 cursor-pointer"
             >
               Suggest 30% margin (₦{suggestTargetPrice(costVal, 30)})
             </button>
           )}
 
           {isInputValid && costVal > 0 && (
-            <div className="rounded-lg bg-cream-canvas p-3">
+            <div className="rounded-lg bg-[var(--surface-canvas)] border border-[var(--border-hairline)] p-3">
               <span className="text-[12px] font-medium text-muted-gray">New Margin Preview:</span>
               <div className="mt-1">
                 <span
@@ -191,14 +191,14 @@ export function PriceUpdateModal({ product, onClose }: PriceUpdateModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-buttons bg-sand-surface py-3 text-[15px] font-semibold text-ink-black"
+              className="flex-1 rounded-buttons bg-[var(--surface-card-secondary)] border border-[var(--border-hairline)] py-3 text-[15px] font-semibold text-heading-charcoal hover:opacity-80 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isMutating}
-              className="flex-1 rounded-buttons bg-ink-black py-3 text-[15px] font-semibold text-white disabled:opacity-50"
+              className="flex-1 rounded-buttons bg-ink-black py-3 text-[15px] font-semibold text-[var(--color-ink-black-text)] hover:opacity-90 disabled:opacity-50 cursor-pointer"
             >
               Save
             </button>

@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { IconContext } from "@phosphor-icons/react";
 import { DatabaseProvider } from "@/lib/db-context";
+import { ThemeProvider } from "@/lib/theme-context";
 
 // "Bold" weight everywhere — matches the spec's "large, high-contrast" UI
 // requirement (PHASE-1-MVP.md) for a low-tech-literacy, small-screen audience.
@@ -15,8 +16,11 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <IconContext.Provider value={iconDefaults}>
-        <DatabaseProvider>{children}</DatabaseProvider>
+        <ThemeProvider>
+          <DatabaseProvider>{children}</DatabaseProvider>
+        </ThemeProvider>
       </IconContext.Provider>
     </QueryClientProvider>
   );
 }
+

@@ -138,51 +138,51 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
           <button
             type="button"
             onClick={onBack}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-sand-surface text-ink-black hover:bg-stone-surface"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--surface-card-secondary)] text-heading-charcoal hover:opacity-80 transition-opacity cursor-pointer"
             aria-label="Back"
           >
             <ArrowLeft size={18} />
           </button>
         )}
         <h1 className="text-[24px] font-bold text-heading-charcoal flex items-center gap-2">
-          <Coins weight="fill" className="text-yellow-600" /> Margin Analysis
+          <Coins weight="fill" className="text-gold" /> Margin Analysis
         </h1>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-cards bg-white p-4 shadow-subtle-3 border border-stone-surface">
+        <div className="rounded-cards bg-[var(--surface-card)] p-4 shadow-subtle-3 border border-[var(--border-hairline)]">
           <span className="text-[12px] font-medium text-muted-gray">Total Products</span>
-          <div className="text-[22px] font-bold text-ink-black">{displaySummary.totalProducts}</div>
+          <div className="text-[22px] font-bold text-heading-charcoal">{displaySummary.totalProducts}</div>
         </div>
 
-        <div className="rounded-cards bg-white p-4 shadow-subtle-3 border border-stone-surface">
+        <div className="rounded-cards bg-[var(--surface-card)] p-4 shadow-subtle-3 border border-[var(--border-hairline)]">
           <span className="text-[12px] font-medium text-muted-gray">Profitable Items</span>
-          <div className="text-[22px] font-bold text-ink-black">
+          <div className="text-[22px] font-bold text-heading-charcoal">
             {displaySummary.profitableCount} / {displaySummary.totalProducts}
           </div>
         </div>
 
-        <div className="rounded-cards bg-white p-4 shadow-subtle-3 border border-stone-surface">
+        <div className="rounded-cards bg-[var(--surface-card)] p-4 shadow-subtle-3 border border-[var(--border-hairline)]">
           <span className="text-[12px] font-medium text-muted-gray">Profit (This Week)</span>
-          <div className="text-[22px] font-bold text-ink-black">
+          <div className="text-[22px] font-bold text-heading-charcoal">
             ₦{displaySummary.totalMarginThisWeek?.toLocaleString() ?? "0"}
           </div>
         </div>
 
-        <div className="rounded-cards bg-white p-4 shadow-subtle-3 border border-stone-surface">
+        <div className="rounded-cards bg-[var(--surface-card)] p-4 shadow-subtle-3 border border-[var(--border-hairline)]">
           <span className="text-[12px] font-medium text-muted-gray">Avg. Profit Margin</span>
-          <div className="text-[22px] font-bold text-ink-black">{displaySummary.averageMargin}%</div>
+          <div className="text-[22px] font-bold text-heading-charcoal">{displaySummary.averageMargin}%</div>
         </div>
       </div>
 
       {/* Warnings & Suggestions Section */}
       {lowMarginProducts.length > 0 && (
-        <div className="rounded-cards border border-red-200 bg-red-50/50 p-4 space-y-3">
-          <h3 className="text-[14px] font-bold text-red-800 flex items-center gap-1.5">
-            <Warning weight="fill" className="text-red-600" /> Action Required: Low Margin Products
+        <div className="rounded-cards border border-[var(--color-alert-red)]/30 bg-[var(--color-alert-red)]/10 p-4 space-y-3">
+          <h3 className="text-[14px] font-bold text-[var(--color-alert-red)] flex items-center gap-1.5">
+            <Warning weight="fill" /> Action Required: Low Margin Products
           </h3>
-          <div className="divide-y divide-red-100">
+          <div className="divide-y divide-[var(--color-alert-red)]/20">
             {lowMarginProducts.slice(0, 3).map((lp) => {
               const targetPrice = lp.costPerUnit ? suggestTargetPrice(lp.costPerUnit, 30) : null;
               return (
@@ -190,7 +190,7 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
                   key={lp.productId}
                   className="py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 first:pt-0 last:pb-0"
                 >
-                  <div className="text-[13px] text-red-900">
+                  <div className="text-[13px] text-heading-charcoal">
                     <span className="font-bold uppercase">{lp.name}</span>:{" "}
                     {lp.marginPercent !== null ? `Only ${lp.marginPercent}% margin.` : "Cost price not configured."}{" "}
                     {targetPrice ? `Reprice to ₦${targetPrice}+ for 30% margin?` : ""}
@@ -199,7 +199,7 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
                     <button
                       type="button"
                       onClick={() => setSelectedProduct(lp._original)}
-                      className="w-fit rounded bg-red-600 px-3 py-1.5 text-[12px] font-bold text-white hover:bg-red-700 transition-colors"
+                      className="w-fit rounded bg-[var(--color-alert-red)] px-3 py-1.5 text-[12px] font-bold text-white hover:opacity-90 transition-colors cursor-pointer"
                     >
                       Reprice
                     </button>
@@ -212,15 +212,15 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
       )}
 
       {/* Profitability Table */}
-      <div className="overflow-hidden rounded-cards border border-stone-surface bg-white shadow-subtle-3">
-        <div className="px-5 py-4 border-b border-stone-surface flex items-center justify-between">
+      <div className="overflow-hidden rounded-cards border border-[var(--border-hairline)] bg-[var(--surface-card)] shadow-subtle-3">
+        <div className="px-5 py-4 border-b border-[var(--border-hairline)] flex items-center justify-between">
           <h3 className="text-[16px] font-semibold text-heading-charcoal">Profitability Rankings</h3>
           <span className="text-[12px] text-muted-gray">Sorted by Margin (Lowest First)</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left text-[14px]">
             <thead>
-              <tr className="bg-cream-canvas text-[12px] font-bold text-muted-gray uppercase border-b border-stone-surface">
+              <tr className="bg-[var(--surface-canvas)] text-[12px] font-bold text-muted-gray uppercase border-b border-[var(--border-hairline)]">
                 <th className="px-5 py-3">Product</th>
                 <th className="px-4 py-3 text-right">Cost</th>
                 <th className="px-4 py-3 text-right">Selling</th>
@@ -230,7 +230,7 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
                 <th className="px-5 py-3 text-right">Profit (Wk)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-surface font-medium text-body-brown">
+            <tbody className="divide-y divide-[var(--border-hairline)] font-medium text-body-brown">
               {displayProducts.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-5 py-8 text-center text-muted-gray">
@@ -242,9 +242,9 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
                   <tr
                     key={p.productId}
                     onClick={() => p._original && setSelectedProduct(p._original)}
-                    className="hover:bg-cream-canvas/50 cursor-pointer transition-colors"
+                    className="hover:bg-[var(--surface-card-secondary)] cursor-pointer transition-colors"
                   >
-                    <td className="px-5 py-3.5 font-semibold text-ink-black uppercase">
+                    <td className="px-5 py-3.5 font-semibold text-heading-charcoal uppercase">
                       {p.name}
                     </td>
                     <td className="px-4 py-3.5 text-right">
@@ -270,7 +270,7 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
                       {p.marginAmount !== null ? `₦${p.marginAmount.toFixed(2)}` : "—"}
                     </td>
                     <td className="px-4 py-3.5 text-center">{p.units_sold_this_week}</td>
-                    <td className="px-5 py-3.5 text-right font-bold text-ink-black">
+                    <td className="px-5 py-3.5 text-right font-bold text-heading-charcoal">
                       ₦{p.total_profit_this_week?.toFixed(2) ?? "0.00"}
                     </td>
                   </tr>

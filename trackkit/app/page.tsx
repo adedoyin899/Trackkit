@@ -15,6 +15,7 @@ import {
   ClockCounterClockwise,
   ChartLineUp,
   Sparkle,
+  PaintBrush,
   type Icon,
 } from "@phosphor-icons/react";
 import { useLocalInventory } from "@/hooks/useLocalInventory";
@@ -30,6 +31,7 @@ import { ProfitabilityDashboard } from "@/components/ProfitabilityDashboard";
 import { PurchaseHistoryDashboard } from "@/components/PurchaseHistoryDashboard";
 import { AIChat } from "@/components/AIChat";
 import { TrendsView } from "@/components/TrendsView";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const TABS: { id: Tab; label: string; icon: Icon }[] = [
   { id: "dashboard", label: "Dashboard", icon: SquaresFour },
@@ -56,7 +58,7 @@ function InventoryTab() {
         <button
           type="button"
           onClick={() => setShowAddForm(true)}
-          className="flex items-center gap-1.5 rounded-buttons bg-ink-black px-4 py-2 text-[14px] font-semibold text-white cursor-pointer"
+          className="flex items-center gap-1.5 rounded-buttons bg-ink-black px-4 py-2 text-[14px] font-semibold text-[var(--color-ink-black-text)] cursor-pointer hover:opacity-90 transition-opacity"
         >
           <Plus /> Add Product
         </button>
@@ -65,7 +67,7 @@ function InventoryTab() {
       {isLoading && <p className="text-[14px] text-muted-gray">Loading…</p>}
 
       {!isLoading && products.length === 0 && (
-        <div className="rounded-cards bg-white p-8 text-center shadow-subtle-3">
+        <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-8 text-center shadow-subtle-3">
           <p className="text-[16px] text-body-brown">No products yet.</p>
           <p className="mt-1 text-[13px] text-muted-gray">
             Tap &ldquo;+ Add Product&rdquo; to start tracking your stock.
@@ -97,7 +99,17 @@ function SettingsTab() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-cards bg-white p-5 shadow-subtle-3">
+      <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3">
+        <h3 className="mb-3 flex items-center gap-1.5 text-[15px] font-medium text-heading-charcoal">
+          <PaintBrush /> Appearance & Theme
+        </h3>
+        <p className="mb-3 text-[13px] text-muted-gray">
+          Choose light mode, dark mode, or follow your system preference.
+        </p>
+        <ThemeToggle variant="full" />
+      </div>
+
+      <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3">
         <label className="flex items-center gap-1.5 text-[13px] font-medium text-body-brown">
           <Storefront /> Shop Name
         </label>
@@ -105,11 +117,11 @@ function SettingsTab() {
           value={shopName ?? ""}
           onChange={(e) => setShopName(e.target.value)}
           placeholder="e.g. Mama Ngozi Stores"
-          className="mt-1 w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-3 text-[16px] outline-none focus:border-[var(--color-link-blue)]"
+          className="mt-2 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-3 text-[16px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
         />
       </div>
 
-      <div className="rounded-cards bg-white p-5 shadow-subtle-3">
+      <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3">
         <h3 className="mb-2 flex items-center gap-1.5 text-[15px] font-medium text-heading-charcoal">
           <CloudArrowUp /> Backup
         </h3>
@@ -120,7 +132,7 @@ function SettingsTab() {
       </div>
 
       {user ? (
-        <div className="rounded-cards bg-white p-5 shadow-subtle-3">
+        <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3">
           <h3 className="mb-2 flex items-center gap-1.5 text-[15px] font-medium text-heading-charcoal">
             <SignOut /> Session
           </h3>
@@ -138,7 +150,7 @@ function SettingsTab() {
           </button>
         </div>
       ) : (
-        <div className="rounded-cards bg-white p-5 shadow-subtle-3">
+        <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3">
           <h3 className="mb-2 flex items-center gap-1.5 text-[15px] font-medium text-heading-charcoal">
             <SignIn /> Cloud Backup
           </h3>
@@ -149,7 +161,7 @@ function SettingsTab() {
           </p>
           <Link
             href="/auth/login"
-            className="block w-full rounded-buttons bg-ink-black py-3 text-center text-[15px] font-semibold text-white hover:opacity-90"
+            className="block w-full rounded-buttons bg-ink-black py-3 text-center text-[15px] font-semibold text-[var(--color-ink-black-text)] hover:opacity-90"
           >
             Sign in to cloud backup
           </Link>
@@ -164,21 +176,18 @@ export default function Home() {
   const setCurrentTab = useTrackkitStore((s) => s.setCurrentTab);
   const { ready, error } = useDatabaseStatus();
 
-  // No auth gate here on purpose: Trackkit is offline-first and login is
-  // opt-in (see SettingsTab's "Cloud Backup" section) — every tab below
-  // works entirely from local SQLite. Signing in only unlocks cloud sync,
-  // it was never meant to be required to use the app at all. See bug.md,
-  // "Every screen requires login," for what this replaced and why.
-
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-4 pb-24 pt-6 sm:px-6">
-      <header className="mb-6 mt-4 flex items-center gap-2">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink-black text-white">
-          <Storefront weight="fill" size={18} />
-        </span>
-        <h1 className="font-display text-[23px] font-medium tracking-[-0.02em] text-heading-charcoal">
-          Trackkit
-        </h1>
+      <header className="mb-6 mt-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink-black text-[var(--color-ink-black-text)]">
+            <Storefront weight="fill" size={18} />
+          </span>
+          <h1 className="font-display text-[23px] font-medium tracking-[-0.02em] text-heading-charcoal">
+            Trackkit
+          </h1>
+        </div>
+        <ThemeToggle />
       </header>
 
       {!ready && !error && (
@@ -202,7 +211,7 @@ export default function Home() {
         </main>
       )}
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-stone-surface bg-white">
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-hairline)] bg-[var(--surface-card)]/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-2xl">
           {TABS.map((tab) => {
             const TabIcon = tab.icon;
@@ -211,8 +220,8 @@ export default function Home() {
                 key={tab.id}
                 type="button"
                 onClick={() => setCurrentTab(tab.id)}
-                className={`flex flex-1 flex-col items-center gap-1 py-3 text-[13px] font-medium cursor-pointer ${
-                  currentTab === tab.id ? "text-ember-orange" : "text-muted-gray"
+                className={`flex flex-1 flex-col items-center gap-1 py-3 text-[13px] font-medium cursor-pointer transition-colors ${
+                  currentTab === tab.id ? "text-ember-orange" : "text-muted-gray hover:text-heading-charcoal"
                 }`}
               >
                 <TabIcon weight={currentTab === tab.id ? "fill" : "regular"} />
@@ -225,3 +234,4 @@ export default function Home() {
     </div>
   );
 }
+

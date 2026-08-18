@@ -34,10 +34,10 @@ function ChartTooltip({ active, payload, metric }: { active?: boolean; payload?:
   const value = point[metric];
 
   return (
-    <div className="rounded-lg border border-stone-surface bg-white px-3 py-2 shadow-subtle-3 text-[12px]">
+    <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-card)] px-3 py-2 shadow-subtle-3 text-[12px]">
       <div className="font-semibold text-heading-charcoal">{formatDateLabel(point.date)}</div>
       <div className="text-muted-gray">
-        {config.label}: <span className="font-medium text-ink-black">{config.prefix}{value.toLocaleString("en-NG", { maximumFractionDigits: 0 })}</span>
+        {config.label}: <span className="font-medium text-heading-charcoal">{config.prefix}{value.toLocaleString("en-NG", { maximumFractionDigits: 0 })}</span>
       </div>
     </div>
   );
@@ -54,17 +54,17 @@ export function SalesChart({ data, metric }: SalesChartProps) {
   return (
     <ResponsiveContainer width="100%" height={220}>
       <LineChart data={data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-stone-surface)" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border-hairline)" vertical={false} />
         <XAxis
           dataKey="date"
           tickFormatter={formatDateLabel}
-          tick={{ fontSize: 11, fill: "var(--color-muted-gray)" }}
-          axisLine={{ stroke: "var(--color-stone-surface)" }}
+          tick={{ fontSize: 11, fill: "var(--text-muted)" }}
+          axisLine={{ stroke: "var(--border-hairline)" }}
           tickLine={false}
           minTickGap={20}
         />
         <YAxis
-          tick={{ fontSize: 11, fill: "var(--color-muted-gray)" }}
+          tick={{ fontSize: 11, fill: "var(--text-muted)" }}
           axisLine={false}
           tickLine={false}
           width={40}

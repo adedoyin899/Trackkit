@@ -76,7 +76,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div
-      className={`rounded-cards bg-white p-5 shadow-subtle-3 ${
+      className={`rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3 ${
         lowStock ? "ring-2 ring-[var(--color-honey)]" : ""
       }`}
     >
@@ -98,14 +98,14 @@ export function ProductCard({ product }: ProductCardProps) {
           type="button"
           onClick={() => setSelectedProductId(product.id)}
           aria-label={`Edit ${product.name}`}
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-muted-gray hover:bg-stone-surface hover:text-heading-charcoal"
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-muted-gray hover:bg-[var(--surface-card-secondary)] hover:text-heading-charcoal cursor-pointer transition-colors"
         >
           <PencilSimple />
         </button>
       </div>
 
       <div className="mt-3 flex items-baseline gap-2">
-        <span className="text-[44px] font-medium leading-none tracking-[-0.02em] text-ink-black">
+        <span className="text-[44px] font-medium leading-none tracking-[-0.02em] text-heading-charcoal">
           {product.current_quantity}
         </span>
         {product.low_stock_threshold != null && (
@@ -121,7 +121,7 @@ export function ProductCard({ product }: ProductCardProps) {
           disabled={product.current_quantity <= 0 || isLogging}
           onClick={() => adjust("sale", 1)}
           aria-label={`Decrease ${product.name} by 1`}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-buttons bg-[var(--color-alert-red)] py-3 text-[16px] font-semibold text-white disabled:opacity-30"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-buttons bg-[var(--color-alert-red)] py-3 text-[16px] font-semibold text-white disabled:opacity-30 cursor-pointer hover:opacity-90 transition-opacity"
         >
           <Minus /> 1
         </button>
@@ -130,7 +130,7 @@ export function ProductCard({ product }: ProductCardProps) {
           disabled={isLogging}
           onClick={() => adjust("restock", 1)}
           aria-label={`Increase ${product.name} by 1`}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-buttons bg-[var(--color-grass-green)] py-3 text-[16px] font-semibold text-white disabled:opacity-30"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-buttons bg-[var(--color-grass-green)] py-3 text-[16px] font-semibold text-white disabled:opacity-30 cursor-pointer hover:opacity-90 transition-opacity"
         >
           <Plus /> 1
         </button>
@@ -141,24 +141,24 @@ export function ProductCard({ product }: ProductCardProps) {
         disabled={isLogging}
         onClick={() => setShowRestockModal(true)}
         aria-label={`Restock ${product.name} with supplier and cost details`}
-        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-stone-surface py-2 text-[13px] font-medium text-muted-gray hover:bg-cream-canvas disabled:opacity-30"
+        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-[var(--border-hairline)] py-2 text-[13px] font-medium text-muted-gray hover:bg-[var(--surface-canvas)] hover:text-heading-charcoal disabled:opacity-30 cursor-pointer transition-colors"
       >
         <ArrowsClockwise size={14} /> Restock with details
       </button>
 
       {/* Pricing & Margins Section */}
-      <div className="mt-4 border-t border-stone-surface pt-3">
+      <div className="mt-4 border-t border-[var(--border-hairline)] pt-3">
         <button
           type="button"
           onClick={() => setExpanded(!expanded)}
-          className="flex w-full items-center justify-between text-[13px] font-semibold text-body-brown hover:text-ink-black"
+          className="flex w-full items-center justify-between text-[13px] font-semibold text-body-brown hover:text-heading-charcoal cursor-pointer"
         >
           <span>Pricing & Margins</span>
           <span className="text-[12px]">{expanded ? "Hide ▲" : "Show ▼"}</span>
         </button>
 
         {expanded && (
-          <div className="mt-3 space-y-2 rounded-lg bg-cream-canvas p-3">
+          <div className="mt-3 space-y-2 rounded-lg bg-[var(--surface-canvas)] p-3 border border-[var(--border-hairline)]">
             <div className="flex items-center justify-between gap-3">
               <label className="text-[12px] font-medium text-muted-gray">Cost Price:</label>
               <div className="flex items-center gap-1">
@@ -173,21 +173,21 @@ export function ProductCard({ product }: ProductCardProps) {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleSaveCost();
                   }}
-                  className="w-20 rounded border border-stone-surface bg-white px-2 py-0.5 text-right text-[13px] outline-none focus:border-[var(--color-link-blue)]"
+                  className="w-20 rounded border border-[var(--border-hairline)] bg-[var(--surface-card)] px-2 py-0.5 text-right text-[13px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
                   placeholder="Cost"
                 />
               </div>
             </div>
 
             {showPreview && (
-              <div className="text-[11px] text-right font-medium text-blue-600">
+              <div className="text-[11px] text-right font-medium text-[var(--color-link-blue)]">
                 New margin: ₦{previewAmount?.toFixed(2)} ({previewPercent}%)
               </div>
             )}
 
             <div className="flex items-center justify-between">
               <span className="text-[12px] font-medium text-muted-gray">Selling Price:</span>
-              <span className="text-[13px] font-semibold text-ink-black">
+              <span className="text-[13px] font-semibold text-heading-charcoal">
                 ₦{product.selling_price_per_unit?.toFixed(2) ?? "0.00"}
               </span>
             </div>

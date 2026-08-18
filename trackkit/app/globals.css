@@ -2,14 +2,16 @@
 @import "../public/styles/tokens.css";
 
 @theme inline {
-  --color-cream-canvas: var(--color-cream-canvas);
-  --color-stone-surface: var(--color-stone-surface);
-  --color-sand-surface: var(--color-sand-surface);
-  --color-ink-black: var(--color-ink-black);
-  --color-heading-charcoal: var(--color-heading-charcoal);
-  --color-body-brown: var(--color-body-brown);
-  --color-muted-gray: var(--color-muted-gray);
-  --color-stone-border: var(--color-stone-border);
+  --color-cream-canvas: var(--surface-canvas);
+  --color-stone-surface: var(--surface-card-secondary);
+  --color-sand-surface: var(--surface-sand);
+  --color-card-surface: var(--surface-card);
+  --color-ink-black: var(--action-primary-bg);
+  --color-ink-black-text: var(--action-primary-text);
+  --color-heading-charcoal: var(--text-heading);
+  --color-body-brown: var(--text-body);
+  --color-muted-gray: var(--text-muted);
+  --color-stone-border: var(--border-hairline);
   --color-link-blue: var(--color-link-blue);
   --color-sky-blue: var(--color-sky-blue);
   --color-alt-blue: var(--color-alt-blue);
@@ -38,8 +40,23 @@
 }
 
 body {
-  background: var(--color-cream-canvas);
-  color: var(--color-heading-charcoal);
+  background: var(--surface-canvas);
+  color: var(--text-heading);
   font-family: var(--font-inter);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Card helpers */
+.theme-card {
+  background-color: var(--surface-card);
+  color: var(--text-heading);
+  border: 1px solid var(--border-hairline);
+  box-shadow: var(--shadow-subtle-3);
+}
+
+.theme-card-secondary {
+  background-color: var(--surface-card-secondary);
+  color: var(--text-heading);
+  border: 1px solid var(--border-hairline);
 }

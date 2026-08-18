@@ -13,12 +13,12 @@ function LowStockRow({ product }: { product: Product }) {
   const critical = product.current_quantity === 0;
 
   return (
-    <div className="flex items-center justify-between rounded-cards bg-white p-4 shadow-subtle-3">
+    <div className="flex items-center justify-between rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-4 shadow-subtle-3">
       <div className="flex items-center gap-2">
         {critical ? (
           <WarningOctagon weight="fill" className="flex-shrink-0 text-[var(--color-alert-red)]" />
         ) : (
-          <WarningCircle weight="fill" className="flex-shrink-0 text-[var(--color-honey)]" />
+          <WarningCircle weight="fill" className="flex-shrink-0 text-[var(--color-gold)]" />
         )}
         <p className="text-[16px] font-medium text-heading-charcoal">
           {product.name}: {product.current_quantity}/
@@ -31,7 +31,7 @@ function LowStockRow({ product }: { product: Product }) {
             key={amount}
             type="button"
             onClick={() => logTransaction({ type: "restock", quantity: amount })}
-            className="rounded-badges bg-sand-surface px-3 py-1.5 text-[13px] font-semibold text-ink-black"
+            className="rounded-badges bg-[var(--surface-card-secondary)] border border-[var(--border-hairline)] px-3 py-1.5 text-[13px] font-semibold text-heading-charcoal hover:opacity-80 cursor-pointer transition-opacity"
           >
             +{amount}
           </button>

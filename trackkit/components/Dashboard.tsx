@@ -17,13 +17,13 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-cards bg-white p-6 shadow-subtle-3">
+      <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 shadow-subtle-3">
         <h2 className="text-[13px] font-medium uppercase tracking-wide text-muted-gray">
           Today&rsquo;s Snapshot
         </h2>
         <div className="mt-3 flex flex-wrap gap-6">
           <div>
-            <p className="text-[32px] font-medium text-ink-black">
+            <p className="text-[32px] font-medium text-heading-charcoal">
               {isLoading ? "—" : totalProducts}
             </p>
             <p className="text-[13px] text-muted-gray">Products in stock</p>
@@ -37,7 +37,7 @@ export function Dashboard() {
             </p>
           </div>
           <div>
-            <p className="text-[32px] font-medium text-ink-black">
+            <p className="text-[32px] font-medium text-heading-charcoal">
               {totalInventoryValue != null ? `${currency}${totalInventoryValue.toFixed(0)}` : "TBD"}
             </p>
             <p className="text-[13px] text-muted-gray">Total inventory value</p>
@@ -49,14 +49,14 @@ export function Dashboard() {
         <button
           type="button"
           onClick={() => setShowAddForm(true)}
-          className="flex items-center gap-1.5 rounded-buttons bg-ink-black px-4 py-2.5 text-[14px] font-semibold text-white"
+          className="flex items-center gap-1.5 rounded-buttons bg-ink-black px-4 py-2.5 text-[14px] font-semibold text-[var(--color-ink-black-text)] cursor-pointer hover:opacity-90 transition-opacity"
         >
           <Plus /> Add Product
         </button>
         <button
           type="button"
           onClick={() => setCurrentTab("inventory")}
-          className="rounded-buttons bg-sand-surface px-4 py-2.5 text-[14px] font-semibold text-ink-black"
+          className="rounded-buttons bg-[var(--surface-card-secondary)] border border-[var(--border-hairline)] px-4 py-2.5 text-[14px] font-semibold text-heading-charcoal cursor-pointer hover:opacity-80 transition-opacity"
         >
           View All
         </button>

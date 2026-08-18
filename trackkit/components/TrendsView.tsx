@@ -56,13 +56,13 @@ export function TrendsView() {
         <h1 className="text-[24px] font-bold text-heading-charcoal">Sales Trends</h1>
       </div>
 
-      <div className="rounded-xl bg-white p-4 shadow-subtle-3 space-y-3">
+      <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-4 shadow-subtle-3 space-y-3">
         <div>
           <label className="mb-1 block text-[12px] font-medium text-muted-gray">Product</label>
           <select
             value={productId}
             onChange={(e) => setProductId(e.target.value)}
-            className="w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-2 text-[14px] outline-none focus:border-[var(--color-link-blue)]"
+            className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-2 text-[14px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
           >
             <option value="">All products</option>
             {products.map((p) => (
@@ -79,10 +79,10 @@ export function TrendsView() {
               key={opt.id}
               type="button"
               onClick={() => setPeriod(opt.id)}
-              className={`flex-1 rounded-buttons py-2 text-[13px] font-semibold transition-colors ${
+              className={`flex-1 rounded-buttons py-2 text-[13px] font-semibold transition-colors cursor-pointer ${
                 period === opt.id
-                  ? "bg-ink-black text-white"
-                  : "bg-cream-canvas text-body-brown hover:bg-stone-surface"
+                  ? "bg-ink-black text-[var(--color-ink-black-text)]"
+                  : "bg-[var(--surface-canvas)] text-body-brown hover:bg-[var(--surface-card-secondary)]"
               }`}
             >
               {opt.label}
@@ -96,10 +96,10 @@ export function TrendsView() {
               key={opt.id}
               type="button"
               onClick={() => setMetric(opt.id)}
-              className={`flex-1 rounded-full border py-1.5 text-[12px] font-medium transition-colors ${
+              className={`flex-1 rounded-full border py-1.5 text-[12px] font-medium transition-colors cursor-pointer ${
                 metric === opt.id
-                  ? "border-ink-black bg-ink-black text-white"
-                  : "border-stone-surface bg-white text-muted-gray hover:bg-cream-canvas"
+                  ? "border-ink-black bg-ink-black text-[var(--color-ink-black-text)]"
+                  : "border-[var(--border-hairline)] bg-[var(--surface-card)] text-muted-gray hover:bg-[var(--surface-canvas)]"
               }`}
             >
               {opt.label}
@@ -108,7 +108,7 @@ export function TrendsView() {
         </div>
       </div>
 
-      <div className="rounded-xl bg-white p-4 shadow-subtle-3">
+      <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-4 shadow-subtle-3">
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-[14px] font-semibold text-heading-charcoal">
             {selectedProduct ? selectedProduct.name.toUpperCase() : "All Products"}
@@ -128,26 +128,26 @@ export function TrendsView() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl bg-white p-3 shadow-subtle-3">
+        <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-3 shadow-subtle-3">
           <div className="text-[11px] text-muted-gray">Total Sold</div>
-          <div className="text-[18px] font-bold text-ink-black">{summary.totalQty}</div>
+          <div className="text-[18px] font-bold text-heading-charcoal">{summary.totalQty}</div>
         </div>
-        <div className="rounded-xl bg-white p-3 shadow-subtle-3">
+        <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-3 shadow-subtle-3">
           <div className="text-[11px] text-muted-gray">Avg/Day</div>
-          <div className="text-[18px] font-bold text-ink-black">{summary.avgPerDay}</div>
+          <div className="text-[18px] font-bold text-heading-charcoal">{summary.avgPerDay}</div>
         </div>
-        <div className="rounded-xl bg-white p-3 shadow-subtle-3">
+        <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-3 shadow-subtle-3">
           <div className="text-[11px] text-muted-gray">Revenue</div>
-          <div className="text-[15px] font-bold text-ink-black">{formatNaira(summary.totalValue)}</div>
+          <div className="text-[15px] font-bold text-heading-charcoal">{formatNaira(summary.totalValue)}</div>
         </div>
-        <div className="rounded-xl bg-white p-3 shadow-subtle-3">
+        <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-3 shadow-subtle-3">
           <div className="text-[11px] text-muted-gray">Profit</div>
           <div className="text-[15px] font-bold text-[var(--color-grass-green)]">{formatNaira(summary.totalProfit)}</div>
         </div>
       </div>
 
       {summary.totalQty > 0 && (
-        <div className="rounded-xl border border-stone-surface bg-cream-canvas p-4 text-[13px] text-body-brown">
+        <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-canvas)] p-4 text-[13px] text-body-brown">
           <span className="font-semibold text-heading-charcoal">Forecast: </span>
           At this pace, expect ~{forecast.nextPeriodEstimate} units next {period === "week" ? "week" : period === "month" ? "month" : "quarter"}
           {" "}(confidence: {Math.round(forecast.confidence * 100)}%).

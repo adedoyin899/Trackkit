@@ -75,10 +75,10 @@ export function ReorderRecommendations() {
             key={f}
             type="button"
             onClick={() => setFilter(f)}
-            className={`flex-shrink-0 rounded-full border px-3 py-1.5 text-[12px] font-medium transition-colors ${
+            className={`flex-shrink-0 rounded-full border px-3 py-1.5 text-[12px] font-medium transition-colors cursor-pointer ${
               filter === f
-                ? "border-ink-black bg-ink-black text-white"
-                : "border-stone-surface bg-white text-muted-gray hover:bg-cream-canvas"
+                ? "border-ink-black bg-ink-black text-[var(--color-ink-black-text)]"
+                : "border-[var(--border-hairline)] bg-[var(--surface-card)] text-muted-gray hover:bg-[var(--surface-canvas)]"
             }`}
           >
             {f === "all" ? `All (${recommendations.length})` : `${f[0].toUpperCase()}${f.slice(1)} (${counts[f]})`}
@@ -91,7 +91,7 @@ export function ReorderRecommendations() {
           const style = URGENCY_STYLES[rec.urgency];
           const UrgencyIcon = style.icon;
           return (
-            <div key={rec.productId} className="rounded-cards bg-white p-4 shadow-subtle-3 space-y-2.5">
+            <div key={rec.productId} className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-4 shadow-subtle-3 space-y-2.5">
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <span
@@ -123,7 +123,7 @@ export function ReorderRecommendations() {
               <button
                 type="button"
                 onClick={() => markOrdered(rec.productId)}
-                className="flex items-center gap-1 rounded-buttons border border-stone-surface px-3 py-1.5 text-[12px] font-semibold text-body-brown hover:bg-cream-canvas"
+                className="flex items-center gap-1 rounded-buttons border border-[var(--border-hairline)] px-3 py-1.5 text-[12px] font-semibold text-body-brown hover:bg-[var(--surface-canvas)] hover:text-heading-charcoal cursor-pointer transition-colors"
               >
                 <CheckCircle size={14} /> Mark as ordered
               </button>
@@ -132,7 +132,7 @@ export function ReorderRecommendations() {
         })}
       </div>
 
-      <div className="rounded-cards border border-stone-surface bg-cream-canvas p-3 text-[12px] text-body-brown">
+      <div className="rounded-cards border border-[var(--border-hairline)] bg-[var(--surface-canvas)] p-3 text-[12px] text-body-brown">
         {counts.high > 0 && (
           <span className="font-semibold text-[var(--color-alert-red)]">
             {counts.high} urgent reorder{counts.high > 1 ? "s" : ""}

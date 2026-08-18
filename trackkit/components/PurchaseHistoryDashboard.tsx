@@ -36,8 +36,8 @@ function SupplierCard({ supplier }: { supplier: SupplierStat }) {
     <div
       className={`relative rounded-xl border p-4 ${
         supplier.isCheapest
-          ? "border-[var(--color-grass-green)] bg-[var(--color-grass-green)]/5"
-          : "border-stone-surface bg-white"
+          ? "border-[var(--color-grass-green)] bg-[var(--color-grass-green)]/10"
+          : "border-[var(--border-hairline)] bg-[var(--surface-card)]"
       }`}
     >
       {supplier.isCheapest && (
@@ -49,27 +49,27 @@ function SupplierCard({ supplier }: { supplier: SupplierStat }) {
         <span className="text-[15px] font-semibold text-heading-charcoal">
           {supplier.name}
         </span>
-        <span className="text-[15px] font-bold text-ink-black">
+        <span className="text-[15px] font-bold text-heading-charcoal">
           {formatNaira(supplier.avgPrice)}
           <span className="text-[11px] font-normal text-muted-gray"> avg/unit</span>
         </span>
       </div>
       <div className="mt-2 grid grid-cols-3 gap-2 text-center">
-        <div className="rounded-lg bg-cream-canvas px-2 py-1.5">
+        <div className="rounded-lg bg-[var(--surface-canvas)] border border-[var(--border-hairline)] px-2 py-1.5">
           <p className="text-[11px] text-muted-gray">Purchases</p>
-          <p className="text-[14px] font-semibold text-ink-black">
+          <p className="text-[14px] font-semibold text-heading-charcoal">
             {supplier.purchaseCount}
           </p>
         </div>
-        <div className="rounded-lg bg-cream-canvas px-2 py-1.5">
+        <div className="rounded-lg bg-[var(--surface-canvas)] border border-[var(--border-hairline)] px-2 py-1.5">
           <p className="text-[11px] text-muted-gray">Total Spent</p>
-          <p className="text-[13px] font-semibold text-ink-black">
+          <p className="text-[13px] font-semibold text-heading-charcoal">
             {formatNaira(supplier.totalSpent)}
           </p>
         </div>
-        <div className="rounded-lg bg-cream-canvas px-2 py-1.5">
+        <div className="rounded-lg bg-[var(--surface-canvas)] border border-[var(--border-hairline)] px-2 py-1.5">
           <p className="text-[11px] text-muted-gray">Last Price</p>
-          <p className="text-[13px] font-semibold text-ink-black">
+          <p className="text-[13px] font-semibold text-heading-charcoal">
             {formatNaira(supplier.lastPrice)}
           </p>
         </div>
@@ -92,7 +92,7 @@ function SupplierCard({ supplier }: { supplier: SupplierStat }) {
 
 function HistoryRow({ entry }: { entry: PurchaseHistoryEntry }) {
   return (
-    <div className="grid grid-cols-[auto_1fr_auto] gap-2 rounded-xl bg-white p-3 shadow-subtle-3">
+    <div className="grid grid-cols-[auto_1fr_auto] gap-2 rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-3 shadow-subtle-3">
       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[var(--color-grass-green)]/10">
         <Receipt size={18} className="text-[var(--color-grass-green)]" />
       </div>
@@ -116,7 +116,7 @@ function HistoryRow({ entry }: { entry: PurchaseHistoryEntry }) {
         )}
       </div>
       <div className="text-right">
-        <p className="text-[14px] font-bold text-ink-black">
+        <p className="text-[14px] font-bold text-heading-charcoal">
           {formatNaira(entry.total_cost)}
         </p>
         <p className="text-[11px] text-muted-gray">
@@ -188,14 +188,14 @@ export function PurchaseHistoryDashboard() {
       </div>
 
       {/* View toggle */}
-      <div className="flex rounded-xl bg-stone-surface p-1">
+      <div className="flex rounded-xl bg-[var(--surface-card-secondary)] border border-[var(--border-hairline)] p-1">
         <button
           type="button"
           onClick={() => setView("history")}
-          className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[13px] font-medium transition-colors ${
+          className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[13px] font-medium transition-colors cursor-pointer ${
             view === "history"
-              ? "bg-white text-heading-charcoal shadow-subtle-3"
-              : "text-muted-gray"
+              ? "bg-[var(--action-primary-bg)] text-[var(--action-primary-text)] shadow-subtle-3"
+              : "text-muted-gray hover:text-heading-charcoal"
           }`}
         >
           <Receipt size={14} /> History
@@ -203,10 +203,10 @@ export function PurchaseHistoryDashboard() {
         <button
           type="button"
           onClick={() => setView("suppliers")}
-          className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[13px] font-medium transition-colors ${
+          className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[13px] font-medium transition-colors cursor-pointer ${
             view === "suppliers"
-              ? "bg-white text-heading-charcoal shadow-subtle-3"
-              : "text-muted-gray"
+              ? "bg-[var(--action-primary-bg)] text-[var(--action-primary-text)] shadow-subtle-3"
+              : "text-muted-gray hover:text-heading-charcoal"
           }`}
         >
           <ArrowsLeftRight size={14} /> Suppliers
@@ -214,7 +214,7 @@ export function PurchaseHistoryDashboard() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-xl bg-white p-4 shadow-subtle-3 space-y-3">
+      <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-4 shadow-subtle-3 space-y-3">
         <div className="flex items-center gap-1.5 text-[13px] font-semibold text-body-brown">
           <Funnel size={14} /> Filters
         </div>
@@ -228,7 +228,7 @@ export function PurchaseHistoryDashboard() {
             <select
               value={productId}
               onChange={(e) => setProductId(e.target.value)}
-              className="w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-2 text-[13px] outline-none focus:border-[var(--color-link-blue)]"
+              className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-2 text-[13px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
             >
               <option value="">All products</option>
               {products.map((p) => (
@@ -248,7 +248,7 @@ export function PurchaseHistoryDashboard() {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-2 text-[13px] outline-none focus:border-[var(--color-link-blue)]"
+              className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-2 text-[13px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
             />
           </div>
           <div>
@@ -259,7 +259,7 @@ export function PurchaseHistoryDashboard() {
               type="date"
               value={endDate}
               readOnly
-              className="w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-2 text-[13px] outline-none"
+              className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-2 text-[13px] text-heading-charcoal outline-none"
             />
           </div>
 
@@ -273,7 +273,7 @@ export function PurchaseHistoryDashboard() {
               value={supplierFilter}
               onChange={(e) => setSupplierFilter(e.target.value)}
               placeholder="Filter by supplier name"
-              className="w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-2 text-[13px] outline-none focus:border-[var(--color-link-blue)]"
+              className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-2 text-[13px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
             />
           </div>
         </div>
@@ -281,7 +281,7 @@ export function PurchaseHistoryDashboard() {
         <button
           type="button"
           onClick={handleApply}
-          className="flex w-full items-center justify-center gap-1.5 rounded-buttons bg-ink-black py-2.5 text-[14px] font-semibold text-white hover:opacity-90 cursor-pointer"
+          className="flex w-full items-center justify-center gap-1.5 rounded-buttons bg-ink-black py-2.5 text-[14px] font-semibold text-[var(--color-ink-black-text)] hover:opacity-90 cursor-pointer"
         >
           <Funnel weight="fill" size={14} /> Apply Filters
         </button>
@@ -318,14 +318,14 @@ export function PurchaseHistoryDashboard() {
           ].map(({ label, value, icon: Icon, color }) => (
             <div
               key={label}
-              className="rounded-xl bg-white p-4 shadow-subtle-3 text-center"
+              className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-4 shadow-subtle-3 text-center"
             >
               <Icon
                 size={18}
                 weight="fill"
                 className={`mx-auto mb-1 ${color}`}
               />
-              <p className="text-[13px] font-bold text-ink-black">{value}</p>
+              <p className="text-[13px] font-bold text-heading-charcoal">{value}</p>
               <p className="text-[11px] text-muted-gray">{label}</p>
             </div>
           ))}
@@ -334,7 +334,7 @@ export function PurchaseHistoryDashboard() {
 
       {/* Supplier insight banner */}
       {cheapest && savingsPerUnit > 0 && selectedProduct && (
-        <div className="rounded-xl border border-[var(--color-grass-green)]/40 bg-[var(--color-grass-green)]/5 px-4 py-3">
+        <div className="rounded-xl border border-[var(--color-grass-green)]/40 bg-[var(--color-grass-green)]/10 px-4 py-3">
           <p className="text-[13px] font-semibold text-[var(--color-grass-green)]">
             💡 Cheapest for {selectedProduct.name}: {cheapest.name} (
             {formatNaira(cheapest.avgPrice)}/unit)
@@ -355,8 +355,8 @@ export function PurchaseHistoryDashboard() {
             </p>
           )}
           {!isLoading && entries.length === 0 && (
-            <div className="rounded-xl bg-white p-8 text-center shadow-subtle-3">
-              <Receipt size={32} className="mx-auto mb-2 text-stone-300" />
+            <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-8 text-center shadow-subtle-3">
+              <Receipt size={32} className="mx-auto mb-2 text-muted-gray" />
               <p className="text-[14px] text-body-brown">
                 No restock purchases found.
               </p>
@@ -380,10 +380,10 @@ export function PurchaseHistoryDashboard() {
       {view === "suppliers" && (
         <div className="space-y-3">
           {!applied.productId && (
-            <div className="rounded-xl bg-white p-6 text-center shadow-subtle-3">
+            <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 text-center shadow-subtle-3">
               <ArrowsLeftRight
                 size={28}
-                className="mx-auto mb-2 text-stone-300"
+                className="mx-auto mb-2 text-muted-gray"
               />
               <p className="text-[14px] text-body-brown">
                 Select a product above to compare suppliers.
@@ -396,8 +396,8 @@ export function PurchaseHistoryDashboard() {
             </p>
           )}
           {applied.productId && !isLoadingSuppliers && supplierStats.length === 0 && (
-            <div className="rounded-xl bg-white p-6 text-center shadow-subtle-3">
-              <User size={28} className="mx-auto mb-2 text-stone-300" />
+            <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 text-center shadow-subtle-3">
+              <User size={28} className="mx-auto mb-2 text-muted-gray" />
               <p className="text-[14px] text-body-brown">
                 No supplier data yet for this product.
               </p>

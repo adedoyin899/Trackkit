@@ -130,11 +130,8 @@
 }
 
 /*
-  Dark mode is opt-in via [data-theme="dark"] only — deliberately NOT wired to
-  prefers-color-scheme yet. Most live app components still hardcode light
-  surfaces (bg-white, etc.), so auto-flipping on OS dark mode would half-theme
-  the app and look broken. Flip this to a `@media (prefers-color-scheme: dark)`
-  guard once components are migrated to the semantic tokens above.
+  Dark mode is activated via [data-theme="dark"] on <html> or system preference.
+  All components inherit semantic token roles defined below.
 */
 :root[data-theme="dark"] {
   --color-cream-canvas: #121212;

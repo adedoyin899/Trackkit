@@ -71,8 +71,8 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center">
-      <div className="w-full max-w-sm rounded-t-cards bg-white p-6 shadow-lg sm:rounded-cards">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs sm:items-center">
+      <div className="w-full max-w-sm rounded-t-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 shadow-lg sm:rounded-cards">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-[19px] font-medium text-heading-charcoal">
             {isEdit ? "Edit Product" : "Add Product"}
@@ -80,7 +80,7 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
           <button
             type="button"
             onClick={onClose}
-            className="text-muted-gray hover:text-heading-charcoal"
+            className="text-muted-gray hover:text-heading-charcoal cursor-pointer"
             aria-label="Close"
           >
             <X />
@@ -95,7 +95,7 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-3 text-[16px] outline-none focus:border-[var(--color-link-blue)]"
+              className="mt-1 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-3 text-[16px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
               placeholder="e.g. Noodles"
             />
           </div>
@@ -105,7 +105,7 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-3 text-[16px]"
+              className="mt-1 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-3 text-[16px] text-heading-charcoal"
             >
               {CATEGORIES.map((c) => (
                 <option key={c} value={c}>
@@ -125,7 +125,7 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
                 min={0}
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-3 text-[16px]"
+                className="mt-1 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-3 text-[16px] text-heading-charcoal"
               />
             </div>
             <div>
@@ -133,7 +133,7 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
               <select
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-3 text-[16px]"
+                className="mt-1 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-3 text-[16px] text-heading-charcoal"
               >
                 {UNITS.map((u) => (
                   <option key={u} value={u}>
@@ -153,7 +153,7 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
               min={0}
               value={threshold}
               onChange={(e) => setThreshold(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-3 text-[16px]"
+              className="mt-1 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-3 text-[16px] text-heading-charcoal"
               placeholder="units"
             />
           </div>
@@ -169,7 +169,7 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
                 step="0.01"
                 value={cost}
                 onChange={(e) => setCost(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-3 text-[16px] w-full"
+                className="mt-1 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-3 text-[16px] text-heading-charcoal"
                 placeholder="₦"
               />
             </div>
@@ -183,7 +183,7 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
                 step="0.01"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-stone-surface bg-cream-canvas px-3 py-3 text-[16px] w-full"
+                className="mt-1 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-3 text-[16px] text-heading-charcoal"
                 placeholder="₦"
               />
             </div>
@@ -195,16 +195,16 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-buttons bg-sand-surface py-3 text-[15px] font-semibold text-ink-black"
+              className="flex-1 rounded-buttons bg-[var(--surface-card-secondary)] border border-[var(--border-hairline)] py-3 text-[15px] font-semibold text-heading-charcoal hover:opacity-80 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isMutating}
-              className="flex-1 rounded-buttons bg-ink-black py-3 text-[15px] font-semibold text-white disabled:opacity-50"
+              className="flex-1 rounded-buttons bg-ink-black py-3 text-[15px] font-semibold text-[var(--color-ink-black-text)] hover:opacity-90 disabled:opacity-50 cursor-pointer"
             >
-              Save
+              {isEdit ? "Save" : "Add Product"}
             </button>
           </div>
 
@@ -212,7 +212,7 @@ export function ProductForm({ product, onClose }: ProductFormProps) {
             <button
               type="button"
               onClick={handleDelete}
-              className="flex w-full items-center justify-center gap-1.5 pt-2 text-[13px] font-medium text-[var(--color-alert-red)]"
+              className="mt-2 flex w-full items-center justify-center gap-1.5 py-2 text-[13px] font-medium text-[var(--color-alert-red)] hover:opacity-80 cursor-pointer"
             >
               <Trash /> Delete product
             </button>
