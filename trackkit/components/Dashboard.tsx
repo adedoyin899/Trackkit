@@ -41,8 +41,8 @@ export function Dashboard() {
       )}
 
       {/* Today's Snapshot Grid */}
-      <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 shadow-subtle-3">
-        <div className="flex items-center justify-between">
+      <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-4 sm:p-6 shadow-subtle-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <h2 className="text-[13px] font-medium uppercase tracking-wide text-muted-gray">
             Today&rsquo;s Snapshot
           </h2>
@@ -50,40 +50,40 @@ export function Dashboard() {
             <button
               type="button"
               onClick={() => setShowAddForm(true)}
-              className="flex items-center gap-1.5 rounded-buttons bg-ink-black px-4 py-2 text-[13px] font-semibold text-[var(--color-ink-black-text)] cursor-pointer hover:opacity-90 transition-opacity"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-buttons bg-ink-black px-3.5 py-2 text-[13px] font-semibold text-[var(--color-ink-black-text)] cursor-pointer hover:opacity-90 transition-opacity"
             >
               <Plus size={14} /> Add Product
             </button>
             <button
               type="button"
               onClick={() => setCurrentTab("inventory")}
-              className="rounded-buttons bg-[var(--surface-card-secondary)] border border-[var(--border-hairline)] px-4 py-2 text-[13px] font-semibold text-heading-charcoal cursor-pointer hover:opacity-80 transition-opacity"
+              className="flex-1 sm:flex-none rounded-buttons bg-[var(--surface-card-secondary)] border border-[var(--border-hairline)] px-3.5 py-2 text-[13px] font-semibold text-heading-charcoal cursor-pointer hover:opacity-80 transition-opacity text-center"
             >
               View Inventory
             </button>
           </div>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-3">
-          <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-canvas)] p-4">
-            <p className="text-[32px] font-medium text-heading-charcoal">
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-3">
+          <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-canvas)] p-3.5 sm:p-4">
+            <p className="text-[26px] sm:text-[32px] font-medium text-heading-charcoal leading-tight">
               {isLoading ? "—" : totalProducts}
             </p>
-            <p className="text-[13px] text-muted-gray">Products in stock</p>
+            <p className="text-[12px] sm:text-[13px] text-muted-gray mt-0.5">Products in stock</p>
           </div>
-          <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-canvas)] p-4">
-            <p className="text-[32px] font-medium text-[var(--color-alert-red)]">
+          <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-canvas)] p-3.5 sm:p-4">
+            <p className="text-[26px] sm:text-[32px] font-medium text-[var(--color-alert-red)] leading-tight">
               {isLoading ? "—" : lowStockCount}
             </p>
-            <p className="flex items-center gap-1 text-[13px] text-muted-gray">
+            <p className="flex items-center gap-1 text-[12px] sm:text-[13px] text-muted-gray mt-0.5">
               <Warning weight="fill" className="text-[var(--color-alert-red)]" /> Low stock alerts
             </p>
           </div>
-          <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-canvas)] p-4">
-            <p className="text-[32px] font-medium text-heading-charcoal">
+          <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-canvas)] p-3.5 sm:p-4">
+            <p className="text-[26px] sm:text-[32px] font-medium text-heading-charcoal leading-tight">
               {totalInventoryValue != null ? `${currency}${totalInventoryValue.toFixed(0)}` : "TBD"}
             </p>
-            <p className="text-[13px] text-muted-gray">Total inventory value</p>
+            <p className="text-[12px] sm:text-[13px] text-muted-gray mt-0.5">Total inventory value</p>
           </div>
         </div>
       </div>

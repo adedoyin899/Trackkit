@@ -20,6 +20,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const { calculateMargin } = useMarginCalculation();
   const selectedProductId = useTrackkitStore((s) => s.selectedProductId);
   const setSelectedProductId = useTrackkitStore((s) => s.setSelectedProductId);
+  const currency = useTrackkitStore((s) => s.currency);
   const lowStock = isLowStock(product);
   const isSelected = selectedProductId === product.id;
 
@@ -167,7 +168,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className="flex items-center justify-between gap-3">
               <label className="text-[12px] font-medium text-muted-gray">Cost Price:</label>
               <div className="flex items-center gap-1">
-                <span className="text-[12px] text-muted-gray">₦</span>
+                <span className="text-[12px] text-muted-gray">{currency}</span>
                 <input
                   type="number"
                   min={0}
@@ -186,7 +187,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
             {showPreview && (
               <div className="text-[11px] text-right font-medium text-[var(--color-link-blue)]">
-                New margin: ₦{previewAmount?.toFixed(2)} ({previewPercent}%)
+                New margin: {currency}{previewAmount?.toFixed(2)} ({previewPercent}%)
               </div>
             )}
 

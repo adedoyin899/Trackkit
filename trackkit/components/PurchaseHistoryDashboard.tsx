@@ -14,6 +14,7 @@ import {
 } from "@phosphor-icons/react";
 import { usePurchaseHistory, useSupplierStats } from "@/hooks/useTransactions";
 import { useLocalInventory } from "@/hooks/useLocalInventory";
+import { useTrackkitStore } from "@/lib/store";
 import type { PurchaseHistoryEntry, SupplierStat } from "@/lib/types";
 
 function formatDate(iso: string) {
@@ -24,14 +25,14 @@ function formatDate(iso: string) {
   });
 }
 
-function formatNaira(val: number | null) {
+function formatMoney(val: number | null, symbol = "₦") {
   if (val == null) return "—";
-  return `₦${val.toLocaleString("en-NG", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+  return `${symbol}${val.toLocaleString("en-NG", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
 }
 
 // ─── Supplier card ──────────────────────────────────────────────────────────
 
-function SupplierCard({ supplier }: { supplier: SupplierStat }) {
+function SupplierCard({ supplier, currency = "₦" }: { supplier: SupplierStat; currency?: string }) {
   return (
     <div
       className={`relative rounded-xl border p-4 ${
@@ -50,7 +51,7 @@ function SupplierCard({ supplier }: { supplier: SupplierStat }) {
           {supplier.name}
         </span>
         <span className="text-[15px] font-bold text-heading-charcoal">
-          {formatNaira(supplier.avgPrice)}
+          {formatMoney(supplier.avgPrice, currency)}
           <span className="text-[11px] font-normal text-muted-gray"> avg/unit</span>
         </span>
       </div>
@@ -64,13 +65,13 @@ function SupplierCard({ supplier }: { supplier: SupplierStat }) {
         <div className="rounded-lg bg-[var(--surface-canvas)] border border-[var(--border-hairline)] px-2 py-1.5">
           <p className="text-[11px] text-muted-gray">Total Spent</p>
           <p className="text-[13px] font-semibold text-heading-charcoal">
-            {formatNaira(supplier.totalSpent)}
+            {formatMoney(supplier.totalSpent, currency)}
           </p>
         </div>
         <div className="rounded-lg bg-[var(--surface-canvas)] border border-[var(--border-hairline)] px-2 py-1.5">
           <p className="text-[11px] text-muted-gray">Last Price</p>
           <p className="text-[13px] font-semibold text-heading-charcoal">
-            {formatNaira(supplier.lastPrice)}
+            {formatMoney(supplier.lastPrice, currency)}
           </p>
         </div>
       </div>
@@ -90,7 +91,7 @@ function SupplierCard({ supplier }: { supplier: SupplierStat }) {
 
 // ─── History row ────────────────────────────────────────────────────────────
 
-function HistoryRow({ entry }: { entry: PurchaseHistoryEntry }) {
+function HistoryRow({ entry, currency = "₦" }: { entry: PurchaseHistoryEntry; currency?: string }) {
   return (
     <div className="grid grid-cols-[auto_1fr_auto] gap-2 rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-3 shadow-subtle-3">
       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[var(--color-grass-green)]/10">
@@ -117,10 +118,10 @@ function HistoryRow({ entry }: { entry: PurchaseHistoryEntry }) {
       </div>
       <div className="text-right">
         <p className="text-[14px] font-bold text-heading-charcoal">
-          {formatNaira(entry.total_cost)}
+          {formatMoney(entry.total_cost, currency)}
         </p>
         <p className="text-[11px] text-muted-gray">
-          ×{entry.quantity} @ {formatNaira(entry.cost_per_unit)}
+          ×{entry.quantity} @ {formatMoney(entry.cost_per_unit, currency)}
         </p>
       </div>
     </div>
@@ -131,6 +132,7 @@ function HistoryRow({ entry }: { entry: PurchaseHistoryEntry }) {
 
 export function PurchaseHistoryDashboard() {
   const { products } = useLocalInventory();
+  const currency = useTrackkitStore((s) => s.currency);
   const [productId, setProductId] = useState<string>("");
   const [supplierFilter, setSupplierFilter] = useState("");
   const [startDate, setStartDate] = useState(() => {
@@ -293,13 +295,13 @@ export function PurchaseHistoryDashboard() {
           {[
             {
               label: "Total Spent",
-              value: formatNaira(summary.totalSpent),
+              value: formatMoney(summary.totalSpent, currency),
               icon: CurrencyNgn,
               color: "text-[var(--color-alert-red)]",
             },
             {
               label: "Avg Cost/Unit",
-              value: formatNaira(summary.avgCostPerUnit),
+              value: formatMoney(summary.avgCostPerUnit, currency),
               icon: TrendUp,
               color: "text-[var(--color-link-blue)]",
             },
@@ -337,10 +339,10 @@ export function PurchaseHistoryDashboard() {
         <div className="rounded-xl border border-[var(--color-grass-green)]/40 bg-[var(--color-grass-green)]/10 px-4 py-3">
           <p className="text-[13px] font-semibold text-[var(--color-grass-green)]">
             💡 Cheapest for {selectedProduct.name}: {cheapest.name} (
-            {formatNaira(cheapest.avgPrice)}/unit)
+            {formatMoney(cheapest.avgPrice, currency)}/unit)
           </p>
           <p className="mt-0.5 text-[12px] text-body-brown">
-            You could save ₦{savingsPerUnit}/unit by switching from{" "}
+            You could save {currency}{savingsPerUnit}/unit by switching from{" "}
             {mostExpensive?.name}
           </p>
         </div>
@@ -366,7 +368,7 @@ export function PurchaseHistoryDashboard() {
             </div>
           )}
           {entries.map((entry) => (
-            <HistoryRow key={entry.id} entry={entry} />
+            <HistoryRow key={entry.id} entry={entry} currency={currency} />
           ))}
           {data && data.total > entries.length && (
             <p className="text-center text-[12px] text-muted-gray">
@@ -407,7 +409,7 @@ export function PurchaseHistoryDashboard() {
             </div>
           )}
           {supplierStats.map((s) => (
-            <SupplierCard key={s.name} supplier={s} />
+            <SupplierCard key={s.name} supplier={s} currency={currency} />
           ))}
         </div>
       )}

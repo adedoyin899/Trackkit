@@ -40,6 +40,7 @@ interface TrackkitStore {
   setCurrentTab: (tab: Tab) => void;
   setSelectedProductId: (id: string | null) => void;
   setUser: (user: User | null) => void;
+  resetSession: () => void;
 }
 
 export const useTrackkitStore = create<TrackkitStore>()(
@@ -70,6 +71,17 @@ export const useTrackkitStore = create<TrackkitStore>()(
       setCurrentTab: (tab) => set({ currentTab: tab }),
       setSelectedProductId: (id) => set({ selectedProductId: id }),
       setUser: (user) => set({ user }),
+      resetSession: () =>
+        set({
+          shopName: null,
+          traderName: null,
+          marketLocation: null,
+          category: null,
+          hasCompletedOnboarding: false,
+          user: null,
+          currentTab: "dashboard",
+          selectedProductId: null,
+        }),
     }),
     {
       name: "trackkit-store",
