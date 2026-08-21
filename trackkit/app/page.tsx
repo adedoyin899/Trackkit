@@ -559,11 +559,11 @@ export default function Home() {
       <aside className="hidden md:flex fixed inset-y-0 left-0 z-30 w-64 flex-col border-r border-[var(--border-hairline)] bg-[var(--surface-card)] p-4 shadow-subtle-3">
         {/* Brand Header */}
         <div className="flex items-center gap-3 border-b border-[var(--border-hairline)] pb-4 px-2">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ink-black text-[var(--color-ink-black-text)] shadow-sm">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-hot-coral)] text-white shadow-coral">
             <Storefront weight="fill" size={20} />
           </span>
           <div className="min-w-0 flex-1">
-            <h1 className="font-display text-[20px] font-medium tracking-tight text-heading-charcoal truncate">
+            <h1 className="font-display text-[20px] font-extrabold tracking-tight text-heading-charcoal truncate">
               {shopName || "Trackkit"}
             </h1>
             <p className="truncate text-[12px] text-muted-gray">
@@ -573,7 +573,7 @@ export default function Home() {
         </div>
 
         {/* Sidebar Nav Items */}
-        <nav className="mt-4 flex-1 space-y-1">
+        <nav className="mt-4 flex-1 space-y-1.5">
           {ALL_TABS.map((tab) => {
             const TabIcon = tab.icon;
             const isActive = currentTab === tab.id;
@@ -582,13 +582,13 @@ export default function Home() {
                 key={tab.id}
                 type="button"
                 onClick={() => setCurrentTab(tab.id)}
-                className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[14px] font-semibold transition-colors cursor-pointer ${
+                className={`monzo-pill flex w-full items-center gap-3 px-4 py-2.5 text-[14px] font-bold transition-all cursor-pointer ${
                   isActive
-                    ? "bg-[var(--action-primary-bg)] text-[var(--action-primary-text)] shadow-subtle-3"
+                    ? "bg-[var(--action-primary-bg)] text-[var(--action-primary-text)] shadow-sm"
                     : "text-muted-gray hover:bg-[var(--surface-card-secondary)] hover:text-heading-charcoal"
                 }`}
               >
-                <TabIcon size={18} weight={isActive ? "fill" : "regular"} />
+                <TabIcon size={18} weight={isActive ? "fill" : "regular"} className={isActive ? "text-[var(--color-hot-coral)]" : ""} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -602,18 +602,18 @@ export default function Home() {
             <ThemeToggle />
           </div>
 
-          <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-canvas)] p-2.5 space-y-2">
+          <div className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-canvas)] p-2.5 space-y-2">
             <div className="flex items-center justify-between text-[11px] text-muted-gray">
-              <span className="truncate max-w-[120px]">
+              <span className="truncate max-w-[120px] font-medium">
                 {user ? (user.phoneNumber ?? user.email) : "Offline Mode"}
               </span>
-              <span className="h-2 w-2 rounded-full bg-[var(--color-grass-green)]" />
+              <span className="h-2 w-2 rounded-full bg-[var(--color-grass-green)] animate-pulse" />
             </div>
 
             <button
               type="button"
               onClick={() => setIsLogoutModalOpen(true)}
-              className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-[var(--border-hairline)] py-1.5 text-[12px] font-semibold text-body-brown hover:text-[var(--color-alert-red)] hover:border-[var(--color-alert-red)]/30 hover:bg-[var(--color-alert-red)]/5 cursor-pointer transition-colors"
+              className="monzo-pill flex w-full items-center justify-center gap-1.5 border border-[var(--border-hairline)] py-1.5 text-[12px] font-bold text-body-brown hover:text-[var(--color-alert-red)] hover:border-[var(--color-alert-red)]/30 hover:bg-[var(--color-alert-red)]/5 cursor-pointer transition-colors"
             >
               <SignOut size={13} /> Log Out / Switch
             </button>
@@ -626,11 +626,11 @@ export default function Home() {
         {/* Mobile Header with Theme Toggle & Profile / Logout Action */}
         <header className="flex md:hidden items-center justify-between px-3.5 sm:px-6 pt-5 pb-3 mb-2 border-b border-[var(--border-hairline)] bg-[var(--surface-card)]">
           <div className="flex items-center gap-2.5 min-w-0">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink-black text-[var(--color-ink-black-text)]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--color-hot-coral)] text-white shadow-xs">
               <Storefront weight="fill" size={17} />
             </span>
             <div className="min-w-0">
-              <h1 className="font-display text-[18px] font-bold tracking-tight text-heading-charcoal truncate">
+              <h1 className="font-display text-[18px] font-extrabold tracking-tight text-heading-charcoal truncate">
                 {shopName || "Trackkit"}
               </h1>
               {traderName && (
@@ -656,7 +656,7 @@ export default function Home() {
         {/* Desktop Header */}
         <header className="hidden md:flex items-center justify-between border-b border-[var(--border-hairline)] bg-[var(--surface-card)] px-8 py-4 mb-6 shadow-subtle-3">
           <div>
-            <h2 className="text-[20px] font-semibold text-heading-charcoal capitalize">
+            <h2 className="font-display text-[20px] font-extrabold text-heading-charcoal capitalize">
               {currentTab}
             </h2>
             <p className="text-[12px] text-muted-gray">
@@ -670,7 +670,7 @@ export default function Home() {
             <button
               type="button"
               onClick={() => setIsLogoutModalOpen(true)}
-              className="flex items-center gap-1.5 rounded-buttons border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-1.5 text-[13px] font-semibold text-body-brown hover:text-[var(--color-alert-red)] transition-colors cursor-pointer"
+              className="monzo-pill flex items-center gap-1.5 border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3.5 py-1.5 text-[13px] font-bold text-body-brown hover:text-[var(--color-alert-red)] transition-colors cursor-pointer"
             >
               <SignOut size={15} /> Log Out
             </button>
@@ -713,8 +713,8 @@ export default function Home() {
                 key={tab.id}
                 type="button"
                 onClick={() => setCurrentTab(tab.id)}
-                className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5 text-[11px] font-semibold cursor-pointer transition-colors ${
-                  isActive ? "text-ember-orange font-bold" : "text-muted-gray hover:text-heading-charcoal"
+                className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5 text-[11px] font-bold cursor-pointer transition-colors ${
+                  isActive ? "text-[var(--color-hot-coral)]" : "text-muted-gray hover:text-heading-charcoal"
                 }`}
               >
                 <TabIcon size={20} weight={isActive ? "fill" : "regular"} />
@@ -727,14 +727,14 @@ export default function Home() {
           <button
             type="button"
             onClick={() => setIsMoreOpen(true)}
-            className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5 text-[11px] font-semibold cursor-pointer transition-colors relative ${
-              isMoreTabActive ? "text-ember-orange font-bold" : "text-muted-gray hover:text-heading-charcoal"
+            className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5 text-[11px] font-bold cursor-pointer transition-colors relative ${
+              isMoreTabActive ? "text-[var(--color-hot-coral)]" : "text-muted-gray hover:text-heading-charcoal"
             }`}
           >
             <DotsThreeCircle size={20} weight={isMoreTabActive ? "fill" : "regular"} />
             <span className="truncate">More</span>
             {isMoreTabActive && (
-              <span className="absolute top-1.5 right-4 h-1.5 w-1.5 rounded-full bg-ember-orange" />
+              <span className="absolute top-1.5 right-4 h-1.5 w-1.5 rounded-full bg-[var(--color-hot-coral)]" />
             )}
           </button>
         </div>

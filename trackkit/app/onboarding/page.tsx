@@ -60,6 +60,11 @@ const CURRENCIES = [
 
 const UNITS = ["Carton", "Tin", "Bag", "Pack", "Box", "Crate", "Bottle", "Piece"];
 
+function createEmojiSvgDataUrl(emoji: string): string {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" rx="24" fill="#f4efe6"/><text x="50%" y="54%" font-size="64" dominant-baseline="middle" text-anchor="middle">${emoji}</text></svg>`;
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+
 const STARTER_PACK: NewProduct[] = [
   {
     name: "Peak Evaporated Milk (160g)",
@@ -69,6 +74,7 @@ const STARTER_PACK: NewProduct[] = [
     cost_per_unit: 800,
     selling_price_per_unit: 950,
     low_stock_threshold: 5,
+    image_url: createEmojiSvgDataUrl("🥛"),
   },
   {
     name: "Dangote Refined Sugar (1kg)",
@@ -78,6 +84,7 @@ const STARTER_PACK: NewProduct[] = [
     cost_per_unit: 1200,
     selling_price_per_unit: 1500,
     low_stock_threshold: 4,
+    image_url: createEmojiSvgDataUrl("🍚"),
   },
   {
     name: "Indomie Instant Noodles (Super Pack)",
@@ -87,6 +94,7 @@ const STARTER_PACK: NewProduct[] = [
     cost_per_unit: 6800,
     selling_price_per_unit: 8000,
     low_stock_threshold: 3,
+    image_url: createEmojiSvgDataUrl("🍜"),
   },
 ];
 
@@ -306,15 +314,15 @@ export default function OnboardingPage() {
       {/* Top Header */}
       <header className="mx-auto w-full max-w-2xl flex items-center justify-between py-2">
         <Link href="/welcome" className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-ink-black text-[var(--color-ink-black-text)] shadow-sm">
+          <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--color-hot-coral)] text-white shadow-coral">
             <Storefront weight="fill" size={19} />
           </span>
-          <span className="font-display text-[21px] font-bold text-heading-charcoal">
+          <span className="font-display text-[21px] font-extrabold text-heading-charcoal tracking-tight">
             Trackkit
           </span>
         </Link>
         <div className="flex items-center gap-3">
-          <span className="hidden sm:inline-block text-[12px] font-medium text-muted-gray">
+          <span className="hidden sm:inline-block text-[12px] font-semibold text-muted-gray">
             Step {step} of 4
           </span>
           <ThemeToggle />
@@ -341,7 +349,7 @@ export default function OnboardingPage() {
                       <span
                         className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-all ${
                           isCurrent
-                            ? "bg-ink-black text-[var(--color-ink-black-text)] ring-2 ring-ink-black/20"
+                            ? "bg-[var(--color-hot-coral)] text-white ring-2 ring-[var(--color-hot-coral)]/30"
                             : isPast
                             ? "bg-[var(--color-grass-green)] text-white"
                             : "bg-[var(--surface-canvas)] text-muted-gray border border-[var(--border-hairline)]"
@@ -354,7 +362,7 @@ export default function OnboardingPage() {
                           isPast
                             ? "bg-[var(--color-grass-green)]"
                             : isCurrent
-                            ? "bg-ink-black/30"
+                            ? "bg-[var(--color-hot-coral)]/40"
                             : "bg-[var(--border-hairline)]"
                         }`}
                       />

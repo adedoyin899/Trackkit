@@ -76,15 +76,15 @@ export default function WelcomePage() {
 
   return (
     <div className="min-h-screen bg-[var(--surface-canvas)] text-heading-charcoal font-sans selection:bg-[var(--color-sun-yellow)] selection:text-heading-charcoal">
-      {/* Top Header */}
+      {/* STICKY TOP NAVBAR */}
       <header className="sticky top-0 z-50 border-b border-[var(--border-hairline)] bg-[var(--surface-card)]/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 md:px-8">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-ink-black text-[var(--color-ink-black-text)] shadow-subtle-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--color-hot-coral)] text-white shadow-coral">
               <Storefront weight="fill" size={20} />
             </span>
-            <span className="font-display text-[22px] font-bold tracking-tight text-heading-charcoal">
-              Tracckit
+            <span className="font-display text-[22px] font-extrabold tracking-tight text-heading-charcoal">
+              Trackkit
             </span>
           </div>
 
@@ -92,13 +92,13 @@ export default function WelcomePage() {
             <ThemeToggle />
             <Link
               href="/auth/login"
-              className="hidden sm:block text-[14px] font-semibold text-body-brown hover:text-heading-charcoal transition-colors px-3 py-2"
+              className="hidden sm:block text-[14px] font-bold text-body-brown hover:text-heading-charcoal transition-colors px-3 py-2"
             >
               Sign In
             </Link>
             <Link
               href="/onboarding"
-              className="flex items-center gap-1.5 rounded-buttons bg-ink-black px-4 py-2.5 text-[14px] font-semibold text-[var(--color-ink-black-text)] hover:opacity-90 transition-opacity shadow-subtle-3 cursor-pointer"
+              className="monzo-pill flex items-center gap-1.5 bg-ink-black px-5 py-2.5 text-[14px] font-bold text-[var(--color-ink-black-text)] hover:opacity-90 transition-opacity shadow-sm cursor-pointer"
             >
               Get Started Free <ArrowRight size={16} />
             </Link>
@@ -117,27 +117,27 @@ export default function WelcomePage() {
                 100% Offline-First Inventory Tracker
               </div>
 
-              <h1 className="font-display text-[38px] sm:text-[56px] font-bold leading-[1.08] tracking-[-0.031em] text-heading-charcoal">
+              <h1 className="font-display text-[38px] sm:text-[56px] font-extrabold leading-[1.08] tracking-[-0.035em] text-heading-charcoal">
                 Know Your Stock. <br />
                 Know Your Profit. <br />
-                <span className="text-[var(--color-ember-orange)]">No Internet? No Problem.</span>
+                <span className="text-[var(--color-hot-coral)]">No Internet? No Problem.</span>
               </h1>
 
               <p className="text-[17px] sm:text-[19px] text-body-brown leading-relaxed max-w-2xl">
-                The app that helps market women track inventory, see real profit margins, and make smarter buying decisions—all offline, completely free to start.
+                The app that helps market traders track inventory, see real profit margins, and make smarter buying decisions—all offline, completely free to start.
               </p>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
                 <Link
                   href="/onboarding"
                   id="download"
-                  className="flex items-center justify-center gap-2 rounded-buttons bg-ink-black px-8 py-4 text-[16px] font-bold text-[var(--color-ink-black-text)] shadow-lg hover:opacity-90 transition-opacity cursor-pointer text-center"
+                  className="monzo-pill flex items-center justify-center gap-2 bg-[var(--color-hot-coral)] px-8 py-3.5 text-[16px] font-extrabold text-white shadow-coral hover:opacity-95 transition-opacity cursor-pointer text-center"
                 >
                   Get Started Free <ArrowRight size={18} />
                 </Link>
                 <Link
                   href="/"
-                  className="flex items-center justify-center gap-2 rounded-buttons border border-[var(--border-hairline)] bg-[var(--surface-card-secondary)] px-6 py-4 text-[15px] font-semibold text-heading-charcoal hover:bg-[var(--surface-card)] transition-colors cursor-pointer text-center"
+                  className="monzo-pill flex items-center justify-center gap-2 border border-[var(--border-hairline)] bg-[var(--surface-card-secondary)] px-6 py-3.5 text-[15px] font-bold text-heading-charcoal hover:bg-[var(--surface-card)] transition-colors cursor-pointer text-center"
                 >
                   Try Workspace Demo
                 </Link>

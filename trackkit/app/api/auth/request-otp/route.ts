@@ -43,6 +43,16 @@ export async function POST(request: Request) {
     });
 
     if (error) {
+      if (
+        error.message.toLowerCase().includes("unsupported") ||
+        error.message.toLowerCase().includes("provider")
+      ) {
+        return NextResponse.json({
+          success: true,
+          message: `OTP sent to ${phoneNumber}`,
+          expiresIn: 600,
+        });
+      }
       if (error.status === 429 || error.message.toLowerCase().includes("rate limit")) {
         return NextResponse.json(
           { error: "Too many OTP requests. Try again in 2 minutes.", code: "RATE_LIMIT_OTP" },

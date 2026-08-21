@@ -26,9 +26,9 @@ export async function addProduct(input: NewProduct): Promise<Product> {
   execute(
     db,
     `INSERT INTO products
-      (id, user_id, name, category, current_quantity, unit, low_stock_threshold, selling_price_per_unit, cost_per_unit, created_at, updated_at, deleted_at)
+      (id, user_id, name, category, current_quantity, unit, low_stock_threshold, selling_price_per_unit, cost_per_unit, image_url, created_at, updated_at, deleted_at)
      VALUES
-      (:id, NULL, :name, :category, :current_quantity, :unit, :low_stock_threshold, :selling_price_per_unit, :cost_per_unit, :created_at, :updated_at, NULL)`,
+      (:id, NULL, :name, :category, :current_quantity, :unit, :low_stock_threshold, :selling_price_per_unit, :cost_per_unit, :image_url, :created_at, :updated_at, NULL)`,
     {
       ":id": id,
       ":name": input.name,
@@ -38,6 +38,7 @@ export async function addProduct(input: NewProduct): Promise<Product> {
       ":low_stock_threshold": input.low_stock_threshold ?? null,
       ":selling_price_per_unit": input.selling_price_per_unit ?? null,
       ":cost_per_unit": input.cost_per_unit ?? null,
+      ":image_url": input.image_url ?? null,
       ":created_at": now,
       ":updated_at": now,
     },
@@ -54,6 +55,7 @@ export async function addProduct(input: NewProduct): Promise<Product> {
     low_stock_threshold: input.low_stock_threshold ?? null,
     selling_price_per_unit: input.selling_price_per_unit ?? null,
     cost_per_unit: input.cost_per_unit ?? null,
+    image_url: input.image_url ?? null,
     created_at: now,
     updated_at: now,
     deleted_at: null,

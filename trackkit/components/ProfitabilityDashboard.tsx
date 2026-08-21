@@ -6,6 +6,7 @@ import { Warning, ArrowLeft, Coins } from "@phosphor-icons/react";
 import { useLocalInventory } from "@/hooks/useLocalInventory";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useMarginCalculation } from "@/hooks/useMarginCalculation";
+import { useTrackkitStore } from "@/lib/store";
 import { useAuth } from "@/hooks/useAuth";
 import { PriceUpdateModal } from "./PriceUpdateModal";
 import type { Product } from "@/lib/types";
@@ -18,6 +19,7 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
   const { products } = useLocalInventory();
   const { transactions } = useTransactions();
   const { calculateMargin, suggestTargetPrice } = useMarginCalculation();
+  const currency = useTrackkitStore((s) => s.currency);
   const { user } = useAuth();
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -39,52 +41,49 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
     refetchOnWindowFocus: false,
   });
 
-  // Calculate local margins fallback for offline capability. useState's
-  // initializer form runs exactly once per mount, avoiding the impure
-  // Date.now() call a plain `new Date(Date.now() - ...)` would make on
-  // every render.
-  const [sevenDaysAgo] = useState(() => new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
-  const salesMap: Record<string, number> = {};
-  transactions.forEach((t) => {
-    if (t.transaction_type === "sale" && new Date(t.created_at) >= sevenDaysAgo) {
-      salesMap[t.product_id] = (salesMap[t.product_id] || 0) + t.quantity;
-    }
-  });
+  // Calculate local margin data from client SQLite tables
+  const sortedLocalProductsWithMargin = products
+    .map((p) => {
+      const { marginPercent, marginAmount, status } = calculateMargin(
+        p.cost_per_unit,
+        p.selling_price_per_unit,
+      );
 
-  const localProductsWithMargin = products.map((p) => {
-    const costPerUnit = p.cost_per_unit;
-    const sellingPrice = p.selling_price_per_unit ?? 0;
-    const unitsSold = salesMap[p.id] || 0;
+      // Sum weekly sales for this product
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    const { marginPercent, marginAmount, status } = calculateMargin(costPerUnit, sellingPrice);
-    const totalProfitThisWeek = unitsSold * (marginAmount ?? 0);
+      const productSales = transactions.filter(
+        (t) =>
+          t.product_id === p.id &&
+          t.transaction_type === "sale" &&
+          new Date(t.created_at) >= sevenDaysAgo,
+      );
 
-    return {
-      productId: p.id,
-      name: p.name,
-      costPerUnit,
-      sellingPrice,
-      marginPercent,
-      marginAmount,
-      units_sold_this_week: unitsSold,
-      total_profit_this_week: totalProfitThisWeek,
-      status,
-      // Keep original product object for modal updating
-      _original: p,
-    };
-  });
+      const units_sold_this_week = productSales.reduce((acc, t) => acc + t.quantity, 0);
+      const total_profit_this_week = units_sold_this_week * (marginAmount ?? 0);
 
-  // Sort local products by marginPercent (lowest first) — sort a copy so
-  // the map result above stays untouched.
-  const sortedLocalProductsWithMargin = [...localProductsWithMargin].sort((a, b) => {
-    if (a.marginPercent === null && b.marginPercent === null) return 0;
-    if (a.marginPercent === null) return -1;
-    if (b.marginPercent === null) return 1;
-    return a.marginPercent - b.marginPercent;
-  });
+      return {
+        productId: p.id,
+        name: p.name,
+        costPerUnit: p.cost_per_unit,
+        sellingPrice: p.selling_price_per_unit ?? 0,
+        marginPercent,
+        marginAmount,
+        status,
+        units_sold_this_week,
+        total_profit_this_week,
+        _original: p,
+      };
+    })
+    .sort((a, b) => {
+      if (a.marginPercent === null) return -1;
+      if (b.marginPercent === null) return 1;
+      return a.marginPercent - b.marginPercent;
+    });
 
   const { profitableCount, totalMarginThisWeek, marginSum, marginCount } =
-    localProductsWithMargin.reduce(
+    sortedLocalProductsWithMargin.reduce(
       (acc, p) => {
         if (p.marginPercent !== null) {
           if (p.marginPercent > 0) acc.profitableCount++;
@@ -144,35 +143,35 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
             <ArrowLeft size={18} />
           </button>
         )}
-        <h1 className="text-[24px] font-bold text-heading-charcoal flex items-center gap-2">
-          <Coins weight="fill" className="text-gold" /> Margin Analysis
+        <h1 className="font-display text-[24px] font-extrabold text-heading-charcoal flex items-center gap-2 tracking-tight">
+          <Coins weight="fill" className="text-[var(--color-hot-coral)]" /> Margin Analysis
         </h1>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
         <div className="rounded-cards bg-[var(--surface-card)] p-4 shadow-subtle-3 border border-[var(--border-hairline)]">
-          <span className="text-[12px] font-medium text-muted-gray">Total Products</span>
-          <div className="text-[22px] font-bold text-heading-charcoal">{displaySummary.totalProducts}</div>
+          <span className="text-[12px] font-semibold text-muted-gray uppercase">Total Products</span>
+          <div className="numo-heading text-[24px] font-extrabold text-heading-charcoal mt-1">{displaySummary.totalProducts}</div>
         </div>
 
         <div className="rounded-cards bg-[var(--surface-card)] p-4 shadow-subtle-3 border border-[var(--border-hairline)]">
-          <span className="text-[12px] font-medium text-muted-gray">Profitable Items</span>
-          <div className="text-[22px] font-bold text-heading-charcoal">
+          <span className="text-[12px] font-semibold text-muted-gray uppercase">Profitable Items</span>
+          <div className="numo-heading text-[24px] font-extrabold text-heading-charcoal mt-1">
             {displaySummary.profitableCount} / {displaySummary.totalProducts}
           </div>
         </div>
 
         <div className="rounded-cards bg-[var(--surface-card)] p-4 shadow-subtle-3 border border-[var(--border-hairline)]">
-          <span className="text-[12px] font-medium text-muted-gray">Profit (This Week)</span>
-          <div className="text-[22px] font-bold text-heading-charcoal">
-            ₦{displaySummary.totalMarginThisWeek?.toLocaleString() ?? "0"}
+          <span className="text-[12px] font-semibold text-muted-gray uppercase">Profit (This Week)</span>
+          <div className="numo-heading text-[24px] font-extrabold text-[var(--color-grass-green)] mt-1">
+            {currency}{displaySummary.totalMarginThisWeek?.toLocaleString("en-NG", { maximumFractionDigits: 0 }) ?? "0"}
           </div>
         </div>
 
         <div className="rounded-cards bg-[var(--surface-card)] p-4 shadow-subtle-3 border border-[var(--border-hairline)]">
-          <span className="text-[12px] font-medium text-muted-gray">Avg. Profit Margin</span>
-          <div className="text-[22px] font-bold text-heading-charcoal">{displaySummary.averageMargin}%</div>
+          <span className="text-[12px] font-semibold text-muted-gray uppercase">Avg. Profit Margin</span>
+          <div className="numo-heading text-[24px] font-extrabold text-heading-charcoal mt-1">{displaySummary.averageMargin}%</div>
         </div>
       </div>
 
@@ -193,13 +192,13 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
                   <div className="text-[13px] text-heading-charcoal">
                     <span className="font-bold uppercase">{lp.name}</span>:{" "}
                     {lp.marginPercent !== null ? `Only ${lp.marginPercent}% margin.` : "Cost price not configured."}{" "}
-                    {targetPrice ? `Reprice to ₦${targetPrice}+ for 30% margin?` : ""}
+                    {targetPrice ? `Reprice to ${currency}${targetPrice}+ for 30% margin?` : ""}
                   </div>
                   {lp._original && (
                     <button
                       type="button"
                       onClick={() => setSelectedProduct(lp._original)}
-                      className="w-fit rounded bg-[var(--color-alert-red)] px-3 py-1.5 text-[12px] font-bold text-white hover:opacity-90 transition-colors cursor-pointer"
+                      className="monzo-pill w-fit bg-[var(--color-alert-red)] px-4 py-1.5 text-[12px] font-bold text-white hover:opacity-90 transition-colors cursor-pointer"
                     >
                       Reprice
                     </button>
@@ -214,23 +213,23 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
       {/* Profitability Table */}
       <div className="overflow-hidden rounded-cards border border-[var(--border-hairline)] bg-[var(--surface-card)] shadow-subtle-3">
         <div className="px-5 py-4 border-b border-[var(--border-hairline)] flex items-center justify-between">
-          <h3 className="text-[16px] font-semibold text-heading-charcoal">Profitability Rankings</h3>
+          <h3 className="font-display text-[16px] font-bold text-heading-charcoal">Profitability Rankings</h3>
           <span className="text-[12px] text-muted-gray">Sorted by Margin (Lowest First)</span>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left text-[14px]">
-            <thead>
-              <tr className="bg-[var(--surface-canvas)] text-[12px] font-bold text-muted-gray uppercase border-b border-[var(--border-hairline)]">
+          <table className="w-full text-left text-[14px]">
+            <thead className="border-b border-[var(--border-hairline)] bg-[var(--surface-card-secondary)] text-[12px] font-semibold text-muted-gray uppercase">
+              <tr>
                 <th className="px-5 py-3">Product</th>
-                <th className="px-4 py-3 text-right">Cost</th>
-                <th className="px-4 py-3 text-right">Selling</th>
+                <th className="px-4 py-3 text-right">Cost Price</th>
+                <th className="px-4 py-3 text-right">Selling Price</th>
                 <th className="px-4 py-3 text-center">Margin %</th>
-                <th className="px-4 py-3 text-right">Margin ₦</th>
-                <th className="px-4 py-3 text-center">Sold (Wk)</th>
-                <th className="px-5 py-3 text-right">Profit (Wk)</th>
+                <th className="px-4 py-3 text-right">Profit / Unit</th>
+                <th className="px-4 py-3 text-center">Sold (7d)</th>
+                <th className="px-5 py-3 text-right">Weekly Profit</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--border-hairline)] font-medium text-body-brown">
+            <tbody className="divide-y divide-[var(--border-hairline)]">
               {displayProducts.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-5 py-8 text-center text-muted-gray">
@@ -244,18 +243,18 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
                     onClick={() => p._original && setSelectedProduct(p._original)}
                     className="hover:bg-[var(--surface-card-secondary)] cursor-pointer transition-colors"
                   >
-                    <td className="px-5 py-3.5 font-semibold text-heading-charcoal uppercase">
+                    <td className="px-5 py-3.5 font-bold text-heading-charcoal uppercase">
                       {p.name}
                     </td>
                     <td className="px-4 py-3.5 text-right">
-                      {p.costPerUnit !== null ? `₦${p.costPerUnit.toFixed(2)}` : "—"}
+                      {p.costPerUnit !== null ? `${currency}${p.costPerUnit.toFixed(2)}` : "—"}
                     </td>
                     <td className="px-4 py-3.5 text-right">
-                      ₦{p.sellingPrice.toFixed(2)}
+                      {currency}{p.sellingPrice.toFixed(2)}
                     </td>
                     <td className="px-4 py-3.5 text-center">
                       <span
-                        className={`inline-flex rounded px-2 py-0.5 text-[12px] font-bold ${
+                        className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
                           p.status === "green"
                             ? "bg-[var(--color-grass-green)]/20 text-[var(--color-grass-green)]"
                             : p.status === "yellow"
@@ -266,12 +265,12 @@ export function ProfitabilityDashboard({ onBack }: ProfitabilityDashboardProps) 
                         {p.marginPercent !== null ? `${p.marginPercent}%` : "N/A"}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5 text-right">
-                      {p.marginAmount !== null ? `₦${p.marginAmount.toFixed(2)}` : "—"}
+                    <td className="px-4 py-3.5 text-right font-medium">
+                      {p.marginAmount !== null ? `${currency}${p.marginAmount.toFixed(2)}` : "—"}
                     </td>
-                    <td className="px-4 py-3.5 text-center">{p.units_sold_this_week}</td>
-                    <td className="px-5 py-3.5 text-right font-bold text-heading-charcoal">
-                      ₦{p.total_profit_this_week?.toFixed(2) ?? "0.00"}
+                    <td className="px-4 py-3.5 text-center font-semibold">{p.units_sold_this_week}</td>
+                    <td className="px-5 py-3.5 text-right font-extrabold text-heading-charcoal font-display">
+                      {currency}{p.total_profit_this_week?.toFixed(2) ?? "0.00"}
                     </td>
                   </tr>
                 ))

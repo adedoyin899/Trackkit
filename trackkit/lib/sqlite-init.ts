@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS products (
   low_stock_threshold INTEGER,
   selling_price_per_unit DECIMAL(10, 2),
   cost_per_unit DECIMAL(10, 2) DEFAULT NULL,
+  image_url TEXT DEFAULT NULL,
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
   deleted_at TEXT DEFAULT NULL,
@@ -94,6 +95,13 @@ async function loadDatabase(): Promise<Database> {
     db.exec("SELECT cost_per_unit FROM products LIMIT 1");
   } catch {
     db.run("ALTER TABLE products ADD COLUMN cost_per_unit DECIMAL(10, 2) DEFAULT NULL");
+  }
+
+  // Migrate existing databases to add image_url to products if missing
+  try {
+    db.exec("SELECT image_url FROM products LIMIT 1");
+  } catch {
+    db.run("ALTER TABLE products ADD COLUMN image_url TEXT DEFAULT NULL");
   }
 
   // Migrate existing databases to add supplier + cost_per_unit to transactions if missing

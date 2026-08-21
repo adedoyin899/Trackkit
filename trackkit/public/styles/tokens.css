@@ -1,101 +1,106 @@
 /*
-  MarketMate design tokens — single source of truth.
-
-  Source: "family DESIGN (1).md" (Family style reference), theme: light only.
-  Dark-mode values below are NOT in the source doc — they're an extrapolation
-  that keeps the same accent hues and swaps the neutral/surface scale, following
-  the doc's own "one moment of darkness" contrast principle (inverted for dark
-  canvases). Treat dark mode as a proposal, not a spec, until a designer signs off.
-
-  Lives under public/ so it's reachable two ways at once: imported at build
-  time by app/globals.css (live app — light only, dark tokens unused today),
-  and served as a plain static file at /styles/tokens.css so
-  public/design-system.html can <link> it directly. One file, one URL.
-
-  Consumed by:
-    - app/globals.css → @import "../public/styles/tokens.css"
-    - public/design-system.html → <link href="./styles/tokens.css">, has a working light/dark toggle
-
-  Edit here once; both the app and the style-guide page pick it up automatically.
+  Trackkit Design System Tokens — Monzo Visual Language & Numo Typography.
+  
+  Source: "monzo.md" (Hot Coral, Page Mist, Midnight Ink, Soft Mint) + Numo chunky display typography.
+  Light & Dark mode full support. Single source of truth consumed by:
+    - app/globals.css (@import)
+    - public/design-system.html (<link>)
 */
 
 :root {
-  /* ---- Brand palette (theme-invariant — same hex in light & dark) ---- */
-  --color-link-blue: #0086fc;
-  --color-sky-blue: #64c6ff;
-  --color-alt-blue: #00b2ff;
-  --color-grass-green: #00c978;
+  /* ---- Monzo Core Brand Palette ---- */
+  --color-hot-coral: #ff4f40;
+  --color-coral-dark: #e83d2e;
+  --color-coral-light: #ff7566;
+  --color-midnight-ink: #091723;
+  --color-deep-navy: #112231;
+  --color-page-mist: #f2f8f3;
+  --color-pure-white: #ffffff;
+  --color-soft-mint: #e3ebe4;
+  --color-fog: #b5b9bd;
+  --color-steel: #6b747b;
+  --color-ash: #75817e;
+  --color-slate-button: #3b4c54;
+  --color-pure-black: #000000;
+
+  /* ---- Functional Accents ---- */
+  --color-grass-green: #00b86b;
   --color-mint: #00ca48;
-  --color-ember-orange: #ff3e00;
-  --color-sun-yellow: #ffcd6c;
+  --color-alert-red: #ff3b30;
+  --color-sun-yellow: #ffbe2e;
   --color-gold: #d48f00;
   --color-honey: #ffbb26;
+  --color-link-blue: #0084ff;
+  --color-sky-blue: #5ac8fa;
+  --color-alt-blue: #00b2ff;
   --color-coral-pink: #ff58ae;
   --color-plum-violet: #9f4fff;
-  --color-alert-red: #ff2b3a;
+  --color-ember-orange: #ff4f40;
 
-  /* ---- Neutral palette (light) ---- */
-  --color-cream-canvas: #fbfaf9;
-  --color-stone-surface: #f2f0ed;
-  --color-sand-surface: #f6f4ef;
-  --color-ink-black: #121212;
-  --color-heading-charcoal: #343433;
-  --color-body-brown: #474645;
-  --color-muted-gray: #7e7e7d;
-  --color-stone-border: #e5d5c3;
-  --color-pure-white: #ffffff;
-  --color-full-black: #000000;
+  /* ---- Gradients ---- */
+  --gradient-monzo-coral: linear-gradient(135deg, #ff4f40 0%, #ff6b57 100%);
+  --gradient-monzo-card: linear-gradient(135deg, #ff4f40 0%, #ff5e4d 60%, #ff7a6b 100%);
+  --gradient-monzo-dark: linear-gradient(135deg, #182d3f 0%, #0d1a24 100%);
+  --gradient-header-glow: linear-gradient(180deg, rgba(255, 79, 64, 0.08) 0%, rgba(242, 248, 243, 0) 100%);
 
-  /* ---- Semantic surface/text/action roles — light (default) ---- */
-  --surface-canvas: var(--color-cream-canvas);
+  /* ---- Semantic Surface & Text Roles — Light Mode ---- */
+  --surface-canvas: var(--color-page-mist);
   --surface-card: var(--color-pure-white);
-  --surface-card-secondary: var(--color-stone-surface);
-  --surface-sand: var(--color-sand-surface);
-  --surface-dark: var(--color-ink-black);
+  --surface-card-secondary: var(--color-soft-mint);
+  --surface-sand: #eaf1eb;
+  --surface-dark: var(--color-midnight-ink);
 
-  --text-heading: var(--color-heading-charcoal);
-  --text-body: var(--color-body-brown);
-  --text-muted: var(--color-muted-gray);
-  --text-on-dark: var(--color-cream-canvas);
+  --text-heading: var(--color-midnight-ink);
+  --text-body: var(--color-steel);
+  --text-muted: var(--color-ash);
+  --text-on-dark: var(--color-pure-white);
 
-  --border-hairline: var(--color-stone-surface);
+  --border-hairline: var(--color-soft-mint);
 
-  --action-primary-bg: var(--color-ink-black);
+  --action-primary-bg: var(--color-midnight-ink);
   --action-primary-text: var(--color-pure-white);
-  --action-secondary-bg: var(--color-sand-surface);
-  --action-secondary-text: var(--color-ink-black);
-  --action-accent-text: var(--color-ember-orange);
+  --action-secondary-bg: var(--color-soft-mint);
+  --action-secondary-text: var(--color-midnight-ink);
+  --action-accent-text: var(--color-hot-coral);
 
-  /* ---- Fonts ---- */
-  /* "Family" display face unavailable — substitute per source doc: Druk Wide
-     Medium / GT America Compressed Medium. Falls back to Inter. */
-  --font-family-display: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-inter: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* ---- Typography (Numo chunky display + Inter crisp body) ---- */
+  --font-family-display: var(--font-display), "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-inter: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* ---- Type scale ---- */
-  --text-micro: 12px;
-  --leading-micro: 19px;
-  --tracking-micro: -0.01px;
-  --text-caption: 15px;
-  --leading-caption: 22px;
-  --tracking-caption: -0.14px;
+  /* ---- Type Scale & Letter Spacing ---- */
+  --text-micro: 11px;
+  --leading-micro: 15px;
+  --tracking-micro: -0.01em;
+
+  --text-caption: 13px;
+  --leading-caption: 18px;
+  --tracking-caption: -0.02em;
+
+  --text-body-sm: 15px;
+  --leading-body-sm: 22px;
+  --tracking-body-sm: -0.02em;
+
   --text-body-size: 17px;
-  --leading-body: 26px;
-  --tracking-body: -0.22px;
-  --text-subheading: 19px;
-  --leading-subheading: 27px;
-  --tracking-subheading: -0.3px;
-  --text-heading-size: 23px;
-  --leading-heading: 25px;
-  --tracking-heading: -0.44px;
-  --text-heading-lg: 44px;
-  --leading-heading-lg: 53px;
-  --tracking-heading-lg: -0.88px;
-  --text-display: 68px;
-  --leading-display: 75px;
-  --tracking-display: -2.1px;
+  --leading-body: 24px;
+  --tracking-body: -0.03em;
 
-  /* ---- Spacing (base unit 4px) ---- */
+  --text-subheading: 20px;
+  --leading-subheading: 26px;
+  --tracking-subheading: -0.03em;
+
+  --text-heading-size: 26px;
+  --leading-heading: 32px;
+  --tracking-heading: -0.04em;
+
+  --text-heading-lg: 38px;
+  --leading-heading-lg: 44px;
+  --tracking-heading-lg: -0.04em;
+
+  --text-display: 56px;
+  --leading-display: 60px;
+  --tracking-display: -0.05em;
+
+  /* ---- Spacing (8px grid) ---- */
   --spacing-4: 4px;
   --spacing-8: 8px;
   --spacing-12: 12px;
@@ -107,64 +112,71 @@
   --spacing-36: 36px;
   --spacing-48: 48px;
   --spacing-60: 60px;
+  --spacing-64: 64px;
   --spacing-76: 76px;
   --spacing-80: 80px;
-  --spacing-92: 92px;
   --spacing-96: 96px;
-  --spacing-104: 104px;
+  --spacing-128: 128px;
 
-  /* ---- Radius ---- */
-  --radius-sm: 2px;
-  --radius-badges: 6px;
-  --radius-nav: 10px;
-  --radius-cards: 10px;
-  --radius-icons: 40px;
-  --radius-buttons: 32px;
-  --radius-illustration: 72px;
-  --radius-pills: 9999px;
+  /* ---- Shapes & Radii (Monzo 500px pills & 28-32px containers) ---- */
+  --radius-sm: 6px;
+  --radius-badges: 500px;
+  --radius-nav: 500px;
+  --radius-cards: 28px;
+  --radius-inputs: 20px;
+  --radius-icons: 500px;
+  --radius-buttons: 500px;
+  --radius-illustration: 40px;
+  --radius-pills: 500px;
+  --radius-containers: 32px;
 
-  /* ---- Shadows (light) ---- */
-  --shadow-subtle-3: 0 0 0 1px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 1px 6px 0 rgba(0, 0, 0, 0.04), 0 0 24px 0 rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 0 24px 0 rgba(0, 0, 0, 0.15);
+  /* ---- Elevation & Shadows (Monzo clean low-elevation) ---- */
+  --shadow-subtle-3: 0 1px 3px 0 rgba(9, 23, 35, 0.04);
+  --shadow-sm: 0 2px 8px 0 rgba(9, 23, 35, 0.05);
+  --shadow-md: 0 8px 24px -4px rgba(9, 23, 35, 0.08);
+  --shadow-lg: 0 16px 36px -6px rgba(9, 23, 35, 0.12);
+  --shadow-coral: 0 10px 25px -5px rgba(255, 79, 64, 0.35);
 }
 
 /*
-  Dark mode is activated via [data-theme="dark"] on <html> or system preference.
-  All components inherit semantic token roles defined below.
+  ---- Dark Mode Tokens ([data-theme="dark"]) ----
+  Deep Midnight Ink canvas with layered Deep Navy cards and glowing Hot Coral.
 */
 :root[data-theme="dark"] {
-  --color-cream-canvas: #121212;
-  --color-stone-surface: #232326;
-  --color-sand-surface: #29292c;
-  --color-ink-black: #fbfaf9;
-  --color-heading-charcoal: #f5f3f1;
-  --color-body-brown: #c9c6c2;
-  --color-muted-gray: #a3a19e;
-  --color-stone-border: #3a3a3d;
-  --color-pure-white: #1c1c1e;
-  --color-full-black: #000000;
+  --color-page-mist: #091723;
+  --color-pure-white: #112231;
+  --color-soft-mint: #182d3f;
+  --color-sand-surface: #1f364a;
+  --color-ink-black: #f2f8f3;
+  --color-heading-charcoal: #f2f8f3;
+  --color-body-brown: #94a3b8;
+  --color-muted-gray: #64748b;
+  --color-stone-border: rgba(255, 255, 255, 0.08);
+  --color-hot-coral: #ff5f50;
 
-  --surface-canvas: #121212;
-  --surface-card: #1c1c1e;
-  --surface-card-secondary: #232326;
-  --surface-sand: #29292c;
-  --surface-dark: #fbfaf9;
+  --surface-canvas: #091723;
+  --surface-card: #112231;
+  --surface-card-secondary: #182d3f;
+  --surface-sand: #1f364a;
+  --surface-dark: #f2f8f3;
 
-  --text-heading: #f5f3f1;
-  --text-body: #c9c6c2;
-  --text-muted: #a3a19e;
-  --text-on-dark: #121212;
+  --text-heading: #f2f8f3;
+  --text-body: #94a3b8;
+  --text-muted: #64748b;
+  --text-on-dark: #091723;
 
   --border-hairline: rgba(255, 255, 255, 0.08);
 
-  --action-primary-bg: #fbfaf9;
-  --action-primary-text: #121212;
-  --action-secondary-bg: #29292c;
-  --action-secondary-text: #fbfaf9;
-  --action-accent-text: var(--color-ember-orange);
+  --action-primary-bg: #f2f8f3;
+  --action-primary-text: #091723;
+  --action-secondary-bg: #182d3f;
+  --action-secondary-text: #f2f8f3;
+  --action-accent-text: #ff5f50;
 
-  --shadow-subtle-3: 0 0 0 1px rgba(255, 255, 255, 0.06);
-  --shadow-sm: 0 1px 6px 0 rgba(0, 0, 0, 0.24), 0 0 24px 0 rgba(0, 0, 0, 0.32);
-  --shadow-lg: 0 0 24px 0 rgba(0, 0, 0, 0.5);
+  --gradient-header-glow: linear-gradient(180deg, rgba(255, 95, 80, 0.12) 0%, rgba(9, 23, 35, 0) 100%);
+  --shadow-subtle-3: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 8px 0 rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 36px -6px rgba(0, 0, 0, 0.65);
+  --shadow-coral: 0 10px 25px -5px rgba(255, 95, 80, 0.4);
 }

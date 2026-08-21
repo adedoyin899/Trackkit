@@ -9,7 +9,7 @@ import {
   Tag,
   Warning,
   CheckCircle,
-  CurrencyNgn,
+  Coins,
 } from "@phosphor-icons/react";
 import type { Product } from "@/lib/types";
 import { RestockModal } from "@/components/RestockModal";
@@ -17,20 +17,22 @@ import { PriceUpdateModal } from "@/components/PriceUpdateModal";
 import { ProductForm } from "@/components/ProductForm";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useMarginCalculation } from "@/hooks/useMarginCalculation";
+import { useTrackkitStore } from "@/lib/store";
 
 interface ProductInspectorProps {
   product: Product;
   onClose: () => void;
 }
 
-function formatNaira(val?: number | null): string {
+function formatMoney(val?: number | null, symbol = "₦"): string {
   if (val == null) return "—";
-  return `₦${val.toLocaleString("en-NG", { maximumFractionDigits: 0 })}`;
+  return `${symbol}${val.toLocaleString("en-NG", { maximumFractionDigits: 0 })}`;
 }
 
 export function ProductInspector({ product, onClose }: ProductInspectorProps) {
   const { logTransaction, isLogging } = useTransactions(product.id);
   const { calculateMargin } = useMarginCalculation();
+  const currency = useTrackkitStore((s) => s.currency);
   const [activeModal, setActiveModal] = useState<"restock" | "reprice" | "edit" | null>(null);
 
   const cost = product.cost_per_unit;
@@ -61,6 +63,7 @@ export function ProductInspector({ product, onClose }: ProductInspectorProps) {
       quantity: data.quantity,
       supplier: data.supplier,
       costPerUnit: data.costPerUnit,
+      notes: data.notes,
     });
   };
 
@@ -69,15 +72,26 @@ export function ProductInspector({ product, onClose }: ProductInspectorProps) {
       <aside className="sticky top-6 flex h-[calc(100vh-3rem)] w-full flex-col rounded-cards border border-[var(--border-hairline)] bg-[var(--surface-card)] p-5 shadow-subtle-3 overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border-hairline)] pb-4">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-canvas)] text-heading-charcoal border border-[var(--border-hairline)]">
-              <Package size={18} />
-            </span>
+          <div className="flex items-center gap-3 min-w-0">
+            {product.image_url ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="h-11 w-11 shrink-0 rounded-xl object-cover border border-[var(--border-hairline)] shadow-xs"
+              />
+            ) : (
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-canvas)] text-heading-charcoal border border-[var(--border-hairline)]">
+                <Package size={20} />
+              </span>
+            )}
             <div className="min-w-0">
-              <h3 className="truncate text-[16px] font-semibold text-heading-charcoal uppercase">
+              <h3 className="truncate text-[16px] font-bold text-heading-charcoal uppercase">
                 {product.name}
               </h3>
-              <p className="text-[12px] text-muted-gray">Unit: {product.unit}</p>
+              <p className="text-[12px] text-muted-gray">
+                {product.category || "General"} · {product.unit}
+              </p>
             </div>
           </div>
           <button
@@ -134,20 +148,20 @@ export function ProductInspector({ product, onClose }: ProductInspectorProps) {
         {/* Financial & Margin Breakdown */}
         <div className="mt-5 space-y-3">
           <h4 className="flex items-center gap-1.5 text-[13px] font-semibold text-body-brown uppercase tracking-wider">
-            <CurrencyNgn size={14} /> Pricing & Profit Margins
+            <Coins size={14} /> Pricing & Profit Margins
           </h4>
 
           <div className="grid grid-cols-2 gap-2 text-center">
             <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-canvas)] p-3">
               <p className="text-[11px] text-muted-gray">Selling Price</p>
               <p className="mt-0.5 text-[15px] font-bold text-heading-charcoal">
-                {formatNaira(price)}
+                {formatMoney(price, currency)}
               </p>
             </div>
             <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-canvas)] p-3">
               <p className="text-[11px] text-muted-gray">Cost Price</p>
               <p className="mt-0.5 text-[15px] font-bold text-heading-charcoal">
-                {formatNaira(cost)}
+                {formatMoney(cost, currency)}
               </p>
             </div>
           </div>
@@ -156,7 +170,7 @@ export function ProductInspector({ product, onClose }: ProductInspectorProps) {
             <div className="flex items-center justify-between text-[13px]">
               <span className="text-muted-gray">Profit per Unit:</span>
               <span className="font-bold text-heading-charcoal">
-                {formatNaira(marginAmount)}
+                {formatMoney(marginAmount, currency)}
               </span>
             </div>
             <div className="mt-2 flex items-center justify-between text-[13px]">

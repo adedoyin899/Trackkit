@@ -2,6 +2,19 @@
 @import "../public/styles/tokens.css";
 
 @theme inline {
+  --color-hot-coral: var(--color-hot-coral);
+  --color-coral-dark: var(--color-coral-dark);
+  --color-coral-light: var(--color-coral-light);
+  --color-midnight-ink: var(--color-midnight-ink);
+  --color-deep-navy: var(--color-deep-navy);
+  --color-page-mist: var(--color-page-mist);
+  --color-pure-white: var(--color-pure-white);
+  --color-soft-mint: var(--color-soft-mint);
+  --color-steel: var(--color-steel);
+  --color-fog: var(--color-fog);
+  --color-ash: var(--color-ash);
+  --color-slate-button: var(--color-slate-button);
+
   --color-cream-canvas: var(--surface-canvas);
   --color-stone-surface: var(--surface-card-secondary);
   --color-sand-surface: var(--surface-sand);
@@ -12,12 +25,13 @@
   --color-body-brown: var(--text-body);
   --color-muted-gray: var(--text-muted);
   --color-stone-border: var(--border-hairline);
+
   --color-link-blue: var(--color-link-blue);
   --color-sky-blue: var(--color-sky-blue);
   --color-alt-blue: var(--color-alt-blue);
   --color-grass-green: var(--color-grass-green);
   --color-mint: var(--color-mint);
-  --color-ember-orange: var(--color-ember-orange);
+  --color-ember-orange: var(--color-hot-coral);
   --color-sun-yellow: var(--color-sun-yellow);
   --color-gold: var(--color-gold);
   --color-honey: var(--color-honey);
@@ -33,10 +47,13 @@
   --radius-pills: var(--radius-pills);
   --radius-badges: var(--radius-badges);
   --radius-buttons: var(--radius-buttons);
+  --radius-containers: var(--radius-containers);
 
   --shadow-subtle-3: var(--shadow-subtle-3);
   --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
+  --shadow-coral: var(--shadow-coral);
 }
 
 body {
@@ -47,11 +64,45 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Card helpers */
+/* Headings with Numo-style punchy, blocky, friendly letter-spacing */
+h1, h2, h3, h4, .numo-heading {
+  font-family: var(--font-family-display);
+  letter-spacing: -0.035em;
+}
+
+.numo-display {
+  font-family: var(--font-family-display);
+  letter-spacing: -0.05em;
+  font-weight: 800;
+}
+
+/* Monzo Card Styles */
+.monzo-coral-card {
+  background: var(--gradient-monzo-card);
+  color: #ffffff;
+  border-radius: var(--radius-cards);
+  box-shadow: var(--shadow-coral);
+  position: relative;
+  overflow: hidden;
+}
+
+.monzo-coral-card::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
 .theme-card {
   background-color: var(--surface-card);
   color: var(--text-heading);
   border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-cards);
   box-shadow: var(--shadow-subtle-3);
 }
 
@@ -59,4 +110,19 @@ body {
   background-color: var(--surface-card-secondary);
   color: var(--text-heading);
   border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-cards);
+}
+
+/* 500px Pill Actions */
+.monzo-pill {
+  border-radius: 500px;
+  transition: all 0.15s ease;
+}
+
+.monzo-pill:hover {
+  transform: translateY(-1px);
+}
+
+.monzo-pill:active {
+  transform: translateY(0);
 }

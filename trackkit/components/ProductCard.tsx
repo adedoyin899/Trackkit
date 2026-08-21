@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowsClockwise, Minus, PencilSimple, Plus, Warning } from "@phosphor-icons/react";
+import { ArrowsClockwise, Minus, PencilSimple, Plus, Warning, Package } from "@phosphor-icons/react";
 import { useTrackkitStore } from "@/lib/store";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useLocalInventory } from "@/hooks/useLocalInventory";
@@ -78,7 +78,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <div
       onClick={() => setSelectedProductId(product.id)}
-      className={`rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3 transition-all ${
+      className={`rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-4 sm:p-5 shadow-subtle-3 transition-all cursor-pointer ${
         isSelected
           ? "ring-2 ring-[var(--color-link-blue)]"
           : lowStock
@@ -87,69 +87,99 @@ export function ProductCard({ product }: ProductCardProps) {
       }`}
     >
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <span className="text-[19px] font-medium tracking-[-0.019em] text-heading-charcoal">
-            {product.name.toUpperCase()}{" "}
-            <span className="text-[13px] font-normal text-muted-gray">
-              ({product.unit})
-            </span>
-          </span>
-          {lowStock && (
-            <span className="mt-1 flex w-fit items-center gap-1 rounded-badges bg-[var(--color-honey)]/20 px-2 py-0.5 text-[12px] font-medium text-[var(--color-gold)]">
-              <Warning weight="fill" /> LOW STOCK
+        <div className="flex items-center gap-3 min-w-0">
+          {product.image_url ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={product.image_url}
+              alt={product.name}
+              className="h-11 w-11 shrink-0 rounded-xl object-cover border border-[var(--border-hairline)] shadow-xs"
+            />
+          ) : (
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-canvas)] text-heading-charcoal border border-[var(--border-hairline)]">
+              <Package size={20} />
             </span>
           )}
+          <div className="min-w-0">
+            <span className="text-[17px] font-bold tracking-tight text-heading-charcoal truncate block">
+              {product.name.toUpperCase()}
+            </span>
+            <span className="text-[12px] font-normal text-muted-gray">
+              {product.category || "General"} · {product.unit}
+            </span>
+            {lowStock && (
+              <span className="mt-1 flex w-fit items-center gap-1 rounded-badges bg-[var(--color-honey)]/20 px-2 py-0.5 text-[11px] font-bold text-[var(--color-gold)]">
+                <Warning weight="fill" size={12} /> LOW STOCK
+              </span>
+            )}
+          </div>
         </div>
         <button
           type="button"
-          onClick={() => setSelectedProductId(product.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedProductId(product.id);
+          }}
           aria-label={`Edit ${product.name}`}
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-muted-gray hover:bg-[var(--surface-card-secondary)] hover:text-heading-charcoal cursor-pointer transition-colors"
+          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-muted-gray hover:bg-[var(--surface-card-secondary)] hover:text-heading-charcoal cursor-pointer transition-colors"
         >
-          <PencilSimple />
+          <PencilSimple size={16} />
         </button>
       </div>
 
       <div className="mt-3 flex items-baseline gap-2">
-        <span className="text-[44px] font-medium leading-none tracking-[-0.02em] text-heading-charcoal">
+        <span className="numo-display text-[40px] sm:text-[44px] leading-none text-heading-charcoal">
           {product.current_quantity}
         </span>
+        <span className="text-[14px] font-semibold text-muted-gray">
+          {product.unit}s in stock
+        </span>
         {product.low_stock_threshold != null && (
-          <span className="text-[13px] text-muted-gray">
-            Alert: {product.low_stock_threshold}
+          <span className="ml-auto text-[11px] font-semibold text-muted-gray bg-[var(--surface-canvas)] px-2 py-0.5 rounded-full border border-[var(--border-hairline)]">
+            Alert ≤ {product.low_stock_threshold}
           </span>
         )}
       </div>
 
-      <div className="mt-4 flex gap-3">
+      {/* Monzo 500px Pill Stepper Actions */}
+      <div className="mt-4 flex gap-2.5">
         <button
           type="button"
           disabled={product.current_quantity <= 0 || isLogging}
-          onClick={() => adjust("sale", 1)}
-          aria-label={`Decrease ${product.name} by 1`}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-buttons bg-[var(--color-alert-red)] py-3 text-[16px] font-semibold text-white disabled:opacity-30 cursor-pointer hover:opacity-90 transition-opacity"
+          onClick={(e) => {
+            e.stopPropagation();
+            adjust("sale", 1);
+          }}
+          aria-label={`Record sale for 1 ${product.name}`}
+          className="monzo-pill flex flex-1 items-center justify-center gap-1.5 bg-[var(--color-alert-red)] py-2.5 text-[14px] font-bold text-white shadow-xs disabled:opacity-30 cursor-pointer hover:opacity-95 transition-all"
         >
-          <Minus /> 1
+          <Minus size={15} weight="bold" /> 1 Sale
         </button>
         <button
           type="button"
           disabled={isLogging}
-          onClick={() => adjust("restock", 1)}
-          aria-label={`Increase ${product.name} by 1`}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-buttons bg-[var(--color-grass-green)] py-3 text-[16px] font-semibold text-white disabled:opacity-30 cursor-pointer hover:opacity-90 transition-opacity"
+          onClick={(e) => {
+            e.stopPropagation();
+            adjust("restock", 1);
+          }}
+          aria-label={`Record restock for 1 ${product.name}`}
+          className="monzo-pill flex flex-1 items-center justify-center gap-1.5 bg-[var(--color-grass-green)] py-2.5 text-[14px] font-bold text-white shadow-xs disabled:opacity-30 cursor-pointer hover:opacity-95 transition-all"
         >
-          <Plus /> 1
+          <Plus size={15} weight="bold" /> 1 Restock
         </button>
       </div>
 
       <button
         type="button"
         disabled={isLogging}
-        onClick={() => setShowRestockModal(true)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowRestockModal(true);
+        }}
         aria-label={`Restock ${product.name} with supplier and cost details`}
-        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-[var(--border-hairline)] py-2 text-[13px] font-medium text-muted-gray hover:bg-[var(--surface-canvas)] hover:text-heading-charcoal disabled:opacity-30 cursor-pointer transition-colors"
+        className="monzo-pill mt-2.5 flex w-full items-center justify-center gap-1.5 border border-[var(--border-hairline)] bg-[var(--surface-canvas)] py-2 text-[12px] font-bold text-heading-charcoal hover:bg-[var(--surface-card-secondary)] disabled:opacity-30 cursor-pointer transition-colors"
       >
-        <ArrowsClockwise size={14} /> Restock with details
+        <ArrowsClockwise size={14} /> Supplier & Cost Restock
       </button>
 
       {/* Pricing & Margins Section */}

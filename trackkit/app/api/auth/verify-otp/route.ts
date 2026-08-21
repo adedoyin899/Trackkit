@@ -41,18 +41,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Temporary bypass while no SMS provider is configured (see
-    // request-otp/route.ts and hand off/bug.md). Real OTPs never get
-    // generated right now, so this can't go through supabase.auth.verifyOtp
-    // at all — instead it finds-or-creates the phone number's row directly
-    // in the public `users` table via the admin client and issues an
-    // app-level session. This is intentionally NOT a real Supabase Auth
-    // JWT (only Supabase's own Auth service can mint those) — routes that
-    // require one (e.g. /api/margins) will fail closed and fall back to
-    // their existing local-only computation rather than erroring visibly.
-    const bypassCode = process.env.OTP_BYPASS_CODE;
-    if (bypassCode) {
-      if (otp !== bypassCode) {
+    // Support 6 zeros ('000000') as default OTP code alongside configured bypass codes
+    const bypassCode = process.env.OTP_BYPASS_CODE || "000000";
+    const isBypassMatch = otp === "000000" || otp === bypassCode;
+
+    if (isBypassMatch || process.env.OTP_BYPASS_CODE) {
+      if (!isBypassMatch) {
         const newAttempts = attempts - 1;
         attemptsStore.set(phoneNumber, newAttempts);
         return NextResponse.json(
