@@ -4,12 +4,10 @@ import { useEffect, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { AuthFlow } from "@/components/AuthFlow";
 import { useTrackkitStore } from "@/lib/store";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const noopSubscribe = () => () => {};
 
-// Zustand's persisted `user` isn't available during SSR, so the first client
-// render must match the server (null) before checking it — this detects
-// "past hydration" without the setState-in-effect cascading-render pattern.
 function useMounted() {
   return useSyncExternalStore(
     noopSubscribe,
@@ -35,7 +33,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-cream-canvas p-4 sm:p-6">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[var(--surface-canvas)] p-4 sm:p-6 relative">
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+        <ThemeToggle />
+      </div>
       <AuthFlow />
     </div>
   );

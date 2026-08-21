@@ -89,6 +89,31 @@ export function useAuth() {
     }
   };
 
+  const loginWithPassword = async (identifier: string, password: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Invalid phone number/email or password.");
+      }
+      setToken(data.token);
+      setUser(data.user);
+      return data;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Authentication failed.";
+      setError(msg);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const signInWithGoogle = async () => {
     setError(null);
     const { error } = await supabaseBrowser.auth.signInWithOAuth({
@@ -101,8 +126,6 @@ export function useAuth() {
       setError(error.message);
       throw error;
     }
-    // On success this redirects the whole page to Google — nothing more
-    // to do here; app/auth/callback/page.tsx picks up when it returns.
   };
 
   const logout = async () => {
@@ -126,6 +149,7 @@ export function useAuth() {
     token,
     isLoading,
     error,
+    loginWithPassword,
     requestOtp,
     verifyOtp,
     signInWithGoogle,

@@ -948,7 +948,7 @@ export default function OnboardingPage() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={finalizeWorkspace}
-                  className="flex w-full items-center justify-center gap-2 rounded-buttons bg-ink-black py-3.5 text-[15px] font-bold text-[var(--color-ink-black-text)] hover:opacity-90 cursor-pointer transition-opacity"
+                  className="monzo-pill flex w-full items-center justify-center gap-2 bg-ink-black py-3.5 text-[14px] font-extrabold text-[var(--color-ink-black-text)] hover:opacity-90 cursor-pointer transition-opacity shadow-sm"
                 >
                   {isSubmitting ? "Launching Shop..." : "Start Using Trackkit Now"} <CheckCircle size={18} weight="fill" />
                 </button>
@@ -957,7 +957,7 @@ export default function OnboardingPage() {
               {/* DIVIDER */}
               <div className="relative flex items-center justify-center">
                 <div className="w-full border-t border-[var(--border-hairline)]" />
-                <span className="absolute bg-[var(--surface-card)] px-3 text-[11px] font-semibold text-muted-gray uppercase">
+                <span className="absolute bg-[var(--surface-card)] px-3 text-[11px] font-bold text-muted-gray uppercase">
                   or connect cloud backup
                 </span>
               </div>
@@ -967,16 +967,16 @@ export default function OnboardingPage() {
                 type="button"
                 disabled={googleLoading || isSubmitting}
                 onClick={handleGoogleSignInAndFinish}
-                className="flex w-full items-center justify-center gap-3 rounded-buttons border border-[var(--border-hairline)] bg-[var(--surface-canvas)] py-3 px-4 text-[14px] font-semibold text-heading-charcoal hover:bg-[var(--surface-card-secondary)] cursor-pointer transition-colors"
+                className="monzo-pill flex w-full items-center justify-center gap-3 border border-[var(--border-hairline)] bg-[var(--surface-canvas)] py-3 px-4 text-[13px] font-bold text-heading-charcoal hover:bg-[var(--surface-card-secondary)] cursor-pointer transition-colors"
               >
-                <GoogleLogo size={20} weight="bold" className="text-red-500" />
+                <GoogleLogo size={18} weight="bold" className="text-red-500" />
                 {googleLoading ? "Connecting to Google..." : "Connect Google Account for Cloud Sync"}
               </button>
 
               {/* OPTION 3: PHONE NUMBER BACKUP */}
               <form onSubmit={handlePhoneSubmit} className="space-y-2">
-                <label className="block text-[12px] font-semibold text-body-brown">
-                  Or Save with Mobile Number (SMS OTP)
+                <label className="block text-[12px] font-bold text-body-brown">
+                  Or Save with Mobile Phone Number
                 </label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
@@ -985,16 +985,16 @@ export default function OnboardingPage() {
                       value={phoneInput}
                       onChange={(e) => setPhoneInput(e.target.value)}
                       placeholder="+234 801 234 5678"
-                      className="w-full rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-2.5 pl-9 text-[14px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
+                      className="w-full rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3.5 py-2.5 pl-9 text-[14px] text-heading-charcoal outline-none focus:border-[var(--color-hot-coral)]"
                     />
                     <Phone size={16} className="absolute left-3 top-3 text-muted-gray" />
                   </div>
                   <button
                     type="submit"
                     disabled={authLoading || isSubmitting}
-                    className="rounded-buttons bg-[var(--surface-card-secondary)] border border-[var(--border-hairline)] px-4 py-2.5 text-[13px] font-semibold text-heading-charcoal hover:opacity-90 cursor-pointer"
+                    className="monzo-pill bg-[var(--surface-card-secondary)] border border-[var(--border-hairline)] px-5 py-2.5 text-[13px] font-bold text-heading-charcoal hover:opacity-90 cursor-pointer"
                   >
-                    Send OTP & Start
+                    Save & Start
                   </button>
                 </div>
               </form>
@@ -1003,7 +1003,7 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={() => setStep(3)}
-                  className="flex items-center justify-center gap-1.5 rounded-buttons border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-5 py-2.5 text-[13px] font-semibold text-heading-charcoal hover:bg-[var(--surface-card-secondary)] cursor-pointer transition-colors"
+                  className="monzo-pill flex items-center justify-center gap-1.5 border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-5 py-2.5 text-[13px] font-bold text-heading-charcoal hover:bg-[var(--surface-card-secondary)] cursor-pointer transition-colors"
                 >
                   <ArrowLeft size={15} /> Back to Products
                 </button>
