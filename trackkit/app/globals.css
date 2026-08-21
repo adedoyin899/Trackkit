@@ -144,7 +144,16 @@ h1, h2, h3, h4, .numo-heading {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-6px);
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes float-reverse {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(8px);
   }
 }
 
@@ -170,6 +179,10 @@ h1, h2, h3, h4, .numo-heading {
 
 .animate-float {
   animation: float-slow 4s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 4.5s ease-in-out infinite;
 }
 
 .animate-pulse-subtle {
