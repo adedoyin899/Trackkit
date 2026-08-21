@@ -500,9 +500,9 @@ export default function OnboardingPage() {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="flex w-full items-center justify-center gap-2 rounded-buttons bg-ink-black py-3.5 text-[15px] font-semibold text-[var(--color-ink-black-text)] hover:opacity-90 cursor-pointer transition-opacity"
+                  className="monzo-pill flex w-full items-center justify-center gap-2 bg-ink-black py-3.5 text-[14px] font-extrabold text-[var(--color-ink-black-text)] hover:opacity-90 cursor-pointer transition-all shadow-sm"
                 >
-                  Continue to Currency & Goals <ArrowRight size={18} />
+                  Continue to Currency & Goals <ArrowRight size={17} weight="bold" />
                 </button>
               </div>
             </form>
@@ -512,7 +512,7 @@ export default function OnboardingPage() {
           {step === 2 && (
             <form onSubmit={handleStep2Next} className="space-y-6">
               <div>
-                <h2 className="text-[22px] font-bold tracking-tight text-heading-charcoal">
+                <h2 className="font-display text-[22px] font-extrabold tracking-tight text-heading-charcoal">
                   Currency & Profit Benchmarks
                 </h2>
                 <p className="mt-1 text-[13px] text-muted-gray">
@@ -521,7 +521,7 @@ export default function OnboardingPage() {
               </div>
 
               <div>
-                <label className="block text-[13px] font-semibold text-body-brown mb-2">
+                <label className="block text-[13px] font-bold text-body-brown mb-2">
                   Primary Currency
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
@@ -532,10 +532,10 @@ export default function OnboardingPage() {
                         key={c.symbol}
                         type="button"
                         onClick={() => setCurrency(c.symbol)}
-                        className={`flex flex-col items-center justify-center rounded-xl border p-3.5 transition-all cursor-pointer ${
+                        className={`flex flex-col items-center justify-center rounded-2xl border p-3.5 transition-all cursor-pointer ${
                           isSelected
-                            ? "border-[var(--color-link-blue)] bg-[var(--color-link-blue)]/10 text-heading-charcoal font-bold shadow-sm"
-                            : "border-[var(--border-hairline)] bg-[var(--surface-canvas)] text-muted-gray hover:text-heading-charcoal"
+                            ? "border-[var(--color-hot-coral)] bg-[var(--color-hot-coral)]/10 text-heading-charcoal font-bold shadow-xs scale-[1.02]"
+                            : "border-[var(--border-hairline)] bg-[var(--surface-canvas)] text-muted-gray hover:text-heading-charcoal hover:bg-[var(--surface-card-secondary)]"
                         }`}
                       >
                         <span className="text-[22px] font-bold">{c.symbol}</span>
@@ -549,7 +549,7 @@ export default function OnboardingPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-[13px] font-semibold text-body-brown">
+                  <label className="block text-[13px] font-bold text-body-brown">
                     Target Profit Margin Goal
                   </label>
                   <span className="text-[13px] font-bold text-[var(--color-grass-green)]">
@@ -562,9 +562,9 @@ export default function OnboardingPage() {
                       key={goal}
                       type="button"
                       onClick={() => setTargetMarginGoal(goal)}
-                      className={`rounded-xl border py-2.5 text-[13px] font-semibold cursor-pointer transition-all ${
+                      className={`rounded-xl border py-2.5 text-[13px] font-bold cursor-pointer transition-all ${
                         targetMarginGoal === goal
-                          ? "border-[var(--color-grass-green)] bg-[var(--color-grass-green)]/15 text-heading-charcoal"
+                          ? "border-[var(--color-grass-green)] bg-[var(--color-grass-green)]/15 text-heading-charcoal shadow-xs"
                           : "border-[var(--border-hairline)] bg-[var(--surface-canvas)] text-muted-gray hover:text-heading-charcoal"
                       }`}
                     >
@@ -579,7 +579,7 @@ export default function OnboardingPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-[13px] font-semibold text-body-brown">
+                  <label className="block text-[13px] font-bold text-body-brown">
                     Default Low Stock Warning Threshold
                   </label>
                   <span className="text-[13px] font-bold text-[var(--color-alert-red)]">
@@ -592,9 +592,9 @@ export default function OnboardingPage() {
                       key={threshold}
                       type="button"
                       onClick={() => setLowStockThreshold(threshold)}
-                      className={`rounded-xl border py-2.5 text-[13px] font-semibold cursor-pointer transition-all ${
+                      className={`rounded-xl border py-2.5 text-[13px] font-bold cursor-pointer transition-all ${
                         lowStockThreshold === threshold
-                          ? "border-[var(--color-alert-red)] bg-[var(--color-alert-red)]/10 text-heading-charcoal"
+                          ? "border-[var(--color-alert-red)] bg-[var(--color-alert-red)]/10 text-heading-charcoal shadow-xs"
                           : "border-[var(--border-hairline)] bg-[var(--surface-canvas)] text-muted-gray hover:text-heading-charcoal"
                       }`}
                     >
@@ -611,15 +611,15 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="flex items-center justify-center gap-1.5 rounded-buttons border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-5 py-3 text-[14px] font-semibold text-heading-charcoal hover:bg-[var(--surface-card-secondary)] cursor-pointer transition-colors"
+                  className="monzo-pill flex items-center justify-center gap-1.5 border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-5 py-3 text-[13px] font-bold text-heading-charcoal hover:bg-[var(--surface-card-secondary)] cursor-pointer transition-colors"
                 >
                   <ArrowLeft size={16} /> Back
                 </button>
                 <button
                   type="submit"
-                  className="flex flex-1 items-center justify-center gap-2 rounded-buttons bg-ink-black py-3.5 text-[15px] font-semibold text-[var(--color-ink-black-text)] hover:opacity-90 cursor-pointer transition-opacity"
+                  className="monzo-pill flex flex-1 items-center justify-center gap-2 bg-ink-black py-3.5 text-[14px] font-extrabold text-[var(--color-ink-black-text)] hover:opacity-90 cursor-pointer transition-opacity shadow-sm"
                 >
-                  Continue to Starter Inventory <ArrowRight size={18} />
+                  Continue to Starter Inventory <ArrowRight size={17} weight="bold" />
                 </button>
               </div>
             </form>
@@ -868,15 +868,15 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="flex items-center justify-center gap-1.5 rounded-buttons border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-5 py-3 text-[14px] font-semibold text-heading-charcoal hover:bg-[var(--surface-card-secondary)] cursor-pointer transition-colors"
+                  className="monzo-pill flex items-center justify-center gap-1.5 border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-5 py-3 text-[13px] font-bold text-heading-charcoal hover:bg-[var(--surface-card-secondary)] cursor-pointer transition-colors"
                 >
                   <ArrowLeft size={16} /> Back
                 </button>
                 <button
                   type="submit"
-                  className="flex flex-1 items-center justify-center gap-2 rounded-buttons bg-ink-black py-3.5 text-[15px] font-semibold text-[var(--color-ink-black-text)] hover:opacity-90 cursor-pointer transition-opacity"
+                  className="monzo-pill flex flex-1 items-center justify-center gap-2 bg-ink-black py-3.5 text-[14px] font-extrabold text-[var(--color-ink-black-text)] hover:opacity-90 cursor-pointer transition-opacity shadow-sm"
                 >
-                  Continue to Backup Options <ArrowRight size={18} />
+                  Continue to Backup Options <ArrowRight size={17} weight="bold" />
                 </button>
               </div>
             </form>

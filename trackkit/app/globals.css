@@ -61,7 +61,7 @@ body {
   color: var(--text-heading);
   font-family: var(--font-inter);
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Headings with Numo-style punchy, blocky, friendly letter-spacing */
@@ -113,16 +113,65 @@ h1, h2, h3, h4, .numo-heading {
   border-radius: var(--radius-cards);
 }
 
-/* 500px Pill Actions */
+/* 500px Pill Actions with tactile feedback */
 .monzo-pill {
   border-radius: 500px;
-  transition: all 0.15s ease;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease;
 }
 
 .monzo-pill:hover {
-  transform: translateY(-1px);
+  transform: translateY(-1.5px);
 }
 
 .monzo-pill:active {
-  transform: translateY(0);
+  transform: translateY(0.5px) scale(0.98);
+}
+
+/* Interactive Card Hover Effects */
+.interactive-card {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+.interactive-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(255, 79, 64, 0.3);
+}
+
+/* Fluid Micro Animations */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.88;
+    transform: scale(1.015);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-float {
+  animation: float-slow 4s ease-in-out infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
 }
