@@ -707,16 +707,17 @@ export default function WelcomePage() {
             </p>
           </div>
 
-          {/* Full Page Showcase Carousel Card */}
-          <div className="relative max-w-5xl mx-auto rounded-containers border border-[var(--border-hairline)] bg-[var(--surface-card)] p-6 sm:p-10 shadow-subtle-3">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-              {/* Left Column: High-Resolution Real Portrait */}
-              <div className="lg:col-span-5 relative">
-                <div className="relative h-[340px] sm:h-[420px] w-full rounded-2xl overflow-hidden border border-[var(--border-hairline)] shadow-md">
+          {/* Full Page Showcase Carousel Card with Locked Consistent Height */}
+          <div className="relative max-w-5xl mx-auto rounded-containers border border-[var(--border-hairline)] bg-[var(--surface-card)] p-6 sm:p-8 md:p-10 shadow-subtle-3 min-h-[480px]">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+              {/* Left Column: High-Resolution Real Portrait with Fixed Same Size */}
+              <div className="lg:col-span-5 relative flex items-center">
+                <div className="relative h-[360px] sm:h-[400px] md:h-[420px] w-full rounded-2xl overflow-hidden border border-[var(--border-hairline)] shadow-md shrink-0">
                   <Image
                     src={currentTestimonial.image}
                     alt={currentTestimonial.name}
                     fill
+                    sizes="(max-width: 768px) 100vw, 420px"
                     className="object-cover transition-opacity duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
@@ -733,73 +734,79 @@ export default function WelcomePage() {
                 </div>
               </div>
 
-              {/* Right Column: Full Story, Verifiable Metric, and Controls */}
-              <div className="lg:col-span-7 space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-[var(--color-gold)] text-[16px]">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} weight="fill" />
-                    ))}
-                  </div>
+              {/* Right Column: Full Story with Consistent Vertical Flex Spacing */}
+              <div className="lg:col-span-7 flex flex-col justify-between min-h-[360px] sm:min-h-[400px] md:min-h-[420px] py-1">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1 text-[var(--color-gold)] text-[16px]">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} weight="fill" />
+                      ))}
+                    </div>
 
-                  {/* Carousel Page Indicator */}
-                  <span className="text-[12px] font-bold text-muted-gray">
-                    {carouselIndex + 1} of {ORIGINAL_TESTIMONIALS.length}
-                  </span>
-                </div>
-
-                {/* Big Quote */}
-                <blockquote className="font-display text-[22px] sm:text-[28px] font-extrabold tracking-tight text-heading-charcoal leading-snug">
-                  &ldquo;{currentTestimonial.quote}&rdquo;
-                </blockquote>
-
-                {/* Social Proof Metric Row */}
-                <div className="pt-4 border-t border-[var(--border-hairline)] flex items-center justify-between">
-                  <div>
-                    <span className="numo-heading text-[26px] font-extrabold text-[var(--color-grass-green)]">
-                      {currentTestimonial.profitMetric}
+                    {/* Carousel Page Indicator */}
+                    <span className="text-[12px] font-bold text-muted-gray">
+                      {carouselIndex + 1} of {ORIGINAL_TESTIMONIALS.length}
                     </span>
-                    <p className="text-[12px] font-semibold text-muted-gray">
-                      {currentTestimonial.profitLabel}
-                    </p>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-grass-green)]/15 px-3 py-1 text-[12px] font-bold text-[var(--color-grass-green)]">
-                    <UserCheck size={16} weight="bold" /> Verified Trader
-                  </span>
+
+                  {/* Big Quote with min height to prevent jitter */}
+                  <div className="min-h-[140px] sm:min-h-[160px] flex items-center">
+                    <blockquote className="font-display text-[20px] sm:text-[25px] md:text-[27px] font-extrabold tracking-tight text-heading-charcoal leading-snug">
+                      &ldquo;{currentTestimonial.quote}&rdquo;
+                    </blockquote>
+                  </div>
                 </div>
 
-                {/* Carousel Navigation Buttons */}
-                <div className="flex items-center gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={prevTestimonial}
-                    aria-label="Previous story"
-                    className="monzo-pill h-10 w-10 flex items-center justify-center border border-[var(--border-hairline)] bg-[var(--surface-card-secondary)] text-heading-charcoal hover:bg-[var(--border-hairline)] transition-colors cursor-pointer"
-                  >
-                    <ArrowLeft size={16} weight="bold" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={nextTestimonial}
-                    aria-label="Next story"
-                    className="monzo-pill h-10 w-10 flex items-center justify-center border border-[var(--border-hairline)] bg-[var(--surface-card-secondary)] text-heading-charcoal hover:bg-[var(--border-hairline)] transition-colors cursor-pointer"
-                  >
-                    <ArrowRight size={16} weight="bold" />
-                  </button>
-                  <div className="flex gap-1.5 ml-2">
-                    {ORIGINAL_TESTIMONIALS.map((_, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => setCarouselIndex(idx)}
-                        aria-label={`Go to slide ${idx + 1}`}
-                        className={`h-2 rounded-full transition-all cursor-pointer ${
-                          carouselIndex === idx
-                            ? "w-7 bg-[var(--color-hot-coral)]"
-                            : "w-2 bg-[var(--border-hairline)] hover:bg-muted-gray"
-                        }`}
-                      />
-                    ))}
+                <div className="space-y-4">
+                  {/* Social Proof Metric Row */}
+                  <div className="pt-4 border-t border-[var(--border-hairline)] flex items-center justify-between">
+                    <div>
+                      <span className="numo-heading text-[26px] font-extrabold text-[var(--color-grass-green)]">
+                        {currentTestimonial.profitMetric}
+                      </span>
+                      <p className="text-[12px] font-semibold text-muted-gray">
+                        {currentTestimonial.profitLabel}
+                      </p>
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-grass-green)]/15 px-3 py-1 text-[12px] font-bold text-[var(--color-grass-green)]">
+                      <UserCheck size={16} weight="bold" /> Verified Trader
+                    </span>
+                  </div>
+
+                  {/* Carousel Navigation Buttons */}
+                  <div className="flex items-center gap-3 pt-1">
+                    <button
+                      type="button"
+                      onClick={prevTestimonial}
+                      aria-label="Previous story"
+                      className="monzo-pill h-10 w-10 flex items-center justify-center border border-[var(--border-hairline)] bg-[var(--surface-card-secondary)] text-heading-charcoal hover:bg-[var(--border-hairline)] transition-colors cursor-pointer"
+                    >
+                      <ArrowLeft size={16} weight="bold" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={nextTestimonial}
+                      aria-label="Next story"
+                      className="monzo-pill h-10 w-10 flex items-center justify-center border border-[var(--border-hairline)] bg-[var(--surface-card-secondary)] text-heading-charcoal hover:bg-[var(--border-hairline)] transition-colors cursor-pointer"
+                    >
+                      <ArrowRight size={16} weight="bold" />
+                    </button>
+                    <div className="flex gap-1.5 ml-2">
+                      {ORIGINAL_TESTIMONIALS.map((_, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setCarouselIndex(idx)}
+                          aria-label={`Go to slide ${idx + 1}`}
+                          className={`h-2 rounded-full transition-all cursor-pointer ${
+                            carouselIndex === idx
+                              ? "w-7 bg-[var(--color-hot-coral)]"
+                              : "w-2 bg-[var(--border-hairline)] hover:bg-muted-gray"
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
