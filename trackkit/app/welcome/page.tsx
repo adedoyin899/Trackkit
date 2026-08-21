@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -8,6 +8,7 @@ import {
   Lightning,
   CheckCircle,
   ArrowRight,
+  ArrowLeft,
   ShieldCheck,
   Package,
   Minus,
@@ -17,9 +18,14 @@ import {
   CaretUp,
   Receipt,
   UserCheck,
-  Sliders,
+  Warning,
   Sparkle,
   TrendUp,
+  ListBullets,
+  WifiSlash,
+  ChartLineUp,
+  Coins,
+  CloudCheck,
 } from "@phosphor-icons/react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -55,45 +61,42 @@ const FAQS: FAQItem[] = [
   },
 ];
 
-const TRADER_STORIES = [
-  {
-    id: "akosua",
-    name: "Akosua Mensah",
-    shop: "Akosua's Spices & Provisions",
-    location: "Makola Market · Accra, Ghana",
-    image: "/images/trader-akosua.jpg",
-    headline: "“I raised my milk price by ₦40 and made ₦12,000 extra this month.”",
-    story:
-      "I was selling milk at 1.25% margin for years without knowing. Trackkit showed me my profit percentages in bright green and red. I adjusted my prices immediately and didn’t lose a single customer.",
-    metricValue: "+₦12,000",
-    metricLabel: "Extra Monthly Profit",
-    category: "Spices & Provisions",
-  },
+const ORIGINAL_TESTIMONIALS = [
   {
     id: "amara",
     name: "Amara Okafor",
-    shop: "Adesola Wholesale & Retail",
+    role: "Selling dairy products for 8 years",
     location: "Balogun Market · Lagos, Nigeria",
     image: "/images/trader-amara.jpg",
-    headline: "“I stopped restocking slow items and boosted my weekly cash by ₦18,500.”",
-    story:
-      "Before Trackkit, I tied up ₦150,000 in slow-moving snacks that barely made ₦20 profit. The Margin Pulse screen made it obvious where my capital was trapped. Now I only restock high-velocity goods.",
-    metricValue: "+₦18,500",
-    metricLabel: "Weekly Cashflow Boost",
-    category: "FMCG & Groceries",
+    quote:
+      "I was selling milk and sugar side by side, but I had no idea which one was actually making me money. Trackkit showed me that milk was barely 1% margin. I raised the price to ₦850 and didn't lose any customers. Now I make ₦3,000 more every week just from milk. This app paid for itself in one day.",
+    profitMetric: "+₦12,000 / mo",
+    profitLabel: "Extra Milk Margin",
+    tag: "Dairy & FMCG",
+  },
+  {
+    id: "esinam",
+    name: "Esinam Akosua Mensah",
+    role: "Selling FMCG and spices for 12 years",
+    location: "Makola Market · Accra, Ghana",
+    image: "/images/trader-akosua.jpg",
+    quote:
+      "I used to write everything on paper. Lists would get lost, I'd forget quantities, suppliers would change prices and I wouldn't track it. Now everything is in my phone. I know exactly how much inventory I have, what I paid for it, and what I'm selling it for. No more guessing. No more losing track.",
+    profitMetric: "100% Tracked",
+    profitLabel: "Paperless Inventory",
+    tag: "Spices & Grains",
   },
   {
     id: "zainab",
     name: "Zainab Bello",
-    shop: "Kano Grains & Spices Depot",
+    role: "Selling noodles, sugar, flour for 6 years",
     location: "Central Market · Kumasi, Ghana",
     image: "/images/trader-zainab.jpg",
-    headline: "“Zero stockouts on my top spices since I turned on low-stock alerts.”",
-    story:
-      "My biggest loss used to be running out of stock on busy Saturdays. Trackkit alerts me 3 days ahead before inventory dips below my threshold. My weekend revenue went up over 25%.",
-    metricValue: "0 Stockouts",
-    metricLabel: "Across 40+ Top Sellers",
-    category: "Grains & Spices",
+    quote:
+      "The low-stock alerts saved me. My phone tells me when I'm running low on popular items. I restock before I run out—no more stock-outs mid-week. My sales went up ₦500 per day just from that one feature.",
+    profitMetric: "+₦15,000 / mo",
+    profitLabel: "Saved Lost Sales",
+    tag: "Noodles & Grains",
   },
 ];
 
@@ -101,38 +104,27 @@ export default function WelcomePage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [activeNavTab, setActiveNavTab] = useState<string>("inventory");
 
-  // Interactive Live Stepper Demo state
-  const [demoStockMilk, setDemoStockMilk] = useState(14);
-  const [demoSalesCount, setDemoSalesCount] = useState(6);
+  // Testimonials carousel state
+  const [carouselIndex, setCarouselIndex] = useState(0);
 
-  // Streamlined Margin Calculator state
-  const [calcCost, setCalcCost] = useState<number>(800);
-  const [calcSelling, setCalcSelling] = useState<number>(1200);
-  const [selectedProductPreset, setSelectedProductPreset] = useState<string>("rice");
+  // Interactive mobile prototype state for features
+  const [prototypeTab, setPrototypeTab] = useState<"stock" | "profit" | "sync">("stock");
+  const [protoMilkStock, setProtoMilkStock] = useState(14);
+  const [protoSugarStock, setProtoSugarStock] = useState(28);
 
-  const calcProfit = calcSelling - calcCost;
-  const calcMarginPct = calcSelling > 0 ? Math.round((calcProfit / calcSelling) * 100) : 0;
+  const nextTestimonial = () => {
+    setCarouselIndex((prev) => (prev + 1) % ORIGINAL_TESTIMONIALS.length);
+  };
 
-  const handleSelectPreset = (preset: string) => {
-    setSelectedProductPreset(preset);
-    if (preset === "milk") {
-      setCalcCost(800);
-      setCalcSelling(810);
-    } else if (preset === "sugar") {
-      setCalcCost(500);
-      setCalcSelling(750);
-    } else if (preset === "noodles") {
-      setCalcCost(350);
-      setCalcSelling(500);
-    } else if (preset === "rice") {
-      setCalcCost(1200);
-      setCalcSelling(1600);
-    }
+  const prevTestimonial = () => {
+    setCarouselIndex((prev) => (prev - 1 + ORIGINAL_TESTIMONIALS.length) % ORIGINAL_TESTIMONIALS.length);
   };
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
   };
+
+  const currentTestimonial = ORIGINAL_TESTIMONIALS[carouselIndex];
 
   return (
     <div className="min-h-screen bg-[var(--surface-canvas)] text-heading-charcoal font-sans selection:bg-[var(--color-hot-coral)] selection:text-white">
@@ -152,16 +144,16 @@ export default function WelcomePage() {
             {/* Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center gap-1">
               <a
+                href="#problem"
+                className="px-3.5 py-1.5 rounded-full text-[13px] font-bold text-body-brown hover:text-heading-charcoal hover:bg-[var(--surface-card-secondary)] transition-colors"
+              >
+                The Reality
+              </a>
+              <a
                 href="#features"
                 className="px-3.5 py-1.5 rounded-full text-[13px] font-bold text-body-brown hover:text-heading-charcoal hover:bg-[var(--surface-card-secondary)] transition-colors"
               >
-                Features
-              </a>
-              <a
-                href="#margin-reality"
-                className="px-3.5 py-1.5 rounded-full text-[13px] font-bold text-body-brown hover:text-heading-charcoal hover:bg-[var(--surface-card-secondary)] transition-colors"
-              >
-                Margin Engine
+                Interactive Prototype
               </a>
               <a
                 href="#stories"
@@ -203,7 +195,7 @@ export default function WelcomePage() {
       </header>
 
       {/* ========================================================================= */}
-      {/* 1. PEOPLE-ORIENTED HERO SECTION WITH FLOATING ANIMATED IN-PRODUCT CARDS */}
+      {/* 1. HERO SECTION (People-Oriented Image with Floating In-Product Cards) */}
       {/* ========================================================================= */}
       <section className="relative overflow-hidden pt-12 pb-16 sm:pt-18 sm:pb-24 border-b border-[var(--border-hairline)] bg-[var(--surface-canvas)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
@@ -217,12 +209,12 @@ export default function WelcomePage() {
 
               <h1 className="font-display text-[42px] sm:text-[56px] lg:text-[62px] font-extrabold leading-[1.04] tracking-[-0.045em] text-heading-charcoal">
                 Know Your Stock. <br />
-                Protect Your Profit. <br />
-                <span className="text-[var(--color-hot-coral)]">Offline Always.</span>
+                Know Your Profit. <br />
+                <span className="text-[var(--color-hot-coral)]">No Internet? No Problem.</span>
               </h1>
 
               <p className="text-[17px] sm:text-[19px] text-body-brown leading-relaxed max-w-xl">
-                The smart inventory copilot built for African retail shops. See exact product profit margins, prevent costly stockouts, and manage daily sales with zero internet.
+                The app that helps market women track inventory, see real profit margins, and make smarter buying decisions—all offline, completely free to start.
               </p>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
@@ -254,7 +246,7 @@ export default function WelcomePage() {
               </div>
             </div>
 
-            {/* Hero Right: High-Res Real Trader Photograph + Floating Animated Cards */}
+            {/* Hero Right: Real Trader Photography + Floating Animated In-Product Cards */}
             <div className="lg:col-span-6 relative">
               <div className="relative mx-auto max-w-lg">
                 {/* Backdrop Glow */}
@@ -264,12 +256,11 @@ export default function WelcomePage() {
                 <div className="relative h-[380px] sm:h-[460px] w-full rounded-[28px] overflow-hidden border border-[var(--border-hairline)] shadow-2xl">
                   <Image
                     src="/images/hero-market-trader.jpg"
-                    alt="Adesola in her modern retail shop in Lagos"
+                    alt="Adesola smiling in her retail grocery and provision shop in Lagos"
                     fill
                     priority
                     className="object-cover"
                   />
-                  {/* Subtle dark gradient overlay at bottom for clarity */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
                   {/* Location badge on photo */}
@@ -309,7 +300,7 @@ export default function WelcomePage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-[12px] font-bold text-heading-charcoal truncate">Dangote Sugar (500g)</p>
                       <p className="text-[11px] font-extrabold text-[var(--color-grass-green)]">
-                        +50% Margin · ₦750 Price
+                        +50% Margin · ₦750 Price 🟢
                       </p>
                     </div>
                   </div>
@@ -329,7 +320,7 @@ export default function WelcomePage() {
       {/* ========================================================================= */}
       {/* 2. "TELL ME ABOUT..." INTERACTIVE PILL NAVIGATION (Monzo Signature Feature) */}
       {/* ========================================================================= */}
-      <section className="py-10 border-b border-[var(--border-hairline)] bg-[var(--surface-card)]">
+      <section className="py-8 border-b border-[var(--border-hairline)] bg-[var(--surface-card)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h2 className="font-display text-[22px] sm:text-[24px] font-extrabold text-heading-charcoal tracking-tight">
@@ -337,8 +328,8 @@ export default function WelcomePage() {
             </h2>
             <div className="flex flex-wrap gap-2">
               {[
-                { id: "inventory", label: "📦 Inventory Tracking", target: "#features" },
-                { id: "margins", label: "💰 Margin Engine", target: "#margin-reality" },
+                { id: "problem", label: "⚠️ The Reality", target: "#problem" },
+                { id: "features", label: "📱 Interactive Prototype", target: "#features" },
                 { id: "stories", label: "💬 Trader Stories", target: "#stories" },
                 { id: "pricing", label: "🏷️ Transparent Pricing", target: "#pricing" },
               ].map((item) => (
@@ -361,271 +352,337 @@ export default function WelcomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. SIMPLIFIED, PUNCHY MARGIN COMPARISON SECTION (Easy to digest & scroll) */}
+      {/* 3. SECTION 1: THE PROBLEM (Exact Original Copy from landing page.md) */}
       {/* ========================================================================= */}
-      <section id="margin-reality" className="py-16 sm:py-20 border-b border-[var(--border-hairline)] bg-[var(--surface-canvas)]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
+      <section id="problem" className="py-16 sm:py-24 border-b border-[var(--border-hairline)] bg-[var(--surface-canvas)]">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 md:px-8 space-y-12">
           {/* Section Heading */}
-          <div className="mx-auto max-w-3xl text-center space-y-3 mb-10">
+          <div className="text-center space-y-3 max-w-3xl mx-auto">
             <span className="text-[12px] font-extrabold text-[var(--color-hot-coral)] uppercase tracking-wider">
               The Reality of Retail Trading
             </span>
-            <h2 className="font-display text-[32px] sm:text-[44px] font-extrabold tracking-tight text-heading-charcoal">
-              The 1% Margin Trap vs. The 50% Profit Engine
+            <h2 className="font-display text-[34px] sm:text-[48px] font-extrabold tracking-tight text-heading-charcoal">
+              You&rsquo;re Losing Money Without Even Knowing It
             </h2>
-            <p className="text-[15px] sm:text-[17px] text-body-brown leading-relaxed">
-              Not all fast-moving items make you money. Trackkit instantly reveals which products actually pay your bills.
+            <p className="text-[17px] sm:text-[19px] text-body-brown leading-relaxed">
+              Every week, you&rsquo;re working hard. Restocking at dawn. Selling all day. Counting money at night. But somewhere in between, profit is slipping away.
             </p>
           </div>
 
-          {/* Clean 2-Column Visual Contrast */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto items-stretch">
-            {/* Milk Trap */}
-            <div className="interactive-card rounded-2xl border border-[var(--color-alert-red)]/30 bg-[var(--surface-card)] p-6 shadow-sm flex flex-col justify-between space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-[24px]">🥛</span>
-                  <div>
-                    <h3 className="font-display text-[17px] font-extrabold text-heading-charcoal">
-                      Peak Evaporated Milk
-                    </h3>
-                    <p className="text-[11px] text-muted-gray">Cost: ₦800 · Sell: ₦810</p>
-                  </div>
-                </div>
-                <span className="rounded-full bg-[var(--color-alert-red)]/15 px-2.5 py-1 text-[11px] font-extrabold text-[var(--color-alert-red)]">
-                  1.25% Margin ⚠️
-                </span>
-              </div>
+          {/* Core Story Box */}
+          <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 sm:p-8 shadow-subtle-3 space-y-4">
+            <p className="text-[16px] text-body-brown leading-relaxed">
+              You remember buying milk at <strong>₦800</strong>, selling at <strong>₦810</strong>. That&rsquo;s barely <strong>₦10 per tin</strong>. Meanwhile, sugar is <strong>₦50 cost</strong>, <strong>₦75 selling</strong>—that&rsquo;s real money. But which one are you actually restocking? Which one is taking up your time?
+            </p>
+            <div className="p-4 rounded-xl bg-[var(--color-alert-red)]/10 border border-[var(--color-alert-red)]/20 text-[14px] font-bold text-[var(--color-alert-red)] flex items-center gap-2">
+              <Warning size={20} weight="fill" className="shrink-0" />
+              <span>Without seeing the numbers, you&rsquo;re flying blind.</span>
+            </div>
+          </div>
 
-              {/* Progress bar */}
-              <div className="w-full bg-[var(--surface-card-secondary)] h-2 rounded-full overflow-hidden">
-                <div className="bg-[var(--color-alert-red)] h-full w-[2%]" />
-              </div>
-
-              <p className="text-[13px] text-body-brown">
-                <strong className="text-[var(--color-alert-red)]">The Reality:</strong> You must haul & sell <strong>100 tins</strong> just to make <strong>₦1,000 profit</strong> while tying down <strong>₦80,000</strong> in capital.
+          {/* 5 Original Pain Points */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-card)] p-5 shadow-xs space-y-2">
+              <h3 className="font-display text-[16px] font-extrabold text-heading-charcoal flex items-center gap-2">
+                <span className="text-[var(--color-alert-red)]">❌</span> Forgotten restocks
+              </h3>
+              <p className="text-[13px] text-muted-gray leading-relaxed">
+                You run out of your best sellers mid-week and lose sales.
               </p>
             </div>
 
-            {/* Sugar Engine */}
-            <div className="interactive-card rounded-2xl border border-[var(--color-grass-green)]/40 bg-[var(--surface-card)] p-6 shadow-sm flex flex-col justify-between space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-[24px]">🍚</span>
-                  <div>
-                    <h3 className="font-display text-[17px] font-extrabold text-heading-charcoal">
-                      Dangote Granulated Sugar
-                    </h3>
-                    <p className="text-[11px] text-muted-gray">Cost: ₦500 · Sell: ₦750</p>
-                  </div>
-                </div>
-                <span className="rounded-full bg-[var(--color-grass-green)]/15 px-2.5 py-1 text-[11px] font-extrabold text-[var(--color-grass-green)]">
-                  33.3% Margin 🟢
-                </span>
-              </div>
+            <div className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-card)] p-5 shadow-xs space-y-2">
+              <h3 className="font-display text-[16px] font-extrabold text-heading-charcoal flex items-center gap-2">
+                <span className="text-[var(--color-alert-red)]">❌</span> No margin visibility
+              </h3>
+              <p className="text-[13px] text-muted-gray leading-relaxed">
+                Some products might be losing you money and you don&rsquo;t even know.
+              </p>
+            </div>
 
-              {/* Progress bar */}
-              <div className="w-full bg-[var(--surface-card-secondary)] h-2 rounded-full overflow-hidden">
-                <div className="bg-[var(--color-grass-green)] h-full w-[33.3%]" />
-              </div>
+            <div className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-card)] p-5 shadow-xs space-y-2">
+              <h3 className="font-display text-[16px] font-extrabold text-heading-charcoal flex items-center gap-2">
+                <span className="text-[var(--color-alert-red)]">❌</span> Buying guesses
+              </h3>
+              <p className="text-[13px] text-muted-gray leading-relaxed">
+                You restock based on habit, not data. Sometimes you over-buy slow items.
+              </p>
+            </div>
 
-              <p className="text-[13px] text-body-brown">
-                <strong className="text-[var(--color-grass-green)]">The Insight:</strong> Selling just <strong>4 bags</strong> earns that exact same <strong>₦1,000 profit</strong> with only <strong>₦2,000</strong> capital committed.
+            <div className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-card)] p-5 shadow-xs space-y-2">
+              <h3 className="font-display text-[16px] font-extrabold text-heading-charcoal flex items-center gap-2">
+                <span className="text-[var(--color-alert-red)]">❌</span> Paper records fail
+              </h3>
+              <p className="text-[13px] text-muted-gray leading-relaxed">
+                Lists get lost, numbers get illegible, you can&rsquo;t remember last week&rsquo;s prices.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-card)] p-5 shadow-xs space-y-2 sm:col-span-2 lg:col-span-2">
+              <h3 className="font-display text-[16px] font-extrabold text-heading-charcoal flex items-center gap-2">
+                <span className="text-[var(--color-alert-red)]">❌</span> No internet? You&rsquo;re stuck
+              </h3>
+              <p className="text-[13px] text-muted-gray leading-relaxed">
+                Most tools need WiFi. Markets don&rsquo;t have WiFi. Trackkit works 100% offline.
               </p>
             </div>
           </div>
 
-          {/* Compact Interactive Margin Calculator Bar */}
-          <div className="mt-8 max-w-3xl mx-auto rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-card)] p-5 shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-              <span className="text-[13px] font-extrabold text-heading-charcoal flex items-center gap-1.5">
-                <Sliders size={16} className="text-[var(--color-hot-coral)]" /> Test Your Product Margin:
-              </span>
-              <div className="flex gap-1.5 flex-wrap">
-                {[
-                  { id: "rice", label: "🍚 Rice" },
-                  { id: "sugar", label: "🍬 Sugar" },
-                  { id: "milk", label: "🥛 Milk" },
-                  { id: "noodles", label: "🍜 Noodles" },
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => handleSelectPreset(item.id)}
-                    className={`monzo-pill px-3 py-0.5 text-[11px] font-bold cursor-pointer transition-all ${
-                      selectedProductPreset === item.id
-                        ? "bg-ink-black text-[var(--color-ink-black-text)] shadow-2xs"
-                        : "bg-[var(--surface-card-secondary)] text-heading-charcoal"
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center text-center sm:text-left">
-              <div>
-                <span className="text-[11px] font-semibold text-muted-gray">Cost: ₦{calcCost}</span>
-                <input
-                  type="range"
-                  min={100}
-                  max={5000}
-                  step={50}
-                  value={calcCost}
-                  onChange={(e) => setCalcCost(Number(e.target.value))}
-                  className="w-full accent-[var(--color-hot-coral)] cursor-pointer"
-                />
-              </div>
-
-              <div>
-                <span className="text-[11px] font-semibold text-muted-gray">Selling: ₦{calcSelling}</span>
-                <input
-                  type="range"
-                  min={100}
-                  max={6000}
-                  step={50}
-                  value={calcSelling}
-                  onChange={(e) => setCalcSelling(Number(e.target.value))}
-                  className="w-full accent-[var(--color-grass-green)] cursor-pointer"
-                />
-              </div>
-
-              <div className="sm:text-right">
-                <span
-                  className={`numo-display text-[22px] font-extrabold ${
-                    calcMarginPct >= 30
-                      ? "text-[var(--color-grass-green)]"
-                      : calcMarginPct >= 10
-                      ? "text-[var(--color-gold)]"
-                      : "text-[var(--color-alert-red)]"
-                  }`}
-                >
-                  +{calcMarginPct}% Margin
-                </span>
-                <p className="text-[11px] font-bold text-heading-charcoal">+₦{calcProfit} profit / item</p>
-              </div>
-            </div>
+          {/* Emotional Anchor Box */}
+          <div className="rounded-cards bg-[var(--surface-card-secondary)] border border-[var(--border-hairline)] p-6 sm:p-8 text-center max-w-3xl mx-auto space-y-2">
+            <p className="text-[16px] sm:text-[18px] text-body-brown leading-relaxed">
+              You didn&rsquo;t start this business to break even. You started it to provide for your family, to build something.
+            </p>
+            <p className="font-display text-[18px] sm:text-[20px] font-extrabold text-heading-charcoal">
+              You deserve to know if your work is actually paying off.
+            </p>
           </div>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. MONZO BENTO FEATURE GRID */}
+      {/* 4. INTERACTIVE MOBILE PROTOTYPE FEATURE SECTION */}
       {/* ========================================================================= */}
-      <section id="features" className="py-16 sm:py-20 border-b border-[var(--border-hairline)] bg-[var(--surface-card-secondary)]">
+      <section id="features" className="py-16 sm:py-24 border-b border-[var(--border-hairline)] bg-[var(--surface-card-secondary)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
           <div className="mx-auto max-w-3xl text-center space-y-3 mb-12">
             <span className="text-[12px] font-extrabold text-[var(--color-hot-coral)] uppercase tracking-wider">
-              Built for African Retail
+              Finally, An App Built For You
             </span>
-            <h2 className="font-display text-[32px] sm:text-[44px] font-extrabold tracking-tight text-heading-charcoal">
-              Everything You Need to Run a Profitable Shop
+            <h2 className="font-display text-[34px] sm:text-[48px] font-extrabold tracking-tight text-heading-charcoal">
+              Three Simple Things That Change Everything
             </h2>
-            <p className="text-[15px] sm:text-[17px] text-body-brown">
-              No complicated spreadsheets. Just tap to sell, tap to restock, and keep 100% control of your margins.
+            <p className="text-[16px] sm:text-[18px] text-body-brown">
+              Tap the interactive mobile prototype below to try Trackkit&rsquo;s core features in real time.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {/* Feature 1: Fast 1-Tap Inventory Stepper */}
-            <div className="interactive-card rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 shadow-subtle-3 flex flex-col justify-between space-y-6">
-              <div>
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--color-hot-coral)] text-white shadow-coral mb-4">
-                  <Package size={22} weight="fill" />
-                </div>
-                <h3 className="font-display text-[20px] font-extrabold text-heading-charcoal">
-                  1-Tap Sales & Restock
-                </h3>
-                <p className="text-[13px] text-body-brown mt-1">
-                  Log sales and restocks in under a second. No counting registers or messy paper books.
-                </p>
-              </div>
-
-              {/* Live Stepper Demo */}
-              <div className="rounded-2xl bg-[var(--surface-canvas)] p-4 border border-[var(--border-hairline)]">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-[13px]">🥛 Peak Milk (160g)</span>
-                  <span className="text-[11px] font-semibold text-muted-gray">Alert ≤ 5</span>
-                </div>
-                <div className="numo-display text-[28px] font-extrabold my-2 text-heading-charcoal">
-                  {demoStockMilk} tins
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (demoStockMilk > 0) {
-                        setDemoStockMilk(demoStockMilk - 1);
-                        setDemoSalesCount(demoSalesCount + 1);
-                      }
-                    }}
-                    className="monzo-pill flex-1 flex items-center justify-center gap-1 bg-[var(--color-alert-red)] text-white py-2 text-[12px] font-bold cursor-pointer hover:opacity-90"
-                  >
-                    <Minus size={13} weight="bold" /> 1 Sale
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDemoStockMilk(demoStockMilk + 1)}
-                    className="monzo-pill flex-1 flex items-center justify-center gap-1 bg-[var(--color-grass-green)] text-white py-2 text-[12px] font-bold cursor-pointer hover:opacity-90"
-                  >
-                    <Plus size={13} weight="bold" /> 1 Restock
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Feature 2: Smart Supplier Tracking */}
-            <div className="interactive-card rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 shadow-subtle-3 flex flex-col justify-between space-y-6">
-              <div>
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--color-grass-green)] text-white shadow-sm mb-4">
-                  <Receipt size={22} weight="fill" />
-                </div>
-                <h3 className="font-display text-[20px] font-extrabold text-heading-charcoal">
-                  Cheapest Supplier Alerts
-                </h3>
-                <p className="text-[13px] text-body-brown mt-1">
-                  Track who gave you the best restock price and see price fluctuation history automatically.
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-[var(--surface-canvas)] p-4 border border-[var(--border-hairline)] space-y-2">
-                <div className="flex justify-between items-center text-[12px]">
-                  <span className="font-bold">Alaba Wholesale</span>
-                  <span className="text-[var(--color-grass-green)] font-extrabold font-display">₦780 / tin (Best)</span>
-                </div>
-                <div className="flex justify-between items-center text-[12px] text-muted-gray">
-                  <span>Kano Depot</span>
-                  <span>₦820 / tin</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Feature 3: Offline SQLite */}
-            <div className="interactive-card rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 shadow-subtle-3 flex flex-col justify-between space-y-6">
-              <div>
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--color-link-blue)] text-white shadow-sm mb-4">
-                  <Lightning size={22} weight="fill" />
-                </div>
-                <h3 className="font-display text-[20px] font-extrabold text-heading-charcoal">
-                  100% Offline SQLite
-                </h3>
-                <p className="text-[13px] text-body-brown mt-1">
-                  Full relational SQLite running right inside your browser. Zero lag, zero network requests.
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-[var(--surface-canvas)] p-4 border border-[var(--border-hairline)] space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[12px] font-bold text-heading-charcoal">Local Database Engine</span>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[var(--color-grass-green)]">
-                    <span className="h-2 w-2 rounded-full bg-[var(--color-grass-green)] animate-pulse" />
-                    Active
+          {/* Interactive Mobile Prototype Showcase */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 max-w-5xl mx-auto items-center">
+            {/* Left: Feature Selector Tabs */}
+            <div className="lg:col-span-6 space-y-4">
+              {/* Tab 1: Know Your Stock */}
+              <button
+                type="button"
+                onClick={() => setPrototypeTab("stock")}
+                className={`w-full text-left p-5 rounded-2xl border transition-all cursor-pointer ${
+                  prototypeTab === "stock"
+                    ? "bg-[var(--surface-card)] border-[var(--color-hot-coral)] shadow-md ring-1 ring-[var(--color-hot-coral)]"
+                    : "bg-[var(--surface-canvas)] border-[var(--border-hairline)] hover:bg-[var(--surface-card)]"
+                }`}
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-hot-coral)] text-white font-bold">
+                    <Package size={20} weight="fill" />
                   </span>
+                  <h3 className="font-display text-[18px] font-extrabold text-heading-charcoal">
+                    1. Know Your Stock
+                  </h3>
                 </div>
-                <p className="text-[11px] text-muted-gray">
-                  All transactions and catalog items are saved to local device storage.
+                <p className="text-[13px] text-body-brown leading-relaxed">
+                  Add your products once. Quick buttons: tap &ldquo;-1&rdquo; when you sell, &ldquo;+1&rdquo; when you restock. No counting. No guessing.
                 </p>
+                <p className="mt-2 text-[12px] font-bold text-[var(--color-grass-green)]">
+                  The result: No more stock-outs on best sellers.
+                </p>
+              </button>
+
+              {/* Tab 2: Know Your Profit */}
+              <button
+                type="button"
+                onClick={() => setPrototypeTab("profit")}
+                className={`w-full text-left p-5 rounded-2xl border transition-all cursor-pointer ${
+                  prototypeTab === "profit"
+                    ? "bg-[var(--surface-card)] border-[var(--color-grass-green)] shadow-md ring-1 ring-[var(--color-grass-green)]"
+                    : "bg-[var(--surface-canvas)] border-[var(--border-hairline)] hover:bg-[var(--surface-card)]"
+                }`}
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-grass-green)] text-white font-bold">
+                    <Receipt size={20} weight="fill" />
+                  </span>
+                  <h3 className="font-display text-[18px] font-extrabold text-heading-charcoal">
+                    2. Know Your Profit Margins
+                  </h3>
+                </div>
+                <p className="text-[13px] text-body-brown leading-relaxed">
+                  Enter supplier cost and selling price. Trackkit calculates the exact margin percentage instantly with green and red indicators.
+                </p>
+                <p className="mt-2 text-[12px] font-bold text-[var(--color-grass-green)]">
+                  The result: Make ₦2,000–₦5,000 more profit per week.
+                </p>
+              </button>
+
+              {/* Tab 3: Sync & Backup */}
+              <button
+                type="button"
+                onClick={() => setPrototypeTab("sync")}
+                className={`w-full text-left p-5 rounded-2xl border transition-all cursor-pointer ${
+                  prototypeTab === "sync"
+                    ? "bg-[var(--surface-card)] border-[var(--color-link-blue)] shadow-md ring-1 ring-[var(--color-link-blue)]"
+                    : "bg-[var(--surface-canvas)] border-[var(--border-hairline)] hover:bg-[var(--surface-card)]"
+                }`}
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-link-blue)] text-white font-bold">
+                    <CloudCheck size={20} weight="fill" />
+                  </span>
+                  <h3 className="font-display text-[18px] font-extrabold text-heading-charcoal">
+                    3. 100% Offline + Cloud Backup
+                  </h3>
+                </div>
+                <p className="text-[13px] text-body-brown leading-relaxed">
+                  Works completely without WiFi. When you reconnect, everything backs up to the cloud automatically.
+                </p>
+                <p className="mt-2 text-[12px] font-bold text-[var(--color-grass-green)]">
+                  The result: Total peace of mind. Your business data is safe.
+                </p>
+              </button>
+            </div>
+
+            {/* Right: Live Interactive Smartphone Prototype */}
+            <div className="lg:col-span-6">
+              <div className="relative mx-auto max-w-[340px] rounded-[40px] border-[8px] border-[#091723] bg-[#091723] p-3 shadow-2xl">
+                {/* Phone Speaker Notch */}
+                <div className="mx-auto mb-2 h-4 w-28 rounded-full bg-black/40" />
+
+                {/* Interactive Screen Display */}
+                <div className="rounded-[28px] bg-[var(--surface-canvas)] p-4 text-heading-charcoal space-y-4 border border-[var(--border-hairline)] min-h-[420px] flex flex-col justify-between">
+                  {/* Top Bar */}
+                  <div className="flex items-center justify-between border-b border-[var(--border-hairline)] pb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="h-6 w-6 rounded-full bg-[var(--color-hot-coral)] text-white text-[10px] font-extrabold flex items-center justify-center">
+                        TK
+                      </span>
+                      <span className="font-display font-extrabold text-[12px]">Trackkit Mobile</span>
+                    </div>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-grass-green)]/15 px-2 py-0.5 text-[9px] font-extrabold text-[var(--color-grass-green)]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-grass-green)] animate-pulse" />
+                      100% Offline
+                    </span>
+                  </div>
+
+                  {/* PROTOTYPE SCREEN 1: 1-TAP INVENTORY STEPPER */}
+                  {prototypeTab === "stock" && (
+                    <div className="space-y-3">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-muted-gray">
+                        1-Tap Stock Stepper Demo
+                      </p>
+
+                      {/* Product 1 */}
+                      <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-3 shadow-2xs space-y-2">
+                        <div className="flex justify-between items-center text-[12px] font-bold">
+                          <span>🥛 Peak Evaporated Milk</span>
+                          <span className="numo-display text-[16px] text-heading-charcoal">{protoMilkStock} tins</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setProtoMilkStock(Math.max(0, protoMilkStock - 1))}
+                            className="monzo-pill flex-1 flex items-center justify-center gap-1 bg-[var(--color-alert-red)] text-white py-1.5 text-[11px] font-bold cursor-pointer hover:opacity-90"
+                          >
+                            <Minus size={12} weight="bold" /> 1 Sale
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setProtoMilkStock(protoMilkStock + 1)}
+                            className="monzo-pill flex-1 flex items-center justify-center gap-1 bg-[var(--color-grass-green)] text-white py-1.5 text-[11px] font-bold cursor-pointer hover:opacity-90"
+                          >
+                            <Plus size={12} weight="bold" /> 1 Restock
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Product 2 */}
+                      <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-3 shadow-2xs space-y-2">
+                        <div className="flex justify-between items-center text-[12px] font-bold">
+                          <span>🍚 Dangote Sugar (500g)</span>
+                          <span className="numo-display text-[16px] text-heading-charcoal">{protoSugarStock} bags</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setProtoSugarStock(Math.max(0, protoSugarStock - 1))}
+                            className="monzo-pill flex-1 flex items-center justify-center gap-1 bg-[var(--color-alert-red)] text-white py-1.5 text-[11px] font-bold cursor-pointer hover:opacity-90"
+                          >
+                            <Minus size={12} weight="bold" /> 1 Sale
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setProtoSugarStock(protoSugarStock + 1)}
+                            className="monzo-pill flex-1 flex items-center justify-center gap-1 bg-[var(--color-grass-green)] text-white py-1.5 text-[11px] font-bold cursor-pointer hover:opacity-90"
+                          >
+                            <Plus size={12} weight="bold" /> 1 Restock
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* PROTOTYPE SCREEN 2: PROFIT MARGIN ENGINE */}
+                  {prototypeTab === "profit" && (
+                    <div className="space-y-2.5">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-muted-gray">
+                        Live Profit Margin Engine
+                      </p>
+
+                      <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-2.5 shadow-2xs flex items-center justify-between">
+                        <div>
+                          <p className="text-[12px] font-bold">Milk: ₦800 cost → ₦810 sell</p>
+                          <p className="text-[10px] text-muted-gray">Net Profit: +₦10 / tin</p>
+                        </div>
+                        <span className="rounded-full bg-[var(--color-alert-red)]/15 px-2 py-0.5 text-[10px] font-extrabold text-[var(--color-alert-red)]">
+                          1.25% Margin 🔴
+                        </span>
+                      </div>
+
+                      <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-2.5 shadow-2xs flex items-center justify-between">
+                        <div>
+                          <p className="text-[12px] font-bold">Sugar: ₦50 cost → ₦75 sell</p>
+                          <p className="text-[10px] text-muted-gray">Net Profit: +₦25 / bag</p>
+                        </div>
+                        <span className="rounded-full bg-[var(--color-grass-green)]/15 px-2 py-0.5 text-[10px] font-extrabold text-[var(--color-grass-green)]">
+                          50.0% Margin 🟢
+                        </span>
+                      </div>
+
+                      <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-2.5 shadow-2xs flex items-center justify-between">
+                        <div>
+                          <p className="text-[12px] font-bold">Noodles: ₦80 cost → ₦120 sell</p>
+                          <p className="text-[10px] text-muted-gray">Net Profit: +₦40 / pack</p>
+                        </div>
+                        <span className="rounded-full bg-[var(--color-grass-green)]/15 px-2 py-0.5 text-[10px] font-extrabold text-[var(--color-grass-green)]">
+                          50.0% Margin 🟢
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* PROTOTYPE SCREEN 3: OFFLINE SYNC */}
+                  {prototypeTab === "sync" && (
+                    <div className="space-y-3 text-center py-4">
+                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--color-link-blue)]/15 text-[var(--color-link-blue)]">
+                        <CloudCheck size={32} weight="fill" />
+                      </div>
+                      <div>
+                        <p className="font-display font-extrabold text-[15px]">100% Offline SQLite</p>
+                        <p className="text-[11px] text-muted-gray mt-1">
+                          All products & sales stored locally in your browser. Auto-syncs to cloud when online.
+                        </p>
+                      </div>
+                      <div className="rounded-xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-2 text-[11px] font-bold text-[var(--color-grass-green)]">
+                        ✓ Safe · Encrypted · Instant
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Bottom App Navigation */}
+                  <div className="border-t border-[var(--border-hairline)] pt-2 flex justify-around text-[10px] text-muted-gray font-bold">
+                    <span className="text-[var(--color-hot-coral)]">📦 Inventory</span>
+                    <span>💰 Margins</span>
+                    <span>⚡ Offline</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -633,86 +690,146 @@ export default function WelcomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 5. MULTI-TRADER STORIES & REAL METRICS (3-Card Visible Gallery) */}
+      {/* 5. FULL-PAGE TESTIMONIAL CAROUSEL (Original Full Page Style with Smooth Navigation) */}
       {/* ========================================================================= */}
       <section id="stories" className="py-16 sm:py-24 border-b border-[var(--border-hairline)] bg-[var(--surface-canvas)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
+          {/* Section Header */}
           <div className="mx-auto max-w-3xl text-center space-y-3 mb-12">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-gold)]/15 px-3.5 py-1 text-[12px] font-extrabold text-[var(--color-gold)]">
-              <Star weight="fill" size={14} /> 5.0 Rating Across 2,000+ Retailers
+              <Star weight="fill" size={14} /> 5.0 Rating Across 2,000+ Market Women
             </div>
-            <h2 className="font-display text-[34px] sm:text-[46px] font-extrabold tracking-tight text-heading-charcoal">
-              Real Market Traders. Real Stories & Results.
+            <h2 className="font-display text-[34px] sm:text-[48px] font-extrabold tracking-tight text-heading-charcoal">
+              Real People, Real Results
             </h2>
-            <p className="text-[16px] text-body-brown">
-              See how market women across West Africa are protecting their weekly margins.
+            <p className="text-[16px] sm:text-[18px] text-body-brown">
+              Hear directly from market women across West Africa who transformed their daily profit with Trackkit.
             </p>
           </div>
 
-          {/* 3-Column Stories Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto items-stretch">
-            {TRADER_STORIES.map((trader) => (
-              <div
-                key={trader.id}
-                className="interactive-card rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-card)] p-6 shadow-subtle-3 flex flex-col justify-between space-y-5"
-              >
-                <div className="space-y-4">
-                  {/* Photo & Identity Header */}
-                  <div className="flex items-center gap-3">
-                    <div className="relative h-14 w-14 rounded-full overflow-hidden border-2 border-[var(--color-hot-coral)] shrink-0 shadow-xs">
-                      <Image
-                        src={trader.image}
-                        alt={trader.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-display text-[16px] font-extrabold text-heading-charcoal leading-tight">
-                        {trader.name}
-                      </h3>
-                      <p className="text-[11px] text-muted-gray">{trader.location}</p>
-                    </div>
+          {/* Full Page Showcase Carousel Card */}
+          <div className="relative max-w-5xl mx-auto rounded-containers border border-[var(--border-hairline)] bg-[var(--surface-card)] p-6 sm:p-10 shadow-subtle-3">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+              {/* Left Column: High-Resolution Real Portrait */}
+              <div className="lg:col-span-5 relative">
+                <div className="relative h-[340px] sm:h-[420px] w-full rounded-2xl overflow-hidden border border-[var(--border-hairline)] shadow-md">
+                  <Image
+                    src={currentTestimonial.image}
+                    alt={currentTestimonial.name}
+                    fill
+                    className="object-cover transition-opacity duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider bg-[var(--color-hot-coral)] px-2.5 py-0.5 rounded-full mb-1 inline-block">
+                      {currentTestimonial.tag}
+                    </span>
+                    <h3 className="font-display font-extrabold text-[20px] leading-tight">
+                      {currentTestimonial.name}
+                    </h3>
+                    <p className="text-[12px] text-white/80">{currentTestimonial.location}</p>
+                    <p className="text-[11px] text-white/60 mt-0.5">{currentTestimonial.role}</p>
                   </div>
+                </div>
+              </div>
 
-                  {/* Rating Stars */}
-                  <div className="flex items-center gap-1 text-[var(--color-gold)] text-[14px]">
+              {/* Right Column: Full Story, Verifiable Metric, and Controls */}
+              <div className="lg:col-span-7 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1 text-[var(--color-gold)] text-[16px]">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} weight="fill" />
                     ))}
                   </div>
 
-                  {/* Headline */}
-                  <p className="font-display text-[15px] font-extrabold text-heading-charcoal leading-snug">
-                    {trader.headline}
-                  </p>
-
-                  {/* Real Story */}
-                  <p className="text-[13px] text-body-brown leading-relaxed">
-                    {trader.story}
-                  </p>
-                </div>
-
-                {/* Hard Metric Footer */}
-                <div className="pt-3 border-t border-[var(--border-hairline)] flex items-center justify-between">
-                  <div>
-                    <span className="numo-heading text-[20px] font-extrabold text-[var(--color-grass-green)]">
-                      {trader.metricValue}
-                    </span>
-                    <p className="text-[11px] font-semibold text-muted-gray">{trader.metricLabel}</p>
-                  </div>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-grass-green)]/15 px-2 py-0.5 text-[11px] font-bold text-[var(--color-grass-green)]">
-                    <UserCheck size={13} weight="bold" /> Verified
+                  {/* Carousel Page Indicator */}
+                  <span className="text-[12px] font-bold text-muted-gray">
+                    {carouselIndex + 1} of {ORIGINAL_TESTIMONIALS.length}
                   </span>
                 </div>
+
+                {/* Big Quote */}
+                <blockquote className="font-display text-[22px] sm:text-[28px] font-extrabold tracking-tight text-heading-charcoal leading-snug">
+                  &ldquo;{currentTestimonial.quote}&rdquo;
+                </blockquote>
+
+                {/* Social Proof Metric Row */}
+                <div className="pt-4 border-t border-[var(--border-hairline)] flex items-center justify-between">
+                  <div>
+                    <span className="numo-heading text-[26px] font-extrabold text-[var(--color-grass-green)]">
+                      {currentTestimonial.profitMetric}
+                    </span>
+                    <p className="text-[12px] font-semibold text-muted-gray">
+                      {currentTestimonial.profitLabel}
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-grass-green)]/15 px-3 py-1 text-[12px] font-bold text-[var(--color-grass-green)]">
+                    <UserCheck size={16} weight="bold" /> Verified Trader
+                  </span>
+                </div>
+
+                {/* Carousel Navigation Buttons */}
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={prevTestimonial}
+                    aria-label="Previous story"
+                    className="monzo-pill h-10 w-10 flex items-center justify-center border border-[var(--border-hairline)] bg-[var(--surface-card-secondary)] text-heading-charcoal hover:bg-[var(--border-hairline)] transition-colors cursor-pointer"
+                  >
+                    <ArrowLeft size={16} weight="bold" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextTestimonial}
+                    aria-label="Next story"
+                    className="monzo-pill h-10 w-10 flex items-center justify-center border border-[var(--border-hairline)] bg-[var(--surface-card-secondary)] text-heading-charcoal hover:bg-[var(--border-hairline)] transition-colors cursor-pointer"
+                  >
+                    <ArrowRight size={16} weight="bold" />
+                  </button>
+                  <div className="flex gap-1.5 ml-2">
+                    {ORIGINAL_TESTIMONIALS.map((_, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setCarouselIndex(idx)}
+                        aria-label={`Go to slide ${idx + 1}`}
+                        className={`h-2 rounded-full transition-all cursor-pointer ${
+                          carouselIndex === idx
+                            ? "w-7 bg-[var(--color-hot-coral)]"
+                            : "w-2 bg-[var(--border-hairline)] hover:bg-muted-gray"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
-            ))}
+            </div>
+          </div>
+
+          {/* Social Proof Stats Banner (From Original Copy) */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto mt-12 text-center">
+            <div className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-card)] p-5 shadow-xs">
+              <p className="numo-heading text-[28px] font-extrabold text-heading-charcoal">2,000+</p>
+              <p className="text-[12px] font-semibold text-muted-gray mt-1">Market Women Using Trackkit</p>
+            </div>
+            <div className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-card)] p-5 shadow-xs">
+              <p className="numo-heading text-[28px] font-extrabold text-[var(--color-hot-coral)]">₦150M+</p>
+              <p className="text-[12px] font-semibold text-muted-gray mt-1">Tracked Inventory Volume</p>
+            </div>
+            <div className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-card)] p-5 shadow-xs">
+              <p className="numo-heading text-[28px] font-extrabold text-[var(--color-grass-green)]">₦45,000+</p>
+              <p className="text-[12px] font-semibold text-muted-gray mt-1">Avg. Monthly Profit Boost</p>
+            </div>
+            <div className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-card)] p-5 shadow-xs">
+              <p className="numo-heading text-[28px] font-extrabold text-[var(--color-link-blue)]">98%</p>
+              <p className="text-[12px] font-semibold text-muted-gray mt-1">Would Recommend to a Friend</p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* 6. TRANSPARENT 2-TIER PRICING */}
+      {/* 6. TRANSPARENT 2-TIER PRICING (Original Copy) */}
       {/* ========================================================================= */}
       <section id="pricing" className="py-16 sm:py-24 border-b border-[var(--border-hairline)] bg-[var(--surface-card-secondary)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
@@ -721,9 +838,9 @@ export default function WelcomePage() {
               Simple & Honest
             </span>
             <h2 className="font-display text-[32px] sm:text-[46px] font-extrabold tracking-tight text-heading-charcoal">
-              Simple Pricing. No Hidden Fees.
+              Simple Pricing. No Surprises.
             </h2>
-            <p className="text-[16px] text-body-brown">
+            <p className="text-[16px] sm:text-[18px] text-body-brown">
               Start completely free today. Upgrade only when your shop expands.
             </p>
           </div>
@@ -735,23 +852,23 @@ export default function WelcomePage() {
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-display text-[22px] font-extrabold text-heading-charcoal">Starter</h3>
                   <span className="rounded-full bg-[var(--surface-card-secondary)] px-3 py-1 text-[11px] font-bold text-muted-gray">
-                    FREE FOREVER
+                    FOREVER FREE
                   </span>
                 </div>
                 <div className="numo-display text-[38px] font-extrabold text-heading-charcoal">
                   ₦0 <span className="text-[14px] font-normal text-muted-gray">/ month</span>
                 </div>
                 <p className="text-[13px] text-body-brown mt-2">
-                  Everything you need to track daily stock and eliminate paper records.
+                  Track your stock, set alerts, never forget a restock. All free. No credit card. No expiration.
                 </p>
 
                 <ul className="mt-6 space-y-2.5 text-[13px]">
                   {[
                     "Unlimited product catalog",
-                    "1-Tap sales and restock logging",
+                    "Unlimited sales tracking",
                     "Low-stock alert warnings",
-                    "100% offline database engine",
-                    "Manual CSV export backup",
+                    "Works fully offline",
+                    "Manual data backup (CSV export)",
                   ].map((f, i) => (
                     <li key={i} className="flex items-center gap-2 text-heading-charcoal font-medium">
                       <CheckCircle weight="fill" className="text-[var(--color-grass-green)] shrink-0" size={17} />
@@ -765,7 +882,7 @@ export default function WelcomePage() {
                 href="/onboarding"
                 className="monzo-pill flex w-full items-center justify-center gap-1.5 border border-[var(--border-hairline)] bg-[var(--surface-card-secondary)] py-3 text-[14px] font-bold text-heading-charcoal hover:bg-[var(--surface-card)] transition-colors cursor-pointer text-center"
               >
-                Start Free Today
+                Start Free
               </Link>
             </div>
 
@@ -777,26 +894,27 @@ export default function WelcomePage() {
 
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-display text-[22px] font-extrabold text-heading-charcoal">Pro Trader</h3>
+                  <h3 className="font-display text-[22px] font-extrabold text-heading-charcoal">Pro</h3>
                   <span className="rounded-full bg-[var(--color-hot-coral)]/15 px-3 py-1 text-[11px] font-bold text-[var(--color-hot-coral)]">
                     PRO
                   </span>
                 </div>
                 <div className="numo-display text-[38px] font-extrabold text-heading-charcoal">
-                  ₦500 <span className="text-[14px] font-normal text-muted-gray">/ month (₦17/day)</span>
+                  ₦500 <span className="text-[14px] font-normal text-muted-gray">/ month (about ₦17/day)</span>
                 </div>
                 <p className="text-[13px] text-body-brown mt-2">
-                  Full profit margin intelligence, supplier tracking, and automatic cloud recovery.
+                  Cost tracking, profit margins, and automatic cloud recovery. Most market women make back the cost in profit improvements in the first week.
                 </p>
 
                 <ul className="mt-6 space-y-2.5 text-[13px]">
                   {[
-                    "Everything in Starter plan",
-                    "Real-time cost & profit margin engine",
-                    "Cheapest supplier price history",
-                    "AI Reorder Recommendations",
-                    "Automatic cloud sync across devices",
-                    "Priority WhatsApp & SMS support",
+                    "Everything in Free, plus:",
+                    "Cost tracking & profit margins",
+                    "Purchase history & trends",
+                    "Profit dashboard with insights",
+                    "Cloud sync (backup + cross-device)",
+                    "Price change history",
+                    "Email & WhatsApp support",
                   ].map((f, i) => (
                     <li key={i} className="flex items-center gap-2 text-heading-charcoal font-medium">
                       <CheckCircle weight="fill" className="text-[var(--color-hot-coral)] shrink-0" size={17} />
