@@ -12,11 +12,34 @@ export function Dashboard() {
   const { totalProducts, lowStockCount, lowStockItems, totalInventoryValue, isLoading } =
     useInventoryStats();
   const currency = useTrackkitStore((s) => s.currency);
+  const shopName = useTrackkitStore((s) => s.shopName);
+  const traderName = useTrackkitStore((s) => s.traderName);
+  const marketLocation = useTrackkitStore((s) => s.marketLocation);
   const setCurrentTab = useTrackkitStore((s) => s.setCurrentTab);
   const [showAddForm, setShowAddForm] = useState(false);
 
   return (
     <div className="space-y-6">
+      {/* Personalized Trader Greeting Banner */}
+      {(traderName || shopName || marketLocation) && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface-card)] p-4 sm:px-6 shadow-subtle-3">
+          <div>
+            <h1 className="text-[17px] sm:text-[19px] font-bold text-heading-charcoal">
+              {traderName ? `Welcome, ${traderName}!` : `Welcome to ${shopName || "your shop"}!`}
+            </h1>
+            <p className="text-[12px] sm:text-[13px] text-muted-gray">
+              {marketLocation ? `Operating in ${marketLocation}` : "Manage stock, margins, and orders offline."}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-grass-green)]/15 px-3 py-1 text-[11px] font-bold text-[var(--color-grass-green)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--color-grass-green)] animate-pulse" />
+              Offline Database Active
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Today's Snapshot Grid */}
       <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 shadow-subtle-3">
         <div className="flex items-center justify-between">

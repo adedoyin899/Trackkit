@@ -16,6 +16,10 @@ import {
   ChartLineUp,
   Sparkle,
   PaintBrush,
+  User,
+  MapPin,
+  Tag,
+  TrendUp,
   type Icon,
 } from "@phosphor-icons/react";
 import { useLocalInventory } from "@/hooks/useLocalInventory";
@@ -120,6 +124,16 @@ function InventoryTab() {
 function SettingsTab() {
   const shopName = useTrackkitStore((s) => s.shopName);
   const setShopName = useTrackkitStore((s) => s.setShopName);
+  const traderName = useTrackkitStore((s) => s.traderName);
+  const setTraderName = useTrackkitStore((s) => s.setTraderName);
+  const marketLocation = useTrackkitStore((s) => s.marketLocation);
+  const setMarketLocation = useTrackkitStore((s) => s.setMarketLocation);
+  const currency = useTrackkitStore((s) => s.currency);
+  const setCurrency = useTrackkitStore((s) => s.setCurrency);
+  const targetMarginGoal = useTrackkitStore((s) => s.targetMarginGoal);
+  const setTargetMarginGoal = useTrackkitStore((s) => s.setTargetMarginGoal);
+  const defaultLowStockThreshold = useTrackkitStore((s) => s.defaultLowStockThreshold);
+  const setDefaultLowStockThreshold = useTrackkitStore((s) => s.setDefaultLowStockThreshold);
   const { user, logout, isLoading: isLoggingOut } = useAuth();
 
   return (
@@ -134,16 +148,105 @@ function SettingsTab() {
         <ThemeToggle variant="full" />
       </div>
 
-      <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3">
-        <label className="flex items-center gap-1.5 text-[13px] font-medium text-body-brown">
-          <Storefront /> Shop Name
-        </label>
-        <input
-          value={shopName ?? ""}
-          onChange={(e) => setShopName(e.target.value)}
-          placeholder="e.g. Mama Ngozi Stores"
-          className="mt-2 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-3 text-[16px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
-        />
+      <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3 space-y-4">
+        <h3 className="flex items-center gap-1.5 text-[15px] font-medium text-heading-charcoal">
+          <Storefront /> Shop & Trader Profile
+        </h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="flex items-center gap-1.5 text-[13px] font-medium text-body-brown">
+              <Storefront size={15} /> Shop Name
+            </label>
+            <input
+              value={shopName ?? ""}
+              onChange={(e) => setShopName(e.target.value)}
+              placeholder="e.g. Mama Ngozi Stores"
+              className="mt-1.5 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-2.5 text-[14px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
+            />
+          </div>
+
+          <div>
+            <label className="flex items-center gap-1.5 text-[13px] font-medium text-body-brown">
+              <User size={15} /> Trader / Owner Name
+            </label>
+            <input
+              value={traderName ?? ""}
+              onChange={(e) => setTraderName(e.target.value)}
+              placeholder="e.g. Mama Ngozi, Amara"
+              className="mt-1.5 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-2.5 text-[14px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="flex items-center gap-1.5 text-[13px] font-medium text-body-brown">
+            <MapPin size={15} /> Market Location
+          </label>
+          <input
+            value={marketLocation ?? ""}
+            onChange={(e) => setMarketLocation(e.target.value)}
+            placeholder="e.g. Balogun Market, Lagos"
+            className="mt-1.5 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-2.5 text-[14px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
+          />
+        </div>
+      </div>
+
+      <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3 space-y-4">
+        <h3 className="flex items-center gap-1.5 text-[15px] font-medium text-heading-charcoal">
+          <Coins /> Currency & Profit Targets
+        </h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-[13px] font-medium text-body-brown mb-1.5">
+              Currency Symbol
+            </label>
+            <div className="flex gap-1.5">
+              {["₦", "₵", "$", "£", "€"].map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCurrency(c)}
+                  className={`flex-1 rounded-lg border py-2 text-[14px] font-bold cursor-pointer transition-all ${
+                    currency === c
+                      ? "border-[var(--color-link-blue)] bg-[var(--color-link-blue)]/15 text-heading-charcoal"
+                      : "border-[var(--border-hairline)] bg-[var(--surface-canvas)] text-muted-gray hover:text-heading-charcoal"
+                  }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[13px] font-medium text-body-brown mb-1.5">
+              Target Margin Goal (%)
+            </label>
+            <input
+              type="number"
+              min="1"
+              max="100"
+              value={targetMarginGoal}
+              onChange={(e) => setTargetMarginGoal(Number(e.target.value) || 20)}
+              className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-2 text-[14px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[13px] font-medium text-body-brown mb-1.5">
+              Low Stock Alert (units)
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={defaultLowStockThreshold}
+              onChange={(e) => setDefaultLowStockThreshold(Number(e.target.value) || 5)}
+              className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-canvas)] px-3 py-2 text-[14px] text-heading-charcoal outline-none focus:border-[var(--color-link-blue)]"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="rounded-cards bg-[var(--surface-card)] border border-[var(--border-hairline)] p-5 shadow-subtle-3">
@@ -223,6 +326,8 @@ export default function Home() {
   const currentTab = useTrackkitStore((s) => s.currentTab);
   const setCurrentTab = useTrackkitStore((s) => s.setCurrentTab);
   const shopName = useTrackkitStore((s) => s.shopName);
+  const traderName = useTrackkitStore((s) => s.traderName);
+  const marketLocation = useTrackkitStore((s) => s.marketLocation);
   const { ready, error } = useDatabaseStatus();
   const { user } = useAuth();
 
@@ -237,10 +342,10 @@ export default function Home() {
           </span>
           <div className="min-w-0 flex-1">
             <h1 className="font-display text-[20px] font-medium tracking-tight text-heading-charcoal truncate">
-              Trackkit
+              {shopName || "Trackkit"}
             </h1>
             <p className="truncate text-[12px] text-muted-gray">
-              {shopName || "My Retail Shop"}
+              {traderName ? `${traderName}` : marketLocation || "Offline Retail Workspace"}
             </p>
           </div>
         </div>
@@ -291,7 +396,7 @@ export default function Home() {
               <Storefront weight="fill" size={18} />
             </span>
             <h1 className="font-display text-[23px] font-medium tracking-[-0.02em] text-heading-charcoal">
-              Trackkit
+              {shopName || "Trackkit"}
             </h1>
           </div>
           <ThemeToggle />
@@ -304,7 +409,9 @@ export default function Home() {
               {currentTab}
             </h2>
             <p className="text-[12px] text-muted-gray">
-              {shopName ? `${shopName} · Desktop Workspace` : "Desktop Workspace"}
+              {shopName
+                ? `${shopName}${marketLocation ? ` · ${marketLocation}` : " · Workspace"}`
+                : "Desktop Workspace"}
             </p>
           </div>
           <div className="flex items-center gap-3">
