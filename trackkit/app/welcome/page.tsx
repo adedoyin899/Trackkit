@@ -441,47 +441,46 @@ export default function WelcomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. SECTION 3: WHAT TRACCKIT DOES (Clean 3-Card Bento Grid) */}
+      {/* 4. SECTION 3: EVERYTHING YOU NEED TO RUN A PROFITABLE SHOP */}
       {/* ========================================================================= */}
       <section id="features" className="py-16 sm:py-24 border-b border-[var(--border-hairline)] bg-[var(--surface-card-secondary)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
           <div className="mx-auto max-w-3xl text-center space-y-3 mb-12">
             <span className="text-[12px] font-extrabold text-[var(--color-hot-coral)] uppercase tracking-wider">
-              Finally, An App Built For You
+              BUILT FOR AFRICAN RETAIL
             </span>
             <h2 className="font-display text-[34px] sm:text-[48px] font-extrabold tracking-tight text-heading-charcoal">
-              Three Simple Things That Change Everything
+              Everything You Need to Run a Profitable Shop
             </h2>
             <p className="text-[16px] sm:text-[18px] text-body-brown">
-              Simple. Free to start. Designed specifically for West African market retail.
+              No complex accounting jargon. Just tap to sell, tap to restock, and watch your margin grow.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto items-stretch">
-            {/* Feature 1: Know Your Stock */}
-            <div className="interactive-card rounded-2xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 sm:p-7 shadow-subtle-3 flex flex-col justify-between space-y-6">
+            {/* Card 1: 1-Tap Sales & Restock */}
+            <div className="interactive-card rounded-[24px] bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 sm:p-7 shadow-subtle-3 flex flex-col justify-between space-y-6">
               <div className="space-y-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--color-hot-coral)] text-white shadow-coral mb-4">
-                  <Package size={24} weight="fill" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--color-hot-coral)] text-white shadow-coral mb-4">
+                  <Package size={22} weight="fill" />
                 </div>
-                <h3 className="font-display text-[22px] font-extrabold text-heading-charcoal">
-                  1. Know Your Stock
+                <h3 className="font-display text-[20px] font-extrabold text-heading-charcoal">
+                  1–Tap Sales & Restock
                 </h3>
-                <p className="text-[14px] text-body-brown leading-relaxed">
-                  Add your products once. See how many tins of milk, bags of sugar, cartons of noodles you have right now.
-                </p>
-                <p className="text-[13px] text-muted-gray leading-relaxed">
-                  Quick buttons: tap &ldquo;-1&rdquo; when you sell, &ldquo;+1&rdquo; when you restock. That&rsquo;s it. No counting. No guessing.
+                <p className="text-[13px] text-body-brown leading-relaxed">
+                  Log sales and restocks in under a second. No counting registers or typing spreadsheets.
                 </p>
               </div>
 
-              {/* Interactive In-Card Stepper Widget */}
-              <div className="rounded-2xl bg-[var(--surface-canvas)] p-4 border border-[var(--border-hairline)] space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-[13px]">🥛 Peak Milk (160g)</span>
+              {/* In-Card Stepper Widget */}
+              <div className="rounded-2xl bg-[var(--surface-canvas)] p-4 border border-[var(--border-hairline)] space-y-3">
+                <div className="flex items-center justify-between text-[12px]">
+                  <span className="font-bold text-heading-charcoal flex items-center gap-1">
+                    🥛 Peak Milk (160g)
+                  </span>
                   <span className="text-[11px] font-semibold text-muted-gray">Alert ≤ 5</span>
                 </div>
-                <div className="numo-display text-[28px] font-extrabold text-heading-charcoal">
+                <div className="numo-display text-[30px] font-extrabold text-heading-charcoal">
                   {protoMilkStock} tins
                 </div>
                 <div className="flex gap-2">
@@ -490,96 +489,81 @@ export default function WelcomePage() {
                     onClick={() => setProtoMilkStock(Math.max(0, protoMilkStock - 1))}
                     className="monzo-pill flex-1 flex items-center justify-center gap-1 bg-[var(--color-alert-red)] text-white py-2 text-[12px] font-bold cursor-pointer hover:opacity-90 transition-opacity"
                   >
-                    <Minus size={13} weight="bold" /> 1 Sale
+                    — 1 Sale
                   </button>
                   <button
                     type="button"
                     onClick={() => setProtoMilkStock(protoMilkStock + 1)}
                     className="monzo-pill flex-1 flex items-center justify-center gap-1 bg-[var(--color-grass-green)] text-white py-2 text-[12px] font-bold cursor-pointer hover:opacity-90 transition-opacity"
                   >
-                    <Plus size={13} weight="bold" /> 1 Restock
+                    + 1 Restock
                   </button>
                 </div>
-                <p className="text-[11px] font-bold text-[var(--color-grass-green)] pt-1">
-                  ✓ Result: No more stock-outs on best sellers.
-                </p>
               </div>
             </div>
 
-            {/* Feature 2: Know Your Profit */}
-            <div className="interactive-card rounded-2xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 sm:p-7 shadow-subtle-3 flex flex-col justify-between space-y-6">
+            {/* Card 2: Instant Margin Breakdown */}
+            <div className="interactive-card rounded-[24px] bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 sm:p-7 shadow-subtle-3 flex flex-col justify-between space-y-6">
               <div className="space-y-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--color-grass-green)] text-white shadow-sm mb-4">
-                  <Receipt size={24} weight="fill" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--color-grass-green)] text-white shadow-sm mb-4">
+                  <TrendUp size={22} weight="bold" />
                 </div>
-                <h3 className="font-display text-[22px] font-extrabold text-heading-charcoal">
-                  2. Know Your Profit
+                <h3 className="font-display text-[20px] font-extrabold text-heading-charcoal">
+                  Instant Margin Breakdown
                 </h3>
-                <p className="text-[14px] text-body-brown leading-relaxed">
-                  Enter what you paid the supplier. Enter what you&rsquo;re selling for. Trackkit shows you the margin—instantly.
-                </p>
-                <p className="text-[13px] text-muted-gray leading-relaxed">
-                  Now you see it. Some products make real money. Some barely move the needle. You decide what to restock.
+                <p className="text-[13px] text-body-brown leading-relaxed">
+                  See cash profit and percentage margins in real time. Know immediately if a price hike is needed.
                 </p>
               </div>
 
               {/* In-Card Margin Breakdown Widget */}
-              <div className="rounded-2xl bg-[var(--surface-canvas)] p-4 border border-[var(--border-hairline)] space-y-2">
+              <div className="rounded-2xl bg-[var(--surface-canvas)] p-4 border border-[var(--border-hairline)] space-y-2.5">
                 <div className="flex items-center justify-between text-[12px]">
-                  <span className="font-semibold">Milk (₦800 → ₦810)</span>
-                  <span className="rounded-full bg-[var(--color-alert-red)]/15 px-2 py-0.5 text-[10px] font-extrabold text-[var(--color-alert-red)]">
-                    1.25% 🔴
+                  <span className="text-muted-gray font-medium">Cost Price:</span>
+                  <span className="rounded-md bg-[var(--surface-card)] px-3 py-1 font-bold text-heading-charcoal border border-[var(--border-hairline)]">
+                    800
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-[12px]">
-                  <span className="font-semibold">Sugar (₦50 → ₦75)</span>
-                  <span className="rounded-full bg-[var(--color-grass-green)]/15 px-2 py-0.5 text-[10px] font-extrabold text-[var(--color-grass-green)]">
-                    50.0% 🟢
+                  <span className="text-muted-gray font-medium">Selling Price:</span>
+                  <span className="rounded-md bg-[var(--surface-card)] px-3 py-1 font-bold text-heading-charcoal border border-[var(--border-hairline)]">
+                    1200
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-[12px]">
-                  <span className="font-semibold">Noodles (₦80 → ₦120)</span>
-                  <span className="rounded-full bg-[var(--color-grass-green)]/15 px-2 py-0.5 text-[10px] font-extrabold text-[var(--color-grass-green)]">
-                    50.0% 🟢
+                <div className="flex items-center justify-between text-[12px] pt-1 border-t border-[var(--border-hairline)]">
+                  <span className="text-muted-gray font-semibold">Profit Margin:</span>
+                  <span className="font-extrabold text-[var(--color-grass-green)] font-display text-[14px]">
+                    +33% (₦400)
                   </span>
                 </div>
-                <p className="text-[11px] font-bold text-[var(--color-grass-green)] pt-1">
-                  ✓ Result: Make ₦2,000–₦5,000 more per week.
-                </p>
               </div>
             </div>
 
-            {/* Feature 3: Sync & Backup */}
-            <div className="interactive-card rounded-2xl bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 sm:p-7 shadow-subtle-3 flex flex-col justify-between space-y-6">
+            {/* Card 3: 100% Offline SQLite */}
+            <div className="interactive-card rounded-[24px] bg-[var(--surface-card)] border border-[var(--border-hairline)] p-6 sm:p-7 shadow-subtle-3 flex flex-col justify-between space-y-6">
               <div className="space-y-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--color-link-blue)] text-white shadow-sm mb-4">
-                  <CloudCheck size={24} weight="fill" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--color-link-blue)] text-white shadow-sm mb-4">
+                  <Lightning size={22} weight="fill" />
                 </div>
-                <h3 className="font-display text-[22px] font-extrabold text-heading-charcoal">
-                  3. 100% Offline + Backup
+                <h3 className="font-display text-[20px] font-extrabold text-heading-charcoal">
+                  100% Offline SQLite
                 </h3>
-                <p className="text-[14px] text-body-brown leading-relaxed">
-                  Your phone might break. But your data won&rsquo;t. Everything works offline and syncs automatically when online.
-                </p>
-                <p className="text-[13px] text-muted-gray leading-relaxed">
-                  Switch to a new phone? Log in, and everything is there. Your records and pricing history are protected.
+                <p className="text-[13px] text-body-brown leading-relaxed">
+                  Full relational SQLite running right inside your browser and mobile device. Zero lag, zero network requests.
                 </p>
               </div>
 
-              {/* In-Card Offline SQLite Status Widget */}
+              {/* In-Card Offline Database Widget */}
               <div className="rounded-2xl bg-[var(--surface-canvas)] p-4 border border-[var(--border-hairline)] space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] font-bold text-heading-charcoal">Local SQLite Engine</span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-grass-green)]/15 px-2 py-0.5 text-[10px] font-extrabold text-[var(--color-grass-green)]">
+                  <span className="text-[12px] font-bold text-heading-charcoal">Local Database Engine</span>
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[var(--color-grass-green)]">
                     <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-grass-green)] animate-pulse" />
-                    Offline Ready
+                    Active
                   </span>
                 </div>
-                <p className="text-[11px] text-muted-gray">
-                  Instant local storage on your phone. Automatic encrypted cloud sync.
-                </p>
-                <p className="text-[11px] font-bold text-[var(--color-grass-green)] pt-1">
-                  ✓ Result: Total peace of mind. Zero data loss.
+                <p className="text-[11px] text-muted-gray leading-relaxed">
+                  All transactions, products, and supplier stats are written directly to local encrypted storage.
                 </p>
               </div>
             </div>
